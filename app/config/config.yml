@@ -74,7 +74,7 @@ doctrine_mongodb:
         default:
             server: mongodb://localhost:27017
             options: {}
-    default_database: test_database
+    default_database: Mnemono
     document_managers:
         default:
             auto_mapping: true

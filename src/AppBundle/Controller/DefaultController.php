@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class DefaultController extends Controller
 {
@@ -26,10 +26,6 @@ class DefaultController extends Controller
     		->getQuery()
     		->execute();
 
-	    $ret = array();
-	    foreach($bizs as $biz){
-	    	$ret[] = $biz;
-	    }
-    	return new Response(json_encode(array("ret" => $ret)));;
+    	return new JsonResponse(array("data" => iterator_to_array($bizs, false)));
     }
 }
