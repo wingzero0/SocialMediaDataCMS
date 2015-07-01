@@ -15,7 +15,7 @@ use JMS\Serializer\SerializationContext;
 /**
  * @Route("/api/v{vNumber}")
  */
-class ApiController extends Controller{
+class BusinessesController extends Controller{
     /**
      * @Route("/", name="versioning")
      */
@@ -24,7 +24,7 @@ class ApiController extends Controller{
         return new Response(json_encode(array('apiVersion' => $vNumber)));
     }
     /**
-     * @Route("/{bizName}", name="retrival")
+     * @Route("/businesses/{bizName}", name="retrival")
      */
     public function getBizAction(Request $request, $vNumber, $bizName)
     {
@@ -45,7 +45,6 @@ class ApiController extends Controller{
     private function serialize($objs, $version){
         $data = array('data' => $objs);
         $serializer = $this->get('jms_serializer');
-        //return $serializer->serialize($objs, 'json', SerializationContext::create()->setVersion($version));
         return $serializer->serialize($data, 'json', SerializationContext::create()->setVersion($version));
     }
 }
