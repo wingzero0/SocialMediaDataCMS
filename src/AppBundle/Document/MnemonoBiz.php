@@ -2,14 +2,19 @@
 namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * @MongoDB\Document(collection="MnemonoBiz")
+ * @ExclusionPolicy("none")
  */
 class MnemonoBiz implements \JsonSerializable
 {
     /**
      * @MongoDB\Id
+     * @Exclude
      */
     protected $id;
 

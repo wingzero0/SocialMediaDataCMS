@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
@@ -26,6 +26,16 @@ class DefaultController extends Controller
     		->getQuery()
     		->execute();
 
-    	return new JsonResponse(array("data" => iterator_to_array($bizs, false)));
+    	return new Response($this->serialize(iterator_to_array($bizs, false)));
+    }
+
+    /**
+     * @param array $objs
+     * @return string JSON string
+     */
+    private function serialize($objs){
+        $data = array('data' => $objs);
+        $serializer = $this->get('jms_serializer');
+        return $serializer->serialize($data, 'json');
     }
 }
