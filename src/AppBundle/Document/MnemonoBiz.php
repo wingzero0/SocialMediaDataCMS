@@ -2,12 +2,16 @@
 namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Since;
 
 /**
  * @MongoDB\Document(collection="MnemonoBiz")
+ * @ExclusionPolicy("none")
  */
-class MnemonoBiz implements \JsonSerializable
-{
+class MnemonoBiz{
     /**
      * @MongoDB\Id
      */
@@ -22,6 +26,13 @@ class MnemonoBiz implements \JsonSerializable
      * @MongoDB\collection
      */
     protected $urls;
+
+    /**
+     * @MongoDB\string
+     * @Since("1.1")
+     */
+    protected $address;
+
 
 
     /**
@@ -78,15 +89,26 @@ class MnemonoBiz implements \JsonSerializable
         return $this->urls;
     }
 
+
     /**
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     * Set address
+     *
+     * @param string $address
+     * @return self
      */
-    public function jsonSerialize()
+    public function setAddress($address)
     {
-        return array( 'name' => $this->getName(), 'urls' => $this->getUrls() );
+        $this->address = $address;
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string $address
+     */
+    public function getAddress()
+    {
+        return $this->address;
     }
 }

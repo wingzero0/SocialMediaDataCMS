@@ -17,11 +17,14 @@ class LoadBiz implements FixtureInterface{
      */
     public function load(ObjectManager $manager)
     {
-        $biz = new MnemonoBiz();
-        $biz->setName('TestData');
-        $biz->setUrls(array('http://localhost', 'https://localhost'));
+        for ($i = 0; $i< 3;$i++){
+            $biz = new MnemonoBiz();
+            $biz->setName('TestData' . $i);
+            $biz->setUrls(array('http://localhost', 'https://localhost'));
+            $biz->setAddress('Macau' . $i);
 
-        $manager->persist($biz);
+            $manager->persist($biz);
+        }
         $manager->flush();
     }
 }
