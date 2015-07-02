@@ -69,7 +69,7 @@ class MnemonoBiz{
      *   discriminatorField="importFrom",
      *   discriminatorMap={
      *     "facebookPage"="Document\FacebookPage",
-     *     "directory"="Documents\Directory"
+     *     "directory"="Document\Directory"
      *   },
      *   defaultDiscriminatorValue="facebookPage"
      * )
