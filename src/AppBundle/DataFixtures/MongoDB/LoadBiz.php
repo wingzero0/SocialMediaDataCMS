@@ -12,6 +12,7 @@ use AppBundle\Document\FacebookPage;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use AppBundle\Document\MnemonoBiz;
+use AppBundle\Document\Post;
 
 class LoadBiz implements FixtureInterface{
     /**
@@ -45,6 +46,11 @@ class LoadBiz implements FixtureInterface{
             $biz->setImportFrom('directory');
             $manager->persist($biz);
         }
+        $post = new Post();
+        $post->setMessage("Test Message");
+        $manager->persist($post);
+
+
         $manager->flush();
     }
 }

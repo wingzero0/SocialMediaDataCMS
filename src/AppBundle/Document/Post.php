@@ -23,4 +23,36 @@ class Post extends BaseThread{
      * @MongoDB\String
      */
     protected $message;
+
+    /**
+     * Get id
+     *
+     * @return id $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set message
+     *
+     * @param string $message
+     * @return self
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+        return $this;
+    }
+
+    /**
+     * Get message
+     *
+     * @return string $message
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 }

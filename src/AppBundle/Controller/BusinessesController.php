@@ -24,7 +24,7 @@ class BusinessesController extends Controller{
         return new Response(json_encode(array('apiVersion' => $vNumber)));
     }
     /**
-     * @Route("/businesses/{bizName}", name="retrival")
+     * @Route("/businesses/{bizName}", name="retrival_biz")
      */
     public function getBizAction(Request $request, $vNumber, $bizName)
     {

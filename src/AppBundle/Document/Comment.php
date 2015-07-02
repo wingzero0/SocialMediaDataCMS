@@ -28,4 +28,14 @@ class Comment extends BaseComment
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Post")
      */
     protected $thread;
+
+    /**
+     * Get id
+     *
+     * @return id $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }
