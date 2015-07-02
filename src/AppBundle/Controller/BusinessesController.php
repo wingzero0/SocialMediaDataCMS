@@ -7,15 +7,14 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use JMS\Serializer\SerializationContext;
+use AppBundle\Controller\BaseController;
 
 /**
  * @Route("/api/v{vNumber}")
  */
-class ApiController extends Controller{
+class BusinessesController extends BaseController{
     /**
      * @Route("/", name="versioning")
      */
@@ -24,7 +23,7 @@ class ApiController extends Controller{
         return new Response(json_encode(array('apiVersion' => $vNumber)));
     }
     /**
-     * @Route("/{bizName}", name="retrival")
+     * @Route("/businesses/{bizName}", name="retrival_biz")
      */
     public function getBizAction(Request $request, $vNumber, $bizName)
     {
@@ -35,17 +34,5 @@ class ApiController extends Controller{
             ->execute();
 
         return new Response($this->serialize(iterator_to_array($bizs, false), $vNumber));
-    }
-
-    /**
-     * @param array $objs
-     * @param string $version
-     * @return string JSON string
-     */
-    private function serialize($objs, $version){
-        $data = array('data' => $objs);
-        $serializer = $this->get('jms_serializer');
-        //return $serializer->serialize($objs, 'json', SerializationContext::create()->setVersion($version));
-        return $serializer->serialize($data, 'json', SerializationContext::create()->setVersion($version));
     }
 }

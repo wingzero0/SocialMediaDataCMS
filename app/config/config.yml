@@ -26,11 +26,19 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
+# FOS Comment
+fos_comment:
+    db_driver: mongodb
+    class:
+        model:
+            comment: AppBundle\Document\Comment
+            thread: AppBundle\Document\Post
+
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ ]
+    bundles:        [ "FOSCommentBundle" ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
