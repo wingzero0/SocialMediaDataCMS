@@ -7,15 +7,14 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use JMS\Serializer\SerializationContext;
+use AppBundle\Controller\BaseController;
 
 /**
  * @Route("/api/v{vNumber}")
  */
-class BusinessesController extends Controller{
+class BusinessesController extends BaseController{
     /**
      * @Route("/", name="versioning")
      */
@@ -35,16 +34,5 @@ class BusinessesController extends Controller{
             ->execute();
 
         return new Response($this->serialize(iterator_to_array($bizs, false), $vNumber));
-    }
-
-    /**
-     * @param array $objs
-     * @param string $version
-     * @return string JSON string
-     */
-    private function serialize($objs, $version){
-        $data = array('data' => $objs);
-        $serializer = $this->get('jms_serializer');
-        return $serializer->serialize($data, 'json', SerializationContext::create()->setVersion($version));
     }
 }
