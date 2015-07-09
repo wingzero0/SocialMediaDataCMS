@@ -77,6 +77,15 @@ class MnemonoBiz{
     protected $importFromRef;
 
     /**
+     * @MongoDB\Date
+     */
+    protected $lastModDate;
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Document\User")
+     */
+    protected $lastModUser;
+
+    /**
      * Get id
      *
      * @return id $id
@@ -370,5 +379,27 @@ class MnemonoBiz{
     public function getWebsites()
     {
         return $this->websites;
+    }
+
+    /**
+     * Set lastModDate
+     *
+     * @param date $lastModDate
+     * @return self
+     */
+    public function setLastModDate($lastModDate)
+    {
+        $this->lastModDate = $lastModDate;
+        return $this;
+    }
+
+    /**
+     * Get lastModDate
+     *
+     * @return date $lastModDate
+     */
+    public function getLastModDate()
+    {
+        return $this->lastModDate;
     }
 }

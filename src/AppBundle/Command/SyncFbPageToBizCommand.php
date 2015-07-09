@@ -9,6 +9,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Document\FacebookPage;
+use AppBundle\Document\MnemonoBiz;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,27 +23,53 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             ->addOption('fbId', null ,
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'the specific fbId you want to sync')
+            ->addOption('updateFromFb', null,
+                InputOption::VALUE_OPTIONAL,
+                'over write current biz value with facebook page')
+            ->addOption('dumpFromFb', null,
+                InputOption::VALUE_OPTIONAL,
+                'add new record from facebook page collection ')
             ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
         $fbIds = $input->getOption('fbId');
         if (!empty($fbIds)){
             $output->writeln("your first fbId is ". $fbIds[0]);
-            $this->updateByFbPage($fbIds[0]);
+            $this->createBizByFbPage($fbIds[0]);
         }else{
             $output->writeln("no fbId");
         }
     }
-    private function updateByFbPage($fbId){
+    private function createBizByFbPage($fbId){
         $dm = $this->getDM();
-        $pages = $dm->createQueryBuilder("AppBundle:FacebookPage")->hydrate(false)->field("fbId")->equals($fbId)
-                ->getQuery()->execute();
-        $rawPageData = array();
-        foreach($pages as $page){
-            print_r($page);
-            $rawPageData[] = $page;
+        $page = $dm->createQueryBuilder("AppBundle:FacebookPage")
+            //->hydrate(false)
+            ->field("fbId")->equals($fbId)
+            ->getQuery()->getSingleResult();
+
+        $pageRaw = $dm->createQueryBuilder("AppBundle:FacebookPage")
+            ->hydrate(false)
+            ->field("fbId")->equals($fbId)
+            ->getQuery()->getSingleResult();
+
+        $biz = $dm->createQueryBuilder("AppBundle:MnemonoBiz")
+            ->field("importFrom")->equals("facebookPage")
+            ->field("importFromRef")->references($page)
+            ->getQuery()->getSingleResult();
+
+        if ($biz == null){
+            $biz = new MnemonoBiz();
+            $biz->setName($pageRaw["name"])
+                ->setImportFrom("facebookPage")
+                ->setImportFromRef($page)
+                ->setLastModDate(new \DateTime());
+
+            $dm->persist($biz);
+            $dm->flush();
         }
-        return $rawPageData;
+
+
+        return $biz;
     }
 
     /**
