@@ -8,8 +8,9 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Document\FacebookPage;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,11 +25,36 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
-        $fbId = $input->getOption('fbId');
-        if (!empty($fbId)){
-            $output->writeln("your first fbId is ". $fbId[0]);
+        $fbIds = $input->getOption('fbId');
+        if (!empty($fbIds)){
+            $output->writeln("your first fbId is ". $fbIds[0]);
+            $this->updateByFbPage($fbIds[0]);
         }else{
             $output->writeln("no fbId");
         }
+    }
+    private function updateByFbPage($fbId){
+        $dm = $this->getDM();
+        $pages = $dm->createQueryBuilder("AppBundle:FacebookPage")->hydrate(false)->field("fbId")->equals($fbId)
+                ->getQuery()->execute();
+        $rawPageData = array();
+        foreach($pages as $page){
+            print_r($page);
+            $rawPageData[] = $page;
+        }
+        return $rawPageData;
+    }
+
+    /**
+     * @return null|DocumentManager
+     */
+    private function getDM(){
+        $dm = $this->getContainer()->get("doctrine_mongodb")->getManager();
+        if ($dm instanceof DocumentManager){
+            return $dm;
+        }else{
+            echo "dm is not documentMananger"."\n";
+        }
+        return null;
     }
 }

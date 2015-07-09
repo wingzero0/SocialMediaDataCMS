@@ -23,7 +23,7 @@ class FacebookPage {
     protected $id;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string", name="fbID")
      */
     protected $fbId;
 
