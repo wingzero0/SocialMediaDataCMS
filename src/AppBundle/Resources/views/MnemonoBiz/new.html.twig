@@ -1,0 +1,112 @@
+{% extends "AppBundle:layout:layout.html.twig" %}
+
+{% block header %}
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">School App</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="{{ path('@BackendHome') }}">Dashboard</a>
+                    </li>
+                </ul>
+                {#<ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{{ path('fos_user_security_logout') }}">Logout {{app.user.username}}</a>
+                    </li>
+                </ul>#}
+            </div>
+            <!--/.navbar-collapse -->
+        </div>
+    </nav>
+{% endblock %}
+
+{% block mainContent %}
+    <div class="container">
+
+
+        <h2>MnemonoBiz creation</h2>
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
+        <div class="form-group">
+            {{ form_label(form.name) }}
+            {{ form_errors(form.name) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.shortDesc) }}
+            {{ form_errors(form.shortDesc) }}
+            {{ form_widget(form.shortDesc, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.longDesc) }}
+            {{ form_errors(form.longDesc) }}
+            {{ form_widget(form.longDesc, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.category) }}
+            {{ form_errors(form.category) }}
+            {{ form_widget(form.category, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group" data-prototype="{{ form_widget(form.tags.vars.prototype)|e>
+            {% for tag in form.tags %}
+                {{ form_label(form.tag) }}
+                {{ form_errors(form.tag) }}
+                {{ form_widget(form.tag, {'attr': {'class': 'form-control'} }) }}
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.address) }}
+            {{ form_errors(form.address) }}
+            {{ form_widget(form.address, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.city) }}
+            {{ form_errors(form.city) }}
+            {{ form_widget(form.city, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.phones) }}
+            {{ form_errors(form.phones) }}
+            {{ form_widget(form.phones, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.faxes) }}
+            {{ form_errors(form.faxes) }}
+            {{ form_widget(form.faxes, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.websites) }}
+            {{ form_errors(form.websites) }}
+            {{ form_widget(form.websites, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.weighting) }}
+            {{ form_errors(form.weighting) }}
+            {{ form_widget(form.weighting, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.importFrom) }}
+            {{ form_errors(form.importFrom) }}
+            {{ form_widget(form.importFrom, {'attr': {'class': 'form-control'} }) }}
+        </div>
+            {{ form_end(form) }}
+
+        <ul class="record_actions list list-inline">
+            <li>
+                <a href="{{ path('mnemonobiz_home') }}" class="btn btn-link">
+                    Back to the list
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
