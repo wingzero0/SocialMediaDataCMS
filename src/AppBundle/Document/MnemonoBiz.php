@@ -35,7 +35,7 @@ class MnemonoBiz{
     /**
      * @MongoDB\Collection
      */
-    protected $tag;
+    protected $tags;
     /**
      * @MongoDB\String
      */
@@ -177,12 +177,12 @@ class MnemonoBiz{
     /**
      * Set tag
      *
-     * @param collection $tag
+     * @param collection $tags
      * @return self
      */
-    public function setTag($tag)
+    public function setTags($tags)
     {
-        $this->tag = $tag;
+        $this->tags = $tags;
         return $this;
     }
 
@@ -191,9 +191,9 @@ class MnemonoBiz{
      *
      * @return collection $tag
      */
-    public function getTag()
+    public function getTags()
     {
-        return $this->tag;
+        return $this->tags;
     }
 
     /**

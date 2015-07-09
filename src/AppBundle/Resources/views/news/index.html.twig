@@ -1,0 +1,241 @@
+{% extends "AppBundle:layout:layout.html.twig" %}
+
+{% block header %}
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">School App</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="{{ path('@BackendHome') }}">Dashboard</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{{ path('fos_user_security_logout') }}">Logout {{app.user.username}}</a>
+                    </li>
+                </ul>
+            </div>
+            <!--/.navbar-collapse -->
+        </div>
+    </nav>
+
+
+{% endblock %}
+
+{% block mainContent %}
+
+    <div class="container">
+        <h2>News list</h2>
+        <a class="btn btn-primary btn-large" href="{{ path('news_form') }}">New Message</a>
+
+        <div class="btn-group" style="float: right">
+            <button class="btn btn-default">{{ currentFilter }}</button>
+            <button data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{{ path('news_home') }}">All</a>
+                </li>
+                {% for level1 in classTypeList %}
+                    <li class="divider"></li>
+                    {% for classType in level1 %}
+                        <li>
+                            <a href="{{ path('news_home') }}?classType={{ classType }}">{{ classType }}</a>
+                        </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>
+                    Message
+                </th>
+                <th>
+                    Create Date
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Action
+                </th>
+                <th>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for news in pagination %}
+                <tr>
+                    <td id="title-{{ news.id }}">{{ news.title }}</td>
+                    <td>{{ news.publishDate|date('Y-m-d H:i:s') }}</td>
+                    <td>
+                        {% if news.visible == true %}
+                            Publish
+                        {% else %}
+                            Draft
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-default btn-large" href="{{ path('news_form') }}?id={{ news.id }}">Edit</a>
+                        <a class="btn btn-default btn-large cgPushButton"
+                           href="{{ path('news_push', {'id':news.id}) }}" data-titleid="title-{{ news.id }}">Push</a>
+                        <a class="btn btn-default btn-large cgDeleteButton"
+                           href="{{ path('news_delete', {'id':news.id}) }}"
+                           data-titleid="title-{{ news.id }}">Delete</a>
+                    </td>
+                    <td>
+                        <p id="{{ news.id }}">
+                            {% if news.lastPushDate is not null %}
+                                pushed
+                            {% endif %}
+                        </p>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Delete</h4>
+                    </div>
+                    <div class="modal-body" id="cgModalBody">
+                        Are you sure to delete message ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="deleteConfirm" type="button" class="btn btn-primary">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="pushDialog" tabindex="-1" role="dialog" aria-labelledby="pushDialogLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="pushDialogLabel">Push</h4>
+                    </div>
+                    <div class="modal-body" id="pushDialogModalBody">
+                        Are you sure to push message ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="pushConfirm" type="button" class="btn btn-primary">Push</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+
+        jQuery(document).ready(function () {
+            jQuery('.cgPushButton').click(function (e) {
+                e.preventDefault();
+                var pushAction = function (URL) {
+                    var data = {'responseType': 'json'};
+                    var pushCallBack = function (data) {
+                        if (data.ret == 1) {
+                            var pushField = jQuery('#' + data.id);
+                            pushField.addClass('text-warning');
+                            pushField.html('pushed');
+                            setTimeout(function () {
+                                pushField.removeClass('text-warning', 1500);
+                            }, 500);
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                    jQuery.ajax({
+                        type: "GET",
+                        url: URL,
+                        data: data,
+                        success: pushCallBack,
+                        dataType: 'json'
+                    });
+                };
+                var URL = this.href;
+                jQuery("#pushConfirm").unbind('click').click(function (e) {
+                    jQuery('#pushDialog').modal('hide');
+                    pushAction(URL);
+                });
+                var messageTitle = jQuery("#" + jQuery(this).attr('data-titleid')).text();
+                jQuery('#pushDialogModalBody').html("Are you sure to push message: '<b>" + messageTitle + "'</b>?");
+                jQuery('#pushDialog').modal();
+            });
+            jQuery('.cgDeleteButton').click(function (e) {
+                e.preventDefault();
+                var deleteAction = function (URL) {
+                    console.log(URL);
+                    var data = {'responseType': 'json'};
+                    var deleteCallBack = function (data) {
+                        console.log(data);
+                        if (data.ret == 1) {
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                    jQuery.ajax({
+                        type: "DELETE",
+                        url: URL,
+                        data: data,
+                        success: deleteCallBack,
+                        dataType: 'json'
+                    });
+                }
+                var URL = this.href;
+                jQuery("#deleteConfirm").unbind('click').click(function (e) {
+                    deleteAction(URL);
+                });
+                var messageTitle = jQuery("#" + jQuery(this).attr('data-titleid')).text();
+                jQuery('#cgModalBody').html("Are you sure to delete message: '<b>" + messageTitle + "'</b>?");
+                jQuery('#myModal').modal();
+            });
+            jQuery('div.pagination span.current').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<li class="active"><a href="#">' + this.innerHTML + '</a></li>'));
+            });
+            var classArray = ['first', 'previous', 'page', 'next', 'last'];
+            jQuery.each(classArray, function (key, className) {
+                jQuery('div.pagination span.' + className).each(function (index) {
+                    jQuery(this).replaceWith(jQuery('<li>' + this.innerHTML + '</li>'));
+                });
+            })
+
+            jQuery('div.pagination').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<ul class="pagination">' + this.innerHTML + '</ul>'));
+            });
+        });
+    </script>
+{% endblock %}

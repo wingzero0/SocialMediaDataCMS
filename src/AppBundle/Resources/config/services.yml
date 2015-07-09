@@ -1,0 +1,7 @@
+services:
+    GCMService:
+      class:  AppBundle\Services\PushServiceAndroid
+      arguments:  [ @service_container ]
+    APNSService:
+      class:  AppBundle\Services\PushServiceiOS
+      arguments:  [ @service_container ]
