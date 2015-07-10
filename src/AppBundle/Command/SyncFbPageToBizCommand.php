@@ -21,25 +21,49 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
     protected function configure(){
         $this->setName("mnemono:sync:fbpagetobiz")
             ->setDescription("sync facebook page to biz")
+            ->addOption('action', null,
+                InputOption::VALUE_OPTIONAL,
+                'over write current biz value with facebook page',
+                'dumpFromFb')
             ->addOption('fbId', null ,
-                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'the specific fbId you want to sync')
-            ->addOption('updateFromFb', null,
-                InputOption::VALUE_OPTIONAL,
-                'over write current biz value with facebook page')
-            ->addOption('dumpFromFb', null,
-                InputOption::VALUE_OPTIONAL,
-                'add new record from facebook page collection ')
             ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
         $fbIds = $input->getOption('fbId');
-        if (!empty($fbIds)){
-            $output->writeln("your first fbId is ". $fbIds[0]);
-            $this->createBizByFbPage($fbIds[0]);
+        $action = $input->getOption('action');
+        if ($action == "dumpFromFb"){
+            $this->createBizFromFbPageCollection();
+        }else if (!empty($fbIds)){
+            foreach ($fbIds as $fbId){
+                if ($action=="createFromFb"){
+                    $this->createBizByFbPage($fbId);
+                }
+            }
         }else{
             $output->writeln("no fbId");
         }
+    }
+    private function createBizFromFbPageCollection(){
+        $dm = $this->getDM();
+        $skip = 0;
+        $limit = 10;
+        do{
+            $pages = $dm->createQueryBuilder("AppBundle:FacebookPage")
+                ->field("exception")->notEqual(true)
+                ->limit($limit)->skip($skip)
+                ->getQuery()->execute();
+            $newAdd = $pages->count(true);
+            if ($pages->count() > 0){
+                foreach($pages as $page){
+                    if ($page instanceof FacebookPage){
+                        $this->createBizByFbPage($page->getFbId());
+                    }
+                    $skip++;
+                }
+            }
+        }while($newAdd > 0);
     }
     private function createBizByFbPage($fbId){
         $dm = $this->getDM();
@@ -86,11 +110,7 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             $biz->setWebsites($websites);
         }
         if (isset($pageRaw["location"])){
-            $location = new Location();
-            $location->setCity($pageRaw["location"]["city"])
-                ->setCountry($pageRaw["location"]["country"])
-                ->setAddress($pageRaw["location"]["street"]);
-            $this->getDM()->persist($location);
+            $location = $this->createLocation($pageRaw["location"]);
             $biz->setLocation($location);
         }
         $biz->setName($pageRaw["name"])
@@ -98,6 +118,22 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             ->setImportFromRef($page)
             ->setLastModDate(new \DateTime());
         return $biz;
+    }
+
+    /**
+     * @param $rawArray
+     * @return Location
+     */
+    private function createLocation($rawArray){
+        $location = new Location();
+        $street = (isset($rawArray["street"]) ? $rawArray["street"] : null);
+        $city = (isset($rawArray["city"]) ? $rawArray["city"] : null);
+        $country = (isset($rawArray["country"]) ? $rawArray["country"] : null);
+        $location->setCity($city)
+            ->setCountry($country)
+            ->setAddress($street);
+        $this->getDM()->persist($location);
+        return $location;
     }
 
     /**
