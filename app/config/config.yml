@@ -34,6 +34,11 @@ fos_comment:
             comment: AppBundle\Document\Comment
             thread: AppBundle\Document\Post
 
+fos_user:
+    db_driver: mongodb # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: main
+    user_class: AppBundle\Document\User
+
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
