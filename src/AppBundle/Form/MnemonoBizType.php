@@ -27,13 +27,34 @@ class MnemonoBizType extends AbstractType
             ->add('category')
             ->add('tags','collection',array(
                 'type' => 'text',
-                'allow_add' => true
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'required' => false
             ))
             ->add('address')
             ->add('city')
-            ->add('phones','collection')
-            ->add('faxes','collection')
-            ->add('websites','collection')
+            ->add('phones','collection',array(
+                'type' => 'text',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'required' => false
+            ))
+            ->add('faxes','collection',array(
+                'type' => 'text',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'required' => false
+            ))
+            ->add('websites','collection',array(
+                'type' => 'text',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'required' => false
+            ))
             ->add('weighting','number')
             ->add('importFrom')
         ;

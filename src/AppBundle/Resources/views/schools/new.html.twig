@@ -56,12 +56,18 @@
     <div class="form-group">
         <label>Grade</label>
         <div class="form-group">
-            {{ form_label(form.classtype) }} <a id="add-another-url" href="#" class="btn btn-default btn-sm">Add another class</a>
+            {{ form_label(form.classtype) }}
+            <a id="add-another-url" href="#" class="btn btn-default btn-sm">Add another class</a>
             <ul id="url-fields-list" data-prototype="{{ form_widget(form.classtype.vars.prototype)|e }}">
                 {#<div id="url-anchor-text" class="hidden" data-prototype="{{ form_widget(form.urlAnchorTexts.vars.prototype)|e }}"></div>#}
                 {% set i = 0 %}
                 {% for class in form.classtype %}
-                    <li>{{ form_errors(class) }}{{ form_widget(class, {'attr': {'class': 'cg-url'} }) }}{#{{ form_widget(form.urlAnchorTexts[i], {'attr': {'class': 'cg-anchorText', 'placeholder':'anchor text'} }) }}#}{% set i = i+1 %}</li>
+                    <li>
+                    {{ form_errors(class) }}
+                    {{ form_widget(class, {'attr': {'class': 'cg-url'} }) }}
+                    {#{{ form_widget(form.urlAnchorTexts[i], {'attr': {'class': 'cg-anchorText', 'placeholder':'anchor text'} }) }}#}
+                    {% set i = i+1 %}
+                    </li>
                 {% endfor %}
             </ul>
         </div>
@@ -119,21 +125,21 @@
 
             var urlList = jQuery('#url-fields-list');
             var newWidget = urlList.attr('data-prototype');
-            var newAnchorText = jQuery('#url-anchor-text').attr('data-prototype');
+            /*var newAnchorText = jQuery('#url-anchor-text').attr('data-prototype');*/
             newWidget = newWidget.replace(/__name__/g, urlCount);
             /*newAnchorText = newAnchorText.replace(/__name__/g, urlCount);*/
             urlCount++;
             var newLi = jQuery('<li></li>').html(newWidget);
-            newLi.append(newAnchorText);
+            /*newLi.append(newAnchorText);*/
             newLi.children().first().addClass('cg-url');
             newLi.children().first().attr('placeholder', 'class name');
-            newLi.children().first().next().addClass('cg-anchorText');
-            newLi.children().first().next().attr('placeholder', 'anchor text');
+            /*newLi.children().first().next().addClass('cg-anchorText');*/
+            /*newLi.children().first().next().attr('placeholder', 'anchor text');*/
             addDeleteTag(newLi);
             newLi.appendTo(urlList);
         });
 
-        jQuery('#checkAll').click(function(e) {
+        /*jQuery('#checkAll').click(function(e) {
             e.preventDefault();
 
             jQuery('.cgClassType').each(function(index){
@@ -146,7 +152,7 @@
             jQuery('.cgClassType').each(function(index){
                 jQuery(this).prop('checked', false);
             });
-        });
+        });*/
     })
 </script>
 {% endblock %}

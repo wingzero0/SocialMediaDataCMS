@@ -19,11 +19,11 @@
                         <a href="{{ path('@BackendHome') }}">Dashboard</a>
                     </li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
+                {#<ul class="nav navbar-nav navbar-right">
                     <li>
                         <a href="{{ path('fos_user_security_logout') }}">Logout {{app.user.username}}</a>
                     </li>
-                </ul>
+                </ul>#}
             </div>
             <!--/.navbar-collapse -->
         </div>
@@ -33,7 +33,7 @@
 {% block mainContent %}
     <div class="container">
 
-        <h2>User</h2>
+        <h2>MnemonoBiz</h2>
 
         <table class="record_properties table table-striped">
             <tbody>
@@ -42,54 +42,88 @@
                 <td>{{ document.id }}</td>
             </tr>
             <tr>
-                <th>Username</th>
-                <td>{{ document.username }}</td>
+                <th>Name</th>
+                <td>{{ document.name }}</td>
             </tr>
             <tr>
-                <th>Email</th>
-                <td>{{ document.email }}</td>
+                <th>ShortDesc</th>
+                <td>{{ document.shortDesc }}</td>
             </tr>
             <tr>
-                <th>Enabled</th>
-                <td>{{ document.enabled }}</td>
+                <th>LongDesc</th>
+                <td>{{ document.longDesc }}</td>
             </tr>
             <tr>
-                <th>Lastlogin</th>
-                <td>{{ document.lastLogin|date('Y-m-d H:i:s') }}</td>
+                <th>Category</th>
+                <td>{{ document.category }}</td>
             </tr>
             <tr>
-                <th>Locked</th>
-                <td>{{ document.locked }}</td>
-            </tr>
-            <tr>
-                <th>Expired</th>
-                <td>{{ document.expired }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
+                <th>Tags</th>
                 <td>
                     <ul class="list">
-                        {% for role in document.roles %}
-                            <li>{{ role }}</li>
+                        {% for tag in document.tags %}
+                            <li>{{ tag }}</li>
                         {% endfor %}
                     </ul>
                 </td>
             </tr>
             <tr>
-                <th>Credentialsexpired</th>
-                <td>{{ document.credentialsExpired }}</td>
+                <th>Address</th>
+                <td>{{ document.address }}</td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td>{{ document.city }}</td>
+            </tr>
+            <tr>
+                <th>Phones</th>
+                <td>
+                    <ul class="list">
+                        {% for phone in document.phones %}
+                            <li>{{ phone }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Faxes</th>
+                <td>
+                    <ul class="list">
+                        {% for fax in document.faxes %}
+                            <li>{{ fax }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Websites</th>
+                <td>
+                    <ul class="list">
+                        {% for website in document.websites %}
+                            <li>{{ website }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Weighting</th>
+                <td>{{ document.weighting }}</td>
+            </tr>
+            <tr>
+                <th>ImportFrom</th>
+                <td>{{ document.importFrom }}</td>
             </tr>
             </tbody>
         </table>
 
         <ul class="record_actions list list-inline">
             <li>
-                <a href="{{ path('member_home') }}">
+                <a href="{{ path('mnemonobiz_home') }}">
                     Back to the list
                 </a>
             </li>
             <li>
-                <a href="{{ path('member_edit', { 'id': document.id }) }}">
+                <a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">
                     Edit
                 </a>
             </li>

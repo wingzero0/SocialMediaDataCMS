@@ -63,6 +63,7 @@ class MnemonoBizController extends CMSBaseController {
         $form   = $this->createCreateForm($document);
 
         return array(
+            'header' => "MnemonoBiz Create",
             'document' => $document,
             'form'   => $form->createView(),
         );
@@ -96,23 +97,171 @@ class MnemonoBizController extends CMSBaseController {
      */
     public function createAction(Request $request)
     {
-        $document = new User();
+        $document = new MnemonoBiz();
         $form = $this->createCreateForm($document);
-        /*$form->handleRequest($request);
 
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $em =  $this->get('doctrine_mongodb')->getManager();
             $em->persist($document);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('MnemonoBiz_show', array('id' => $document->getId())));
-        }*/
+            return $this->redirect($this->generateUrl('mnemonobiz_show', array('id' => $document->getId())));
+        }
 
         return array(
+            'header' => "MnemonoBiz Create Failed!",
             'document' => $document,
             'form'   => $form->createView(),
         );
     }
 
+    /**
+     * Finds and displays a MnemonoBiz document.
+     *
+     * @Route("/{id}", name="mnemonobiz_show")
+     * @Method("GET")
+     * @Template()
+     */
+    public function showAction($id)
+    {
+        $document =  $this->get('doctrine.odm.mongodb.document_manager')->getRepository('AppBundle:MnemonoBiz')->find($id);
 
+        if (!$document) {
+            throw $this->createNotFoundException('Unable to find MnemonoBiz document.');
+        }
+
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'header' => "MmemonoBiz Create",
+            'document'      => $document,
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+
+    /**
+     * Creates a form to delete a MnemonoBiz document by id.
+     *
+     * @param mixed $id The document id
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm($id)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('mnemonobiz_delete', array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->getForm()
+            ;
+    }
+
+    /**
+     * Deletes a MnemonoBiz document.
+     *
+     * @Route("/{id}", name="mnemonobiz_delete")
+     * @Method("DELETE")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->get('doctrine_mongodb')->getManager();
+            $document = $em->getRepository('AppBundle:MnemonoBiz')->find($id);
+
+            if (!$document) {
+                throw $this->createNotFoundException('Unable to find MnemonoBiz document.');
+            }
+
+            $em->remove($document);
+            $em->flush();
+        }
+
+        return $this->redirect($this->generateUrl('mnemonobiz_home'));
+    }
+
+    /**
+     * Displays a form to edit an existing MnemonoBiz document.
+     *
+     * @Route("/{id}/edit", name="mnemonobiz_edit")
+     * @Method("GET")
+     * @Template()
+     */
+    public function editAction($id)
+    {
+        $document = $this->get('doctrine.odm.mongodb.document_manager')->getRepository('AppBundle:MnemonoBiz')->find($id);
+
+        if (!$document) {
+            throw $this->createNotFoundException('Unable to find User document.');
+        }
+
+        $editForm = $this->createEditForm($document);
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'header' => "MmemonoBiz Edit",
+            'document'      => $document,
+            'form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+
+    /**
+     * Creates a form to edit a MnemonoBiz document.
+     *
+     * @param MnemonoBiz $document The document
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createEditForm(MnemonoBiz $document)
+    {
+        $form = $this->createForm(new MnemonoBizType(), $document, array(
+            'action' => $this->generateUrl('mnemonobiz_update', array('id' => $document->getId())),
+            'method' => 'PUT',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Update'));
+
+        return $form;
+    }
+
+    /**
+     * Edits an existing MnemonoBiz document.
+     *
+     * @Route("/{id}", name="mnemonobiz_update")
+     * @Method("PUT")
+     * @Template("AppBundle:MnemonoBiz:edit.html.twig")
+     */
+    public function updateAction(Request $request, $id)
+    {
+        $em = $this->get('doctrine_mongodb')->getManager();
+
+        $document = $em->getRepository('AppBundle:MnemonoBiz')->find($id);
+
+        if (!$document) {
+            throw $this->createNotFoundException('Unable to find MnemonoBiz document.');
+        }
+
+        $deleteForm = $this->createDeleteForm($id);
+        $editForm = $this->createEditForm($document);
+
+        $editForm->handleRequest($request);
+        if ($editForm->isValid()) {
+            $em = $this->get('doctrine_mongodb')->getManager();
+            $em->persist($document);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('mnemonobiz_edit', array('id' => $id)));
+        }
+
+        return array(
+            'header' => "MmemonoBiz Update Failed!",
+            'document'      => $document,
+            'form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
 }

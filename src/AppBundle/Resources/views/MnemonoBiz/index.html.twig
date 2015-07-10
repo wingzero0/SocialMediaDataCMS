@@ -12,12 +12,17 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">School App</a>
+                <a class="navbar-brand" href="#">Mnemono</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li class="active">
                         <a href="{{ path('@BackendHome') }}">Dashboard</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="{{ path('mnemonobiz_home') }}">MnemonoBiz</a>
                     </li>
                 </ul>
                 {#<ul class="nav navbar-nav navbar-right">
@@ -52,39 +57,62 @@
                 <th>Websites</th>
                 <th>Weighting</th>
                 <th>Import From</th>
+                <th>Actions</th>
             </tr>
             </thead>
-            {#<tbody>
+            <tbody>
             {% for document in documents %}
                 <tr>
                     <td>{{ document.id }}</td>
-                    <td><a href="{{ path('member_show', { 'id': document.id }) }}">{{ document.username }}</a></td>
-                    <td>{{ document.email }}</td>
-                    <td>{{ document.enabled }}</td>
-                    <td>{% if document.lastLogin %}{{ document.lastLogin|date('Y-m-d H:i:s') }}{% endif %}</td>
-                    <td>{{ document.locked }}</td>
-                    <td>{{ document.expired }}</td>
+                    <td><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">{{ document.name }}</a></td>
+                    <td>{{ document.shortDesc }}</td>
+                    <td>{{ document.longDesc }}</td>
+                    <td>{{ document.category }}</td>
                     <td>
                         <ul class="list">
-                            {% for role in document.roles %}
-                                <li>{{ role }}</li>
+                            {% for tag in document.tags %}
+                                <li>{{ tag }}</li>
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{{ document.credentialsExpired }}</td>
+                    <td>{{ document.address }}</td>
+                    <td>{{ document.city }}</td>
                     <td>
-                        &#123;&#35;<ul>
+                        <ul class="list">
+                            {% for phone in document.phones %}
+                                <li>{{ phone }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list">
+                            {% for fax in document.faxes %}
+                                <li>{{ fax }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list">
+                            {% for website in document.websites %}
+                                <li>{{ website }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ document.weighting }}</td>
+                    <td>{{ document.importFrom }}</td>
+                    <td>
+                        <ul>
                             <li>
-                                <a href="{{ path('member_show', { 'id': document.id }) }}">show</a>
+                                <a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">show</a>
                             </li>
                             <li>
-                                <a href="{{ path('member_edit', { 'id': document.id }) }}">edit</a>
+                                <a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">edit</a>
                             </li>
-                        </ul>&#35;&#125;
+                        </ul>
                     </td>
                 </tr>
             {% endfor %}
-            </tbody>#}
+            </tbody>
         </table>
 
 
