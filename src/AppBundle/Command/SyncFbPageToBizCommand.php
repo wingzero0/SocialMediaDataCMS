@@ -9,6 +9,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Document\FacebookPage;
+use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -57,18 +58,45 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             ->field("importFromRef")->references($page)
             ->getQuery()->getSingleResult();
 
-        if ($biz == null){
-            $biz = new MnemonoBiz();
-            $biz->setName($pageRaw["name"])
-                ->setImportFrom("facebookPage")
-                ->setImportFromRef($page)
-                ->setLastModDate(new \DateTime());
-
+        if ($biz == null && $page instanceof FacebookPage){
+            $biz = $this->bizBuilder($page, $pageRaw);
             $dm->persist($biz);
             $dm->flush();
         }
 
 
+        return $biz;
+    }
+
+    /**
+     * @param FacebookPage $page
+     * @param array $pageRaw
+     * @return MnemonoBiz
+     */
+    private function bizBuilder(FacebookPage $page, $pageRaw){
+        $biz = new MnemonoBiz();
+        $websites = array();
+        if (isset($pageRaw['link'])){
+            $websites[] = $pageRaw['link'];
+        }
+        if (isset($pageRaw['website'])){
+            $websites[] = $pageRaw['website'];
+        }
+        if (!empty($websites)){
+            $biz->setWebsites($websites);
+        }
+        if (isset($pageRaw["location"])){
+            $location = new Location();
+            $location->setCity($pageRaw["location"]["city"])
+                ->setCountry($pageRaw["location"]["country"])
+                ->setAddress($pageRaw["location"]["street"]);
+            $this->getDM()->persist($location);
+            $biz->setLocation($location);
+        }
+        $biz->setName($pageRaw["name"])
+            ->setImportFrom("facebookPage")
+            ->setImportFromRef($page)
+            ->setLastModDate(new \DateTime());
         return $biz;
     }
 
