@@ -12,6 +12,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 
 class BaseController extends Controller{
+    protected $mnemonoBizQueryPath = "AppBundle:MnemonoBiz";
+    protected $postQueryPath = "AppBundle:PostBiz";
+    protected $commentQueryPath = "AppBundle:Comment";
     /**
      * @param array $objs
      * @param string $version

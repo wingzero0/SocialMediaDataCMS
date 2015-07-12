@@ -9,10 +9,15 @@ namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use FOS\CommentBundle\Document\Thread as BaseThread;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Since;
 
 /**
  * @MongoDB\Document(collection="Post")
  * @MongoDB\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ExclusionPolicy("none")
  */
 class Post extends BaseThread{
     /**
