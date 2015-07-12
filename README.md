@@ -14,4 +14,5 @@
 ### generate sample data
     app/console doctrine:mongodb:fixtures:load
 
-    
+### create user account
+    http://yourServer/app_dev.php/register
