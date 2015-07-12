@@ -8,6 +8,7 @@
 namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JMS\Serializer\SerializationContext;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 
 class BaseController extends Controller{
@@ -20,5 +21,12 @@ class BaseController extends Controller{
         $data = array('data' => $objs);
         $serializer = $this->get('jms_serializer');
         return $serializer->serialize($data, 'json', SerializationContext::create()->setVersion($version));
+    }
+
+    /**
+     * @return null|DocumentManager
+     */
+    protected function getDM(){
+        return $this->get("doctrine_mongodb")->getManager();
     }
 }
