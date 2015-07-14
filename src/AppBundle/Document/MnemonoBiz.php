@@ -2,6 +2,8 @@
 namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use AppBundle\Document\Location;
+use AppBundle\Document\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
@@ -37,9 +39,9 @@ class MnemonoBiz{
      */
     protected $tags;
     /**
-     * @MongoDB\String
+     * @MongoDB\EmbedOne(targetDocument="Location")
      */
-    protected $address;
+    protected $location;
     /**
      * @MongoDB\String
      */
@@ -75,6 +77,15 @@ class MnemonoBiz{
      * )
      */
     protected $importFromRef;
+
+    /**
+     * @MongoDB\Date
+     */
+    protected $lastModDate;
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="User")
+     */
+    protected $lastModUser;
 
     /**
      * Get id
@@ -194,28 +205,6 @@ class MnemonoBiz{
     public function getTags()
     {
         return $this->tags;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     * @return self
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-        return $this;
-    }
-
-    /**
-     * Get address
-     *
-     * @return string $address
-     */
-    public function getAddress()
-    {
-        return $this->address;
     }
 
     /**
@@ -370,5 +359,71 @@ class MnemonoBiz{
     public function getWebsites()
     {
         return $this->websites;
+    }
+
+    /**
+     * Set lastModDate
+     *
+     * @param date $lastModDate
+     * @return self
+     */
+    public function setLastModDate($lastModDate)
+    {
+        $this->lastModDate = $lastModDate;
+        return $this;
+    }
+
+    /**
+     * Get lastModDate
+     *
+     * @return date $lastModDate
+     */
+    public function getLastModDate()
+    {
+        return $this->lastModDate;
+    }
+
+    /**
+     * Set location
+     *
+     * @param AppBundle\Document\Location $location
+     * @return self
+     */
+    public function setLocation(\AppBundle\Document\Location $location)
+    {
+        $this->location = $location;
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return AppBundle\Document\Location $location
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * Set lastModUser
+     *
+     * @param AppBundle\Document\User $lastModUser
+     * @return self
+     */
+    public function setLastModUser(\AppBundle\Document\User $lastModUser)
+    {
+        $this->lastModUser = $lastModUser;
+        return $this;
+    }
+
+    /**
+     * Get lastModUser
+     *
+     * @return AppBundle\Document\User $lastModUser
+     */
+    public function getLastModUser()
+    {
+        return $this->lastModUser;
     }
 }

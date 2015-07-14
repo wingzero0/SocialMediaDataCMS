@@ -8,6 +8,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\MnemonoBiz;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,16 +25,52 @@ use AppBundle\Controller\BaseController;
 class PostsController extends BaseController{
     /**
      * @Route("/posts", name="get_all_post")
+     * @Method("GET")
      */
     public function getPostsAction(Request $request, $vNumber)
     {
-        $bizs = $this->get('doctrine_mongodb')
-            ->getManager()
-            ->createQueryBuilder('AppBundle:MnemonoBiz')
+        // TODO implement default ranking
+        $idGt = $request->get("idGt", null);
+        $dm = $this->getDM();
+        $qb = $dm->createQueryBuilder($this->postQueryPath);
+        if ($idGt){
+            $qb->field("id")->gt($idGt);
+        }
+        $posts = $qb->limit(25)
             ->getQuery()
             ->execute();
 
-        return new Response($this->serialize(iterator_to_array($bizs, false), $vNumber));
+        return new Response($this->serialize(iterator_to_array($posts, false), $vNumber));
+    }
+
+    /**
+     * @Route("/posts", name="create_post")
+     * @Method("POST")
+     */
+    public function createPostsAction(Request $request, $vNumber)
+    {
+        $dm = $this->getDM();
+        $mnemonoBizId = $request->get("mnemonoBizId", null);
+        $post = new Post();
+        if ($mnemonoBizId != null){
+            $businesses = $dm->createQueryBuilder($this->mnemonoBizQueryPath)
+                ->field("id")->equals($mnemonoBizId)->getQuery()->execute();
+            foreach($businesses as $business){
+                if ($business instanceof MnemonoBiz){
+                    $post->setContent($request->get("content", ""));
+                    $post->setMnemonoBiz($business);
+                    $dm->persist($post);
+                    $dm->flush();
+                    break;
+                }else{
+                    return new Response("{\"mnemonoBizId is not biz object\"}");
+                }
+            }
+        }else{
+            return new Response("{\"mnemonoBizId can't be null\"}");
+        }
+
+        return new Response($this->serialize(array(0 => $post), $vNumber));
     }
 
     /**
@@ -66,8 +103,8 @@ class PostsController extends BaseController{
             throw new \InvalidArgumentException();
         }
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $comments = $dm->createQueryBuilder('AppBundle:Comment')
+        $dm = $this->getDM();
+        $comments = $dm->createQueryBuilder($this->commentQueryPath)
             ->field('thread')->references($post)
             ->getQuery()
             ->execute();
