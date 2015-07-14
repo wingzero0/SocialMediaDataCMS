@@ -61,7 +61,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for document in documents %}
+            {% for document in pagination %}
                 <tr>
                     <td>{{ document.id }}</td>
                     <td><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">{{ document.name }}</a></td>
@@ -114,7 +114,34 @@
             {% endfor %}
             </tbody>
         </table>
-
-
+        <div class="text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
     </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('div.pagination span.current').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<li class="active"><a href="#">' + this.innerHTML + '</a></li>'));
+            });
+            var classArray = ['first', 'previous', 'page', 'next', 'last'];
+            jQuery.each(classArray, function (key, className) {
+                jQuery('div.pagination span.' + className).each(function (index) {
+                    jQuery(this).replaceWith(jQuery('<li>' + this.innerHTML + '</li>'));
+                });
+            })
+            jQuery('div.pagination').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<ul class="pagination">' + this.innerHTML + '</ul>'));
+            });
+
+        });
+    </script>
 {% endblock %}

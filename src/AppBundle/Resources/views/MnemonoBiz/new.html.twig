@@ -150,6 +150,11 @@
             </li>
         </ul>
     </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
 {% endblock %}
 
 {% block javascripts %}

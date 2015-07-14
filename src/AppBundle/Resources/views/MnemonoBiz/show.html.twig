@@ -130,4 +130,9 @@
             <li>{{ form(delete_form) }}</li>
         </ul>
     </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
 {% endblock %}

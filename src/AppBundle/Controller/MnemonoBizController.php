@@ -34,17 +34,17 @@ class MnemonoBizController extends CMSBaseController {
         $page = intval($request->get('page', 1));
 
         $dm = $this->get('doctrine.odm.mongodb.document_manager');
-        $documents = $dm->getRepository('AppBundle:MnemonoBiz')->findAll();
+        $qb = $dm->createQueryBuilder('AppBundle:MnemonoBiz');
+        $query = $qb->getQuery();
 
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $documents,
+            $query,
             $page,
             $limit
         );
 
         return array(
-            'documents' => $documents,
             'pagination' => $pagination,
         );
 
@@ -188,7 +188,7 @@ class MnemonoBizController extends CMSBaseController {
      *
      * @Route("/{id}/edit", name="mnemonobiz_edit")
      * @Method("GET")
-     * @Template()
+     * @Template("AppBundle:MnemonoBiz:new.html.twig")
      */
     public function editAction($id)
     {
@@ -233,7 +233,7 @@ class MnemonoBizController extends CMSBaseController {
      *
      * @Route("/{id}", name="mnemonobiz_update")
      * @Method("PUT")
-     * @Template("AppBundle:MnemonoBiz:edit.html.twig")
+     * @Template("AppBundle:MnemonoBiz:new.html.twig")
      */
     public function updateAction(Request $request, $id)
     {
