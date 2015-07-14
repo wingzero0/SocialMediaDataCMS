@@ -161,6 +161,8 @@
         var faxesCount = '{{ form.faxes|length }}';
         var websitesCount = '{{ form.websites|length }}';
 
+        var countList = [tagsCount, phonesCount, faxesCount, websitesCount];
+
         jQuery(document).ready(function() {
             /* Create and add a delete button behind a input field of list */
             var addDeleteTag = function (liObj){
@@ -183,64 +185,41 @@
 
             updateDeleteListionser();
 
+            /* Add new item function */
+            var addNewItem = function(key, tagName, holderText) {
+                var urlList = jQuery(tagName);
+                var newWidget = urlList.attr('data-prototype');
+                newWidget = newWidget.replace(/__name__/g, tagsCount);
+                countList[key]++;
+                var newLi = jQuery('<li></li>').html(newWidget);
+                newLi.children().first().addClass('cg');
+                newLi.children().first().attr('placeholder', holderText);
+                addDeleteTag(newLi);
+                newLi.appendTo(urlList);
+            }
+
             /* Add new item function of Tags */
             jQuery('#add-another-tag').click(function(e) {
                 e.preventDefault();
-
-                var urlList = jQuery('#tag-fields-list');
-                var newWidget = urlList.attr('data-prototype');
-                newWidget = newWidget.replace(/__name__/g, tagsCount);
-                tagsCount++;
-                var newLi = jQuery('<li></li>').html(newWidget);
-                newLi.children().first().addClass('cg');
-                newLi.children().first().attr('placeholder', 'New Tag');
-                addDeleteTag(newLi);
-                newLi.appendTo(urlList);
+                addNewItem(0, '#tag-fields-list', 'New Tag');
             });
 
             /* Add new item function of Phones */
             jQuery('#add-another-phone').click(function(e) {
                 e.preventDefault();
-
-                var urlList = jQuery('#phone-fields-list');
-                var newWidget = urlList.attr('data-prototype');
-                newWidget = newWidget.replace(/__name__/g, phonesCount);
-                phonesCount++;
-                var newLi = jQuery('<li></li>').html(newWidget);
-                newLi.children().first().addClass('cg');
-                newLi.children().first().attr('placeholder', 'Phone Number');
-                addDeleteTag(newLi);
-                newLi.appendTo(urlList);
+                addNewItem(1, '#phone-fields-list', 'Phone Number');
             });
 
             /* Add new item function of Faxes */
             jQuery('#add-another-fax').click(function(e) {
                 e.preventDefault();
-
-                var urlList = jQuery('#fax-fields-list');
-                var newWidget = urlList.attr('data-prototype');
-                newWidget = newWidget.replace(/__name__/g, faxesCount);
-                faxesCount++;
-                var newLi = jQuery('<li></li>').html(newWidget);
-                newLi.children().first().addClass('cg');
-                newLi.children().first().attr('placeholder', 'Fax Number');
-                addDeleteTag(newLi);
-                newLi.appendTo(urlList);
+                addNewItem(2, '#fax-fields-list', 'Fax Number');
             });
 
             /* Add new item function of Websites */
             jQuery('#add-another-website').click(function(e) {
                 e.preventDefault();
-
-                var urlList = jQuery('#website-fields-list');
-                var newWidget = urlList.attr('data-prototype');
-                newWidget = newWidget.replace(/__name__/g, websitesCount);
-                websitesCount++;
-                var newLi = jQuery('<li></li>').html(newWidget);
-                newLi.children().first().addClass('cg');
-                newLi.children().first().attr('placeholder', 'URL');
-                addDeleteTag(newLi);
-                newLi.appendTo(urlList);
+                addNewItem(3, '#website-fields-list', 'URL');
             });
         })
     </script>
