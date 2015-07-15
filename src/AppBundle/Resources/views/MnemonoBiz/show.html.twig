@@ -1,0 +1,125 @@
+{% extends "AppBundle:layout:layout.html.twig" %}
+
+{% block headerBar %}
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="{{ path('@BackendHome') }}">Dashboard</a>
+        </li>
+    </ul>
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="{{ path('mnemonobiz_home') }}">MnemonoBiz</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block mainContent %}
+    <div class="container">
+
+        <h2>MnemonoBiz</h2>
+
+        <table class="record_properties table table-striped">
+            <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ document.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ document.name }}</td>
+            </tr>
+            <tr>
+                <th>ShortDesc</th>
+                <td>{{ document.shortDesc }}</td>
+            </tr>
+            <tr>
+                <th>LongDesc</th>
+                <td>{{ document.longDesc }}</td>
+            </tr>
+            <tr>
+                <th>Category</th>
+                <td>{{ document.category }}</td>
+            </tr>
+            <tr>
+                <th>Tags</th>
+                <td>
+                    <ul class="list">
+                        {% for tag in document.tags %}
+                            <li>{{ tag }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ document.location.address }}</td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td>{{ document.location.city }}</td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td>{{ document.location.country }}</td>
+            </tr>
+            <tr>
+                <th>Phones</th>
+                <td>
+                    <ul class="list">
+                        {% for phone in document.phones %}
+                            <li>{{ phone }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Faxes</th>
+                <td>
+                    <ul class="list">
+                        {% for fax in document.faxes %}
+                            <li>{{ fax }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Websites</th>
+                <td>
+                    <ul class="list">
+                        {% for website in document.websites %}
+                            <li>{{ website }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Weighting</th>
+                <td>{{ document.weighting }}</td>
+            </tr>
+            <tr>
+                <th>ImportFrom</th>
+                <td>{{ document.importFrom }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <ul class="record_actions list list-inline">
+            <li>
+                <a href="{{ path('mnemonobiz_home') }}">
+                    Back to the list
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">
+                    Edit
+                </a>
+            </li>
+            <li>{{ form(delete_form) }}</li>
+        </ul>
+    </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
