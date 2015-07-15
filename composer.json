@@ -24,7 +24,9 @@
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "jms/serializer-bundle": "~0.13",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "friendsofsymfony/comment-bundle": "^2.0"
+        "friendsofsymfony/comment-bundle": "^2.0",
+        "nelmio/api-doc-bundle": "2.8.*@dev",
+        "knplabs/knp-paginator-bundle": "~2.4"
     },
     "scripts": {
         "post-install-cmd": [

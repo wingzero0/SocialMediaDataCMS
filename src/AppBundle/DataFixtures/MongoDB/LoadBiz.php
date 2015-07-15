@@ -24,7 +24,7 @@ class LoadBiz implements FixtureInterface{
             $biz = new MnemonoBiz();
             $biz->setName('TestData' . $i);
             $biz->setWebsites(array('http://localhost', 'https://localhost'));
-            $biz->setTag(array('randomTag'.$i , 'bizTag'));
+            $biz->setTags(array('randomTag'.$i , 'bizTag'));
 
             $source = null;
             if ($i < 3){
