@@ -64,9 +64,15 @@
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{{ document.location.address }}</td>
-                    <td>{{ document.location.city }}</td>
-                    <td>{{ document.location.country }}</td>
+                    {% if document.location is not null %}
+                        <td>{{ document.location.address }}</td>
+                        <td>{{ document.location.city }}</td>
+                        <td>{{ document.location.country }}</td>
+                    {% else %}
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    {% endif %}
                     <td>
                         <ul class="list">
                             {% for phone in document.phones %}
