@@ -45,8 +45,8 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         }
     }
 
-    private function createPostByFeed($fbId){;
-        $feeds = $this->getDM()->createQueryBuilder("AppBundle:FacebookFeed")
+    private function createPostByFeed($fbId){
+        $feeds = $this->getDM()->createQueryBuilder("AppBundle:Facebook\\FacebookFeed")
         ->field("fbId")->equals($fbId)->getQuery()->execute();
         foreach($feeds as $feed){
             $likes = $feed->getLikes();
