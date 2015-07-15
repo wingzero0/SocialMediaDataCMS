@@ -11,13 +11,13 @@ namespace AppBundle\Command;
 use AppBundle\Document\FacebookPage;
 use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
+use AppBundle\Command\BaseCommand;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SyncFbPageToBizCommand extends ContainerAwareCommand{
+class SyncFbPageToBizCommand extends BaseCommand{
     protected function configure(){
         $this->setName("mnemono:sync:fbpagetobiz")
             ->setDescription("sync facebook page to biz")
@@ -152,18 +152,5 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             ->setAddress($street);
         $this->getDM()->persist($location);
         return $location;
-    }
-
-    /**
-     * @return null|DocumentManager
-     */
-    private function getDM(){
-        $dm = $this->getContainer()->get("doctrine_mongodb")->getManager();
-        if ($dm instanceof DocumentManager){
-            return $dm;
-        }else{
-            echo "dm is not documentMananger"."\n";
-        }
-        return null;
     }
 }

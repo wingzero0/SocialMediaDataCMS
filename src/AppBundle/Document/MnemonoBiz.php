@@ -43,10 +43,6 @@ class MnemonoBiz{
      */
     protected $location;
     /**
-     * @MongoDB\String
-     */
-    protected $city;
-    /**
      * @MongoDB\Collection
      */
     protected $phones;
@@ -205,28 +201,6 @@ class MnemonoBiz{
     public function getTags()
     {
         return $this->tags;
-    }
-
-    /**
-     * Set city
-     *
-     * @param string $city
-     * @return self
-     */
-    public function setCity($city)
-    {
-        $this->city = $city;
-        return $this;
-    }
-
-    /**
-     * Get city
-     *
-     * @return string $city
-     */
-    public function getCity()
-    {
-        return $this->city;
     }
 
     /**
