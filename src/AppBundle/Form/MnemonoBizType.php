@@ -32,8 +32,7 @@ class MnemonoBizType extends AbstractType
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('address')
-            ->add('city')
+            ->add('location', new LocationType())
             ->add('phones','collection',array(
                 'type' => 'text',
                 'allow_add' => true,
