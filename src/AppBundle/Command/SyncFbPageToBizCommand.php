@@ -86,6 +86,8 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             $biz = $this->bizBuilder($page, $pageRaw);
             $dm->persist($biz);
             $dm->flush();
+
+            $dm->clear();
         }
 
 
@@ -110,7 +112,7 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             $biz->setWebsites($websites);
         }
         if (isset($pageRaw["location"])){
-            $location = $this->createLocation($pageRaw["location"]);
+            $location = $this->createLocation($pageRaw);
             $biz->setLocation($location);
         }
         $biz->setName($pageRaw["name"])
@@ -121,14 +123,30 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
     }
 
     /**
-     * @param $rawArray
+     * @param $pageRaw
      * @return Location
      */
-    private function createLocation($rawArray){
+    private function createLocation($pageRaw){
+        $city = null;
+        $country = null;
+        if (isset($pageRaw["mnemono"])){
+            if (isset($pageRaw["mnemono"]["location"]["city"])){
+                $city = $pageRaw["mnemono"]["location"]["city"];
+            }
+            if (isset($pageRaw["mnemono"]["location"]["country"])){
+                $country = $pageRaw["mnemono"]["location"]["country"];
+            }
+        }
+
+        $street = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
+        if ($city == null){
+            $city = (isset($pageRaw["location"]["city"]) ? $pageRaw["location"]["city"] : null);
+        }
+        if ($country == null){
+            $country = (isset($pageRaw["location"]["country"]) ? $pageRaw["location"]["country"] : null);
+        }
+
         $location = new Location();
-        $street = (isset($rawArray["street"]) ? $rawArray["street"] : null);
-        $city = (isset($rawArray["city"]) ? $rawArray["city"] : null);
-        $country = (isset($rawArray["country"]) ? $rawArray["country"] : null);
         $location->setCity($city)
             ->setCountry($country)
             ->setAddress($street);
