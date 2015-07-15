@@ -21,9 +21,10 @@ class DefaultController extends Controller
 
     /**
      * @Route("/", name="homepage")
+     * @Template("AppBundle:layout:layout.html.twig")
      */
     public function indexAction()
     {
-        return $this->render('default/index.html.twig');
+        return array();
     }
 }

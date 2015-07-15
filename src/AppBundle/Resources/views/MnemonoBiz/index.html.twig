@@ -16,8 +16,19 @@
 {% block mainContent %}
     <div class="container">
         <h2>MnemonoBiz list</h2>
-        <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}">  Create MnemonoBiz</a>
-
+        <div class="container">
+            <div class="navbar-header">
+                <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}"> Create MnemonoBiz </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <form class="navbar-form navbar-right" role="form" method="post" action="{{ path('mnemonobiz_search')}}">
+                    <div class="form-group">
+                        <input name="query" type="text" placeholder="keyword" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </form>
+            </div>
+        </div>
         <table class="records_list table table-striped">
             <thead>
             <tr>
@@ -29,6 +40,7 @@
                 <th>Tag</th>
                 <th>Address</th>
                 <th>City</th>
+                <th>Country</th>
                 <th>Phones</th>
                 <th>Faxes</th>
                 <th>Websites</th>
@@ -52,8 +64,9 @@
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{{ document.address }}</td>
-                    <td>{{ document.city }}</td>
+                    <td>{{ document.location.address }}</td>
+                    <td>{{ document.location.city }}</td>
+                    <td>{{ document.location.country }}</td>
                     <td>
                         <ul class="list">
                             {% for phone in document.phones %}
