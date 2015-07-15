@@ -50,6 +50,7 @@
                     </ul>
                 </td>
             </tr>
+            {% if document.location is not null %}
             <tr>
                 <th>Address</th>
                 <td>{{ document.location.address }}</td>
@@ -62,6 +63,20 @@
                 <th>Country</th>
                 <td>{{ document.location.country }}</td>
             </tr>
+            {% else %}
+            <tr>
+                <th>Address</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td></td>
+            </tr>
+            {% endif %}
             <tr>
                 <th>Phones</th>
                 <td>
