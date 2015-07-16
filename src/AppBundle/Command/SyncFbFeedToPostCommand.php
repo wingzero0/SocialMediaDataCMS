@@ -39,7 +39,6 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             // TODO implement batch dump
         }else if (!empty($fbIds)){
             foreach ($fbIds as $fbId){
-                print_r($fbId);
                 if ($action=="createFromFb"){
                     $this->createPostByFeed($fbId);
                 }
@@ -50,15 +49,15 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     }
 
     private function createPostByFeed($fbId){
-        $feeds = $this->getDM()->createQueryBuilder("AppBundle:Facebook\\FacebookFeed")
-        ->field("fbId")->equals($fbId)->getQuery()->execute();
-        foreach($feeds as $feed){
-            if ($feed instanceof FacebookFeed){
-                $page = $feed->getFacebookPage();
-
-            }
-            $likes = $feed->getLikes();
-            print_r($likes["summary"]);
+        $dm = $this->getDM();
+        $feed = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
+            ->field("fbId")->equals($fbId)->getQuery()->getSingleResult();
+        if ($feed instanceof FacebookFeed){
+            $post = $this->postBuilder($feed);
+            $dm->persist($post->getMeta());
+            $dm->persist($post);
+            $dm->flush();
+            $dm->clear();
         }
     }
 
@@ -72,18 +71,25 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         $post->setImportFromRef($feed);
         $post->setContent($feed->getMessage());
         $post->setPublishStatus("review");
-        $post->setMeta();
-        $meta = new FacebookMeta();
-        $likes = $feed->getLikes();
-        $meta->setFbId($likes["summary"]["total_count"]);
+        $meta = $this->fbMetaBuilder($feed);
+        $post->setMeta($meta);
         $biz = $this->getDM()->createQueryBuilder($this->mnemonoBizDocumentPath)
             ->field("importFrom")->equals("facebookPage")
-            ->field("importFromRef")->equals($feed->getFacebookPage())
+            ->field("importFromRef")->references($feed->getFbPage())
             ->getQuery()->getSingleResult();
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
         }
         return $post;
+    }
+    private function fbMetaBuilder(FacebookFeed $feed){
+        $meta = new FacebookMeta();
+        $likes = $feed->getLikes();
+        $comments = $feed->getComments();
+        $meta->setFbId($feed->getFbId());
+        $meta->setFbTotalLikes($likes["summary"]["total_count"]);
+        $meta->setFbTotalComments($comments["summary"]["total_count"]);
+        return $meta;
     }
 }

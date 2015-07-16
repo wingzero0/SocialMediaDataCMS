@@ -40,7 +40,7 @@ class FacebookFeed {
     /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookPage")
      */
-    protected $facebookPage;
+    protected $fbPage;
 
     /**
      * Get id
@@ -163,24 +163,24 @@ class FacebookFeed {
     }
 
     /**
-     * Set facebookPage
+     * Set fbPage
      *
-     * @param AppBundle\Document\Facebook\FacebookPage $facebookPage
+     * @param AppBundle\Document\Facebook\FacebookPage $fbPage
      * @return self
      */
-    public function setFacebookPage(\AppBundle\Document\Facebook\FacebookPage $facebookPage)
+    public function setFbPage(\AppBundle\Document\Facebook\FacebookPage $fbPage)
     {
-        $this->facebookPage = $facebookPage;
+        $this->fbPage = $fbPage;
         return $this;
     }
 
     /**
-     * Get facebookPage
+     * Get fbPage
      *
-     * @return AppBundle\Document\Facebook\FacebookPage $facebookPage
+     * @return AppBundle\Document\Facebook\FacebookPage $fbPage
      */
-    public function getFacebookPage()
+    public function getFbPage()
     {
-        return $this->facebookPage;
+        return $this->fbPage;
     }
 }

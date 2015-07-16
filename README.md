@@ -12,7 +12,15 @@
     setfacl -dR -m u:"$HTTPDUSER":rwX -m u:webmaster:rwX app/cache app/logs
 
 ### generate sample data
+if you have the CMSTestData.tgz (include collection: MnemonoBiz, FacebookPage)
+    tar zxvf CMSTestData.tgz
+    mongorestore Mnemono
+
+if you use the generator
     app/console doctrine:mongodb:fixtures:load
+
+### create MnemonoBiz by FacebookPage
+    app/console mnemono:sync:fbpagetobiz --action createFromFb --fbId xxxxx
 
 ### create user account
     http://yourServer/app_dev.php/register
