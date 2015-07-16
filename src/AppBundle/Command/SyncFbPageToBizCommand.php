@@ -8,16 +8,16 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Document\FacebookPage;
+use AppBundle\Document\Facebook\FacebookPage;
 use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
+use AppBundle\Command\BaseCommand;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SyncFbPageToBizCommand extends ContainerAwareCommand{
+class SyncFbPageToBizCommand extends BaseCommand{
     protected function configure(){
         $this->setName("mnemono:sync:fbpagetobiz")
             ->setDescription("sync facebook page to biz")
@@ -50,7 +50,7 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
         $skip = 0;
         $limit = 10;
         do{
-            $pages = $dm->createQueryBuilder("AppBundle:FacebookPage")
+            $pages = $dm->createQueryBuilder($this->facebookPageDocumentPath)
                 ->field("exception")->notEqual(true)
                 ->limit($limit)->skip($skip)
                 ->getQuery()->execute();
@@ -67,17 +67,17 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
     }
     private function createBizByFbPage($fbId){
         $dm = $this->getDM();
-        $page = $dm->createQueryBuilder("AppBundle:FacebookPage")
+        $page = $dm->createQueryBuilder($this->facebookPageDocumentPath)
             //->hydrate(false)
             ->field("fbId")->equals($fbId)
             ->getQuery()->getSingleResult();
 
-        $pageRaw = $dm->createQueryBuilder("AppBundle:FacebookPage")
+        $pageRaw = $dm->createQueryBuilder($this->facebookPageDocumentPath)
             ->hydrate(false)
             ->field("fbId")->equals($fbId)
             ->getQuery()->getSingleResult();
 
-        $biz = $dm->createQueryBuilder("AppBundle:MnemonoBiz")
+        $biz = $dm->createQueryBuilder($this->mnemonoBizDocumentPath)
             ->field("importFrom")->equals("facebookPage")
             ->field("importFromRef")->references($page)
             ->getQuery()->getSingleResult();
@@ -86,6 +86,8 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             $biz = $this->bizBuilder($page, $pageRaw);
             $dm->persist($biz);
             $dm->flush();
+
+            $dm->clear();
         }
 
 
@@ -110,7 +112,7 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
             $biz->setWebsites($websites);
         }
         if (isset($pageRaw["location"])){
-            $location = $this->createLocation($pageRaw["location"]);
+            $location = $this->createLocation($pageRaw);
             $biz->setLocation($location);
         }
         $biz->setName($pageRaw["name"])
@@ -121,31 +123,34 @@ class SyncFbPageToBizCommand extends ContainerAwareCommand{
     }
 
     /**
-     * @param $rawArray
+     * @param $pageRaw
      * @return Location
      */
-    private function createLocation($rawArray){
+    private function createLocation($pageRaw){
+        $city = null;
+        $country = null;
+        if (isset($pageRaw["mnemono"])){
+            if (isset($pageRaw["mnemono"]["location"]["city"])){
+                $city = $pageRaw["mnemono"]["location"]["city"];
+            }
+            if (isset($pageRaw["mnemono"]["location"]["country"])){
+                $country = $pageRaw["mnemono"]["location"]["country"];
+            }
+        }
+
+        $street = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
+        if ($city == null){
+            $city = (isset($pageRaw["location"]["city"]) ? $pageRaw["location"]["city"] : null);
+        }
+        if ($country == null){
+            $country = (isset($pageRaw["location"]["country"]) ? $pageRaw["location"]["country"] : null);
+        }
+
         $location = new Location();
-        $street = (isset($rawArray["street"]) ? $rawArray["street"] : null);
-        $city = (isset($rawArray["city"]) ? $rawArray["city"] : null);
-        $country = (isset($rawArray["country"]) ? $rawArray["country"] : null);
         $location->setCity($city)
             ->setCountry($country)
             ->setAddress($street);
         $this->getDM()->persist($location);
         return $location;
-    }
-
-    /**
-     * @return null|DocumentManager
-     */
-    private function getDM(){
-        $dm = $this->getContainer()->get("doctrine_mongodb")->getManager();
-        if ($dm instanceof DocumentManager){
-            return $dm;
-        }else{
-            echo "dm is not documentMananger"."\n";
-        }
-        return null;
     }
 }

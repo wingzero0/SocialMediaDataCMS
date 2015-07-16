@@ -25,18 +25,6 @@ class Post extends BaseThread{
      */
     protected $id;
     /**
-     * @MongoDB\String
-     */
-    protected $fbId;
-    /**
-     * @MongoDB\Int
-     */
-    protected $fbTotalLikes;
-    /**
-     * @MongoDB\Int
-     */
-    protected $fbTotalComments;
-    /**
      * @MongoDB\Collection
      */
     protected $tags;
@@ -47,7 +35,7 @@ class Post extends BaseThread{
     /**
      * @MongoDB\Date
      */
-    protected $fbUpdateTime;
+    protected $lastModDate;
     /**
      * @MongoDB\Float
      */
@@ -63,6 +51,36 @@ class Post extends BaseThread{
     /**
      * @MongoDB\String
      */
+    protected $importFrom;
+    /**
+     * @MongoDB\ReferenceOne(
+     *   discriminatorField="importFrom",
+     *   discriminatorMap={
+     *     "facebookFeed"="Document\Facebook\FacebookFeed",
+     *     "directory"="Document\Directory"
+     *   },
+     *   defaultDiscriminatorValue="facebookFeed"
+     * )
+     */
+    protected $importFromRef;
+    /**
+     * @MongoDB\EmbedOne(
+     *   discriminatorField="importFrom",
+     *   discriminatorMap={
+     *     "facebookFeed"="Document\Facebook\FacebookMeta"
+     *   },
+     *   defaultDiscriminatorValue="facebookFeed"
+     * )
+     */
+    protected $meta;
+    /**
+     * @MongoDB\String
+     */
+    // passible value: draft(by use), review(by admin), published,
+    protected $publishStatus;
+    /**
+     * @MongoDB\String
+     */
     protected $content;
 
     /**
@@ -73,72 +91,6 @@ class Post extends BaseThread{
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set fbId
-     *
-     * @param string $fbId
-     * @return self
-     */
-    public function setFbId($fbId)
-    {
-        $this->fbId = $fbId;
-        return $this;
-    }
-
-    /**
-     * Get fbId
-     *
-     * @return string $fbId
-     */
-    public function getFbId()
-    {
-        return $this->fbId;
-    }
-
-    /**
-     * Set fbTotalLikes
-     *
-     * @param int $fbTotalLikes
-     * @return self
-     */
-    public function setFbTotalLikes($fbTotalLikes)
-    {
-        $this->fbTotalLikes = $fbTotalLikes;
-        return $this;
-    }
-
-    /**
-     * Get fbTotalLikes
-     *
-     * @return int $fbTotalLikes
-     */
-    public function getFbTotalLikes()
-    {
-        return $this->fbTotalLikes;
-    }
-
-    /**
-     * Set fbTotalComments
-     *
-     * @param int $fbTotalComments
-     * @return self
-     */
-    public function setFbTotalComments($fbTotalComments)
-    {
-        $this->fbTotalComments = $fbTotalComments;
-        return $this;
-    }
-
-    /**
-     * Get fbTotalComments
-     *
-     * @return int $fbTotalComments
-     */
-    public function getFbTotalComments()
-    {
-        return $this->fbTotalComments;
     }
 
     /**
@@ -183,28 +135,6 @@ class Post extends BaseThread{
     public function getMnemonoCat()
     {
         return $this->mnemonoCat;
-    }
-
-    /**
-     * Set fbUpdateTime
-     *
-     * @param date $fbUpdateTime
-     * @return self
-     */
-    public function setFbUpdateTime($fbUpdateTime)
-    {
-        $this->fbUpdateTime = $fbUpdateTime;
-        return $this;
-    }
-
-    /**
-     * Get fbUpdateTime
-     *
-     * @return date $fbUpdateTime
-     */
-    public function getFbUpdateTime()
-    {
-        return $this->fbUpdateTime;
     }
 
     /**
@@ -293,5 +223,115 @@ class Post extends BaseThread{
     public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * Set lastModDate
+     *
+     * @param date $lastModDate
+     * @return self
+     */
+    public function setLastModDate($lastModDate)
+    {
+        $this->lastModDate = $lastModDate;
+        return $this;
+    }
+
+    /**
+     * Get lastModDate
+     *
+     * @return date $lastModDate
+     */
+    public function getLastModDate()
+    {
+        return $this->lastModDate;
+    }
+
+    /**
+     * Set importFrom
+     *
+     * @param string $importFrom
+     * @return self
+     */
+    public function setImportFrom($importFrom)
+    {
+        $this->importFrom = $importFrom;
+        return $this;
+    }
+
+    /**
+     * Get importFrom
+     *
+     * @return string $importFrom
+     */
+    public function getImportFrom()
+    {
+        return $this->importFrom;
+    }
+
+    /**
+     * Set importFromRef
+     *
+     * @param $importFromRef
+     * @return self
+     */
+    public function setImportFromRef($importFromRef)
+    {
+        $this->importFromRef = $importFromRef;
+        return $this;
+    }
+
+    /**
+     * Get importFromRef
+     *
+     * @return $importFromRef
+     */
+    public function getImportFromRef()
+    {
+        return $this->importFromRef;
+    }
+
+    /**
+     * Set meta
+     *
+     * @param $meta
+     * @return self
+     */
+    public function setMeta($meta)
+    {
+        $this->meta = $meta;
+        return $this;
+    }
+
+    /**
+     * Get meta
+     *
+     * @return $meta
+     */
+    public function getMeta()
+    {
+        return $this->meta;
+    }
+
+    /**
+     * Set publishStatus
+     *
+     * @param string $publishStatus
+     * @return self
+     */
+    public function setPublishStatus($publishStatus)
+    {
+        $this->publishStatus = $publishStatus;
+        return $this;
+    }
+
+    /**
+     * Get publishStatus
+     *
+     * @return string $publishStatus
+     */
+    public function getPublishStatus()
+    {
+        return $this->publishStatus;
     }
 }
