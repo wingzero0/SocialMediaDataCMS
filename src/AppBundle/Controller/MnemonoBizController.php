@@ -51,6 +51,49 @@ class MnemonoBizController extends CMSBaseController {
     }
 
     /**
+     * Search MnemonoBiz documents by query.
+     *
+     * @Route("/search", name="mnemonobiz_search")
+     * @Method("GET")
+     * @Template("AppBundle:MnemonoBiz:index.html.twig")
+     */
+    public function searchAction(Request $request){
+
+        $limit = 15;
+        $page = intval($request->get('page', 1));
+
+        $keywords = explode(' ', $request->get('query'));
+        $regex = array();
+        $i = 0;
+        foreach($keywords as $keyword){
+            $keyword = '/' . $keyword . '/i';
+            $regex[$i] = new \MongoRegex($keyword);
+            $i++;
+        }
+
+        $dm = $this->get('doctrine.odm.mongodb.document_manager');
+        $qb = $dm->createQueryBuilder('AppBundle:MnemonoBiz');
+
+        $qb->addOr($qb->expr()->field('name')->all($regex));
+        $qb->addOr($qb->expr()->field('shortDesc')->all($regex));
+        $qb->addOr($qb->expr()->field('longDesc')->all($regex));
+
+        $query = $qb->getQuery();
+
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $page,
+            $limit
+        );
+
+        return array(
+            'pagination' => $pagination,
+        );
+
+    }
+
+    /**
      * Displays a form to create a new MnemonoBiz document.
      *
      * @Route("/new", name="mnemonobiz_new")
@@ -265,46 +308,6 @@ class MnemonoBizController extends CMSBaseController {
         );
     }
 
-    /**
-     * Search MnemonoBiz documents by query.
-     *
-     * @Route("/search", name="mnemonobiz_search")
-     * @Method("POST")
-     * @Template("AppBundle:MnemonoBiz:index.html.twig")
-     */
-    public function searchAction(Request $request){
 
-        $limit = 15;
-        $page = intval($request->get('page', 1));
-
-        $keywords = explode(' ', $request->get('query'));
-        $regex = array();
-        $i = 0;
-        foreach($keywords as $keyword){
-            $keyword = '/' . $keyword . '/';
-            $regex[$i] = new \MongoRegex($keyword);
-            $i++;
-        }
-
-        $dm = $this->get('doctrine.odm.mongodb.document_manager');
-        $qb = $dm->createQueryBuilder('AppBundle:MnemonoBiz');
-
-        $qb->addOr($qb->expr()->field('name')->all($regex));
-        $qb->addOr($qb->expr()->field('shortDesc')->all($regex));
-
-        $query = $qb->getQuery();
-
-        $paginator  = $this->get('knp_paginator');
-        $pagination = $paginator->paginate(
-            $query,
-            $page,
-            $limit
-        );
-
-        return array(
-            'pagination' => $pagination,
-        );
-
-    }
 
 }
