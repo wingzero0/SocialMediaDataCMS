@@ -66,7 +66,7 @@ class MnemonoBizController extends CMSBaseController {
         $regex = array();
         $i = 0;
         foreach($keywords as $keyword){
-            $keyword = '/' . $keyword . '/';
+            $keyword = '/' . $keyword . '/i';
             $regex[$i] = new \MongoRegex($keyword);
             $i++;
         }
@@ -76,6 +76,7 @@ class MnemonoBizController extends CMSBaseController {
 
         $qb->addOr($qb->expr()->field('name')->all($regex));
         $qb->addOr($qb->expr()->field('shortDesc')->all($regex));
+        $qb->addOr($qb->expr()->field('longDesc')->all($regex));
 
         $query = $qb->getQuery();
 
