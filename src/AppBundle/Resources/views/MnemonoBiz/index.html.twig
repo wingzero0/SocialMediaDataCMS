@@ -21,7 +21,7 @@
                 <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}"> Create MnemonoBiz </a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right" role="form" method="post" action="{{ path('mnemonobiz_search')}}">
+                <form class="navbar-form navbar-right" role="form" method="get" action="{{ path('mnemonobiz_search')}}">
                     <div class="form-group">
                         <input name="query" type="text" placeholder="keyword" class="form-control">
                     </div>
