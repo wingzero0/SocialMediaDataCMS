@@ -66,7 +66,7 @@ class MnemonoBiz{
      * @MongoDB\ReferenceOne(
      *   discriminatorField="importFrom",
      *   discriminatorMap={
-     *     "facebookPage"="Document\FacebookPage",
+     *     "facebookPage"="Document\Facebook\FacebookPage",
      *     "directory"="Document\Directory"
      *   },
      *   defaultDiscriminatorValue="facebookPage"

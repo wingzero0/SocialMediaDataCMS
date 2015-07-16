@@ -8,7 +8,7 @@
 namespace AppBundle\DataFixtures\MongoDB;
 
 use AppBundle\Document\Directory;
-use AppBundle\Document\FacebookPage;
+use AppBundle\Document\Facebook\FacebookPage;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use AppBundle\Document\MnemonoBiz;

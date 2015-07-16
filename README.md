@@ -14,7 +14,7 @@
 ### generate sample data
 if you have the CMSTestData.tgz (include collection: MnemonoBiz, FacebookPage)
     tar zxvf CMSTestData.tgz
-    mongorestore Mnemono
+    mongorestore CMSTestData
 
 if you use the generator
     app/console doctrine:mongodb:fixtures:load
