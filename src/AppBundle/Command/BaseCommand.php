@@ -13,6 +13,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends ContainerAwareCommand{
+    protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
+    protected $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";
+    protected $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
     /**
      * @return null|DocumentManager
      */

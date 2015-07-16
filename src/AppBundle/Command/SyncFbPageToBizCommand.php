@@ -8,7 +8,7 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Document\FacebookPage;
+use AppBundle\Document\Facebook\FacebookPage;
 use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Command\BaseCommand;
@@ -50,7 +50,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
         $skip = 0;
         $limit = 10;
         do{
-            $pages = $dm->createQueryBuilder("AppBundle:FacebookPage")
+            $pages = $dm->createQueryBuilder($this->facebookPageDocumentPath)
                 ->field("exception")->notEqual(true)
                 ->limit($limit)->skip($skip)
                 ->getQuery()->execute();
@@ -67,17 +67,17 @@ class SyncFbPageToBizCommand extends BaseCommand{
     }
     private function createBizByFbPage($fbId){
         $dm = $this->getDM();
-        $page = $dm->createQueryBuilder("AppBundle:FacebookPage")
+        $page = $dm->createQueryBuilder($this->facebookPageDocumentPath)
             //->hydrate(false)
             ->field("fbId")->equals($fbId)
             ->getQuery()->getSingleResult();
 
-        $pageRaw = $dm->createQueryBuilder("AppBundle:FacebookPage")
+        $pageRaw = $dm->createQueryBuilder($this->facebookPageDocumentPath)
             ->hydrate(false)
             ->field("fbId")->equals($fbId)
             ->getQuery()->getSingleResult();
 
-        $biz = $dm->createQueryBuilder("AppBundle:MnemonoBiz")
+        $biz = $dm->createQueryBuilder($this->mnemonoBizDocumentPath)
             ->field("importFrom")->equals("facebookPage")
             ->field("importFromRef")->references($page)
             ->getQuery()->getSingleResult();

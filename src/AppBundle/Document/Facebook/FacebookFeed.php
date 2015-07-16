@@ -37,6 +37,10 @@ class FacebookFeed {
      * @MongoDB\Raw
      */
     protected $comments;
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookPage")
+     */
+    protected $facebookPage;
 
     /**
      * Get id
@@ -156,5 +160,27 @@ class FacebookFeed {
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * Set facebookPage
+     *
+     * @param AppBundle\Document\Facebook\FacebookPage $facebookPage
+     * @return self
+     */
+    public function setFacebookPage(\AppBundle\Document\Facebook\FacebookPage $facebookPage)
+    {
+        $this->facebookPage = $facebookPage;
+        return $this;
+    }
+
+    /**
+     * Get facebookPage
+     *
+     * @return AppBundle\Document\Facebook\FacebookPage $facebookPage
+     */
+    public function getFacebookPage()
+    {
+        return $this->facebookPage;
     }
 }
