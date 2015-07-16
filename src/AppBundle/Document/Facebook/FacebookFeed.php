@@ -38,6 +38,10 @@ class FacebookFeed {
      */
     protected $comments;
     /**
+     * @MongoDB\Field(type="string", name="created_time")
+     */
+    protected $createdTime;
+    /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookPage")
      */
     protected $fbPage;
@@ -182,5 +186,27 @@ class FacebookFeed {
     public function getFbPage()
     {
         return $this->fbPage;
+    }
+
+    /**
+     * Set createdTime
+     *
+     * @param string $createdTime
+     * @return self
+     */
+    public function setCreatedTime($createdTime)
+    {
+        $this->createdTime = $createdTime;
+        return $this;
+    }
+
+    /**
+     * Get createdTime
+     *
+     * @return string $createdTime
+     */
+    public function getCreatedTime()
+    {
+        return $this->createdTime;
     }
 }

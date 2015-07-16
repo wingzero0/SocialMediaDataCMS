@@ -16,6 +16,7 @@ abstract class BaseCommand extends ContainerAwareCommand{
     protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
     protected $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";
     protected $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
+    protected $postDocumentPath = "AppBundle:Post";
     /**
      * @return null|DocumentManager
      */

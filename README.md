@@ -22,5 +22,11 @@ if you use the generator
 ### create MnemonoBiz by FacebookPage
     app/console mnemono:sync:fbpagetobiz --action createFromFb --fbId xxxxx
 
+### create Post by FacebookFeed
+created by single feed
+    app/console mnemono:sync:fbfeedtopost --action createFromFb --fbId xxxxxx
+created by batch
+    app/console mnemono:sync:fbfeedtopost --action dumpFromFb --fromDate 2015-06-01 --toDate 2015-06-30
+
 ### create user account
     http://yourServer/app_dev.php/register
