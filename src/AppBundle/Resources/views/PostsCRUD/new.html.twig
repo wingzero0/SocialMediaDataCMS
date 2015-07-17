@@ -1,0 +1,152 @@
+{% extends "AppBundle:layout:layout.html.twig" %}
+
+{% block headerBar %}
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="{{ path('@BackendHome') }}">Dashboard</a>
+        </li>
+    </ul>
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="{{ path('posts_home') }}">Posts</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block mainContent %}
+    <style>
+        .cg{
+            width:80%;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+    </style>
+    <div class="container">
+        <h2>{{ header }}</h2>
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
+        <div class="form-group">
+            {{ form_label(form.id) }}
+            {{ form_errors(form.id) }}
+            {{ form_widget(form.id, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.content) }}
+            {{ form_errors(form.content) }}
+            {{ form_widget(form.content, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.tags) }}
+            <a id="add-another-tag" href="#" class="btn btn-default btn-sm">Add another tag</a>
+            <ul id="tag-fields-list" data-prototype="{{ form_widget(form.tags.vars.prototype)|e }}">
+                {% for tag in form.tags %}
+                    <li>
+                        {{ form_errors(tag) }}
+                        {{ form_widget(tag, {'attr': {'class': 'cg'} }) }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="form-group">
+            {{ form_label(form.mnemonoCat) }}
+            {{ form_errors(form.mnemonoCat) }}
+            {{ form_widget(form.mnemonoCat, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.lastModDate) }}
+            {{ form_errors(form.lastModDate) }}
+            {{ form_widget(form.lastModDate, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.rankingScoreAlgorithm) }}
+            {{ form_errors(form.rankingScoreAlgorithm) }}
+            {{ form_widget(form.rankingScoreAlgorithm, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.rankingScoreHuman) }}
+            {{ form_errors(form.rankingScoreHuman) }}
+            {{ form_widget(form.rankingScoreHuman, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.mnemonoBiz) }}
+            {{ form_errors(form.mnemonoBiz.name) }}
+            {{ form_widget(form.mnemonoBiz.name, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.publishStatus) }}
+            {{ form_errors(form.publishStatus) }}
+            {{ form_widget(form.publishStatus, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        {% do form.mnemonoBiz.setRendered %}
+        {% do form.importFrom.setRendered %}
+        {{ form_end(form) }}
+
+        <ul class="record_actions list list-inline">
+            <li>
+                <a href="{{ path('posts_home') }}" class="btn btn-link">
+                    Back to the list
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        /* Keep track of how many tags fields have been rendered */
+        var tagsCount = '{{ form.tags|length }}';
+
+        var countList = [tagsCount];
+
+        jQuery(document).ready(function() {
+            /* Create and add a delete button behind a input field of list */
+            var addDeleteTag = function (liObj){
+                var removeFormA = jQuery('<a href="#" class="btn btn-default btn-sm">X</a>');
+                liObj.append(removeFormA);
+
+                removeFormA.on('click', function(e) {
+                    e.preventDefault();
+                    liObj.remove();
+                });
+            }
+
+            /* Run the addDeleteTag function by each input field of those lists */
+            var updateDeleteListionser = function (){
+                var collectionHolder = jQuery("[id*='fields-list']");
+                collectionHolder.find('li').each(function() {
+                    addDeleteTag($(this));
+                });
+            }
+
+            updateDeleteListionser();
+
+            /* Add new item function */
+            var addNewItem = function(key, tagName, holderText) {
+                var urlList = jQuery(tagName);
+                var newWidget = urlList.attr('data-prototype');
+                newWidget = newWidget.replace(/__name__/g, tagsCount);
+                countList[key]++;
+                var newLi = jQuery('<li></li>').html(newWidget);
+                newLi.children().first().addClass('cg');
+                newLi.children().first().attr('placeholder', holderText);
+                addDeleteTag(newLi);
+                newLi.appendTo(urlList);
+            }
+
+            /* Add new item function of Tags */
+            jQuery('#add-another-tag').click(function(e) {
+                e.preventDefault();
+                addNewItem(0, '#tag-fields-list', 'New Tag');
+            });
+
+        })
+    </script>
+{% endblock %}

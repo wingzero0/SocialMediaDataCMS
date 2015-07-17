@@ -8,7 +8,7 @@
     </ul>
     <ul class="nav navbar-nav">
         <li class="active">
-            <a href="{{ path('mnemonobiz_home') }}">MnemonoBiz</a>
+            <a href="{{ path('posts_home') }}">Posts</a>
         </li>
     </ul>
 {% endblock %}
@@ -20,16 +20,17 @@
         }
         ul{
             padding: 0;
+            list-style-type: none;
         }
     </style>
     <div class="container">
-        <h2>MnemonoBiz list</h2>
+        <h2>Posts list</h2>
         <div class="container">
-            <div class="navbar-header">
+            {#<div class="navbar-header">
                 <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}"> Create MnemonoBiz </a>
-            </div>
+            </div>#}
             <div id="navbar" class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right" role="form" method="get" action="{{ path('mnemonobiz_search')}}">
+                <form class="navbar-form navbar-right" role="form" method="get" action="{{ path('posts_search')}}">
                     <div class="form-group">
                         <input name="query" type="text" placeholder="keyword" class="form-control">
                     </div>
@@ -41,79 +42,68 @@
             <thead>
             <tr>
                 <th>Id</th>
-                <th>Name</th>
-                <th>Short Description</th>
-                <th>Long Description</th>
-                <th>Category</th>
-                <th>Tag</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Country</th>
-                <th>Phones</th>
-                <th>Faxes</th>
-                <th>Websites</th>
-                <th>Weighting</th>
+                <th>Action</th>
+                <th>Content</th>
+                <th>Tags</th>
+                <th>MnemonoCat</th>
+                <th>Last Modified date</th>
+                <th>Ranking Score by Algorithm</th>
+                <th>Ranking Score by Human</th>
+                <th>MnemonoBiz</th>
                 <th>Import From</th>
-                <th>Actions</th>
+                <th>Meta</th>
+                <th>Publish Status</th>
             </tr>
             </thead>
             <tbody>
             {% for document in pagination %}
                 <tr>
                     <td>{{ document.id }}</td>
-                    <td><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">{{ document.name }}</a></td>
-                    <td>{{ document.shortDesc }}</td>
-                    <td>{{ document.longDesc }}</td>
-                    <td>{{ document.category }}</td>
                     <td>
-                        <ul class="list">
+                        <ul>
+                            <li>
+                                <a href="{{ path('posts_show', { 'id': document.id }) }}">show</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('posts_edit', { 'id': document.id }) }}">edit</a>
+                            </li>
+                        </ul>
+                    </td>
+                    <td>{{ document.content }}</td>
+                    <td>
                             {% for tag in document.tags %}
                                 <li>{{ tag }}</li>
                             {% endfor %}
                         </ul>
                     </td>
-                    {% if document.location is not null %}
-                        <td>{{ document.location.address }}</td>
-                        <td>{{ document.location.city }}</td>
-                        <td>{{ document.location.country }}</td>
+                    <td>{{ document.mnemonoCat }}</td>
+                    {% if document.lastModDate is not null %}
+                        <td>{{ document.lastModDate.format('Y-m-d') }}</td>
                     {% else %}
                         <td></td>
-                        <td></td>
-                        <td></td>
                     {% endif %}
-                    <td>
-                        <ul class="list">
-                            {% for phone in document.phones %}
-                                <li>{{ phone }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
-                        <ul class="list">
-                            {% for fax in document.faxes %}
-                                <li>{{ fax }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
-                        <ul class="list">
-                            {% for website in document.websites %}
-                                <li>{{ website }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>{{ document.weighting }}</td>
-                    <td>{{ document.importFrom }}</td>
-                    <td>
+                    <td>{{ document.rankingScoreAlgorithm }}</td>
+                    <td>{{ document.rankingScoreHuman }}</td>
+                    {% if document.mnemonoBiz is not null %}
+                        <td><a href="{{ path('mnemonobiz_show', {'id': document.mnemonoBiz.id })}}">{{ document.mnemonoBiz.name }}</a></td>
+                    {% else %}
+                        <td>null</td>
+                    {% endif %}
+                    {% if document.importFromRef is not null %}
+                        <td>{{ document.importFrom }}<td>
+                    {% else %}
+                        <td>{{ document.importFrom }}<td>
+                    {% endif %}
+                    {% if document.meta is not null %}
                         <ul>
-                            <li>
-                                <a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">show</a>
-                            </li>
-                            <li>
-                                <a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">edit</a>
-                            </li>
+                            <li>Facebook ID: {{ document.meta.fbId }}</li>
+                            <li>Total Likes: {{ document.meta.fbTotalLikes }}</li>
+                            <li>Total Comments: {{ document.meta.fbTotalComments }}</li>
                         </ul>
-                    </td>
+                    {% else %}
+                        <td>null<td>
+                    {% endif %}
+                    <td>{{ document.publishStatus }}</td>
                 </tr>
             {% endfor %}
             </tbody>

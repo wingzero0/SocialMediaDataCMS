@@ -177,7 +177,7 @@ class MnemonoBizController extends CMSBaseController {
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'header' => "MmemonoBiz Create",
+            'header' => "MmemonoBiz Detail",
             'document'      => $document,
             'delete_form' => $deleteForm->createView(),
         );
@@ -245,8 +245,7 @@ class MnemonoBizController extends CMSBaseController {
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'header' => "MmemonoBiz Edit",
-            'document'      => $document,
+            'header' => "Edit MmemonoBiz",
             'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
@@ -301,8 +300,7 @@ class MnemonoBizController extends CMSBaseController {
         }
 
         return array(
-            'header' => "MmemonoBiz Update Failed!",
-            'document'      => $document,
+            'header' => "Update MmemonoBiz Failed!",
             'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );

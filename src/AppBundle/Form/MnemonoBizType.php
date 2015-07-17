@@ -22,9 +22,15 @@ class MnemonoBizType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('shortDesc')
-            ->add('longDesc')
-            ->add('category')
+            ->add('shortDesc','text',array(
+                'required' => false
+            ))
+            ->add('longDesc','text',array(
+                'required' => false
+            ))
+            ->add('category','text',array(
+                'required' => false
+            ))
             ->add('tags','collection',array(
                 'type' => 'text',
                 'allow_add' => true,
@@ -54,7 +60,9 @@ class MnemonoBizType extends AbstractType
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('weighting','number')
+            ->add('weighting','number',array(
+                'required' => false
+            ))
             ->add('importFrom')
         ;
 
