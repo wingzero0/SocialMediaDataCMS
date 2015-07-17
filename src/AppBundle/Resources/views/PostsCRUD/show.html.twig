@@ -1,0 +1,113 @@
+{% extends "AppBundle:layout:layout.html.twig" %}
+
+{% block headerBar %}
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="{{ path('@BackendHome') }}">Dashboard</a>
+        </li>
+    </ul>
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="{{ path('posts_home') }}">Posts</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block mainContent %}
+    <div class="container">
+
+        <h2>{{ header }}</h2>
+
+        <table class="record_properties table table-striped">
+            <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ document.id }}</td>
+            </tr>
+            <tr>
+                <th>Tags</th>
+                <td>
+                    <ul class="list">
+                        {% for tag in document.tags %}
+                            <li>{{ tag }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>MnemonoCat</th>
+                <td>{{ document.mnemonoCat }}</td>
+            </tr>
+            <tr>
+                <th>Last Modified Date</th>
+                <td>{{ document.lastModDate }}</td>
+            </tr>
+            <tr>
+                <th>Ranking Score by Algorithm</th>
+                <td>{{ document.rankingScoreAlgorithm }}</td>
+            </tr>
+            <tr>
+                <th>Ranking Score by Human</th>
+                <td>{{ document.rankingScoreHuman }}</td>
+            </tr>
+            <tr>
+                <th>MnemonoBiz</th>
+                {% if document.mnemonoBiz is not null %}
+                    <td><a href="{{ path('mnemonobiz_show', {'id': document.mnemonoBiz.id })}}">{{ document.mnemonoBiz.name }}</a></td>
+                {% else %}
+                    <td>null</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th>Import From</th>
+                {% if document.importFromRef is not null %}
+                    <td>{{ document.importFrom }}</td>
+                {% else %}
+                    <td>{{ document.importFrom }}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th>Meta</th>
+                {% if document.meta is not null %}
+                <td>
+                    <ul>
+                        <li>Facebook ID: {{ document.meta.fbId }}</li>
+                        <li>Total Likes: {{ document.meta.fbTotalLikes }}</li>
+                        <li>Total Comments: {{ document.meta.fbTotalComments }}</li>
+                    </ul>
+                </td>
+                {% else %}
+                    <td>null<td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th>Publish Status</th>
+                <td>{{ document.publishStatus }}</td>
+            </tr>
+            <tr>
+                <th>Content</th>
+                <td>{{ document.content }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <ul class="record_actions list list-inline">
+            <li>
+                <a href="{{ path('posts_home') }}">
+                    Back to the list
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('posts_edit', { 'id': document.id }) }}">
+                    Edit
+                </a>
+            </li>
+            <li>{{ form(delete_form) }}</li>
+        </ul>
+    </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
