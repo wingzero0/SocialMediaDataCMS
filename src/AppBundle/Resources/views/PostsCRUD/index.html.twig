@@ -1,17 +1,4 @@
-{% extends "AppBundle:layout:layout.html.twig" %}
-
-{% block headerBar %}
-    <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="{{ path('@BackendHome') }}">Dashboard</a>
-        </li>
-    </ul>
-    <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="{{ path('posts_home') }}">Posts</a>
-        </li>
-    </ul>
-{% endblock %}
+{% extends "AppBundle:PostsCRUD:layout.html.twig" %}
 
 {% block mainContent %}
     <style>
@@ -22,43 +9,46 @@
             padding: 0;
             list-style-type: none;
         }
+        .mycontainer {
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        @media (min-width: 1200px) {
+            .mycontainer {
+                width: 1350px;
+            }
+        }
     </style>
-    <div class="container">
-        <h2>Posts list</h2>
-        <div class="container">
-            {#<div class="navbar-header">
-                <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}"> Create MnemonoBiz </a>
-            </div>#}
-            <div id="navbar" class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right" role="form" method="get" action="{{ path('posts_search')}}">
-                    <div class="form-group">
-                        <input name="query" type="text" placeholder="keyword" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-success">Search</button>
-                </form>
+    <div class="mycontainer">
+        <h1 class="page-header"><strong>Posts list</strong></h1>
+        <form class="navbar-form navbar-right form-inline" role="form" method="get" action="{{ path('posts_search')}}">
+            <div class="form-group">
+                <input name="query" type="text" placeholder="keyword" class="form-control">
             </div>
-        </div>
-        <table class="records_list table table-striped">
+            <button type="submit" class="btn btn-success">Search</button>
+        </form>
+        <table class="records_list table table-striped table-bordered table-condensed">
             <thead>
             <tr>
-                <th>Id</th>
-                <th>Action</th>
+                <th>Publish Status</th>
                 <th>Content</th>
-                <th>Tags</th>
-                <th>MnemonoCat</th>
-                <th>Last Modified date</th>
-                <th>Ranking Score by Algorithm</th>
-                <th>Ranking Score by Human</th>
+                <th>Action</th>
                 <th>MnemonoBiz</th>
+                <th>Tags</th>
+                <th>RSA</th>
+                <th>RSH</th>
                 <th>Import From</th>
                 <th>Meta</th>
-                <th>Publish Status</th>
+                <th>Last Modified date</th>
             </tr>
             </thead>
             <tbody>
             {% for document in pagination %}
                 <tr>
-                    <td>{{ document.id }}</td>
+                    <td>{{ document.publishStatus }}</td>
+                    <td>{{ document.content }}</td>
                     <td>
                         <ul>
                             <li>
@@ -69,26 +59,19 @@
                             </li>
                         </ul>
                     </td>
-                    <td>{{ document.content }}</td>
+                    {% if document.mnemonoBiz is not null %}
+                        <td><a href="{{ path('mnemonobiz_show', {'id': document.mnemonoBiz.id })}}">{{ document.mnemonoBiz.name }}</a></td>
+                    {% else %}
+                        <td>null</td>
+                    {% endif %}
                     <td>
                             {% for tag in document.tags %}
                                 <li>{{ tag }}</li>
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{{ document.mnemonoCat }}</td>
-                    {% if document.lastModDate is not null %}
-                        <td>{{ document.lastModDate.format('Y-m-d') }}</td>
-                    {% else %}
-                        <td></td>
-                    {% endif %}
                     <td>{{ document.rankingScoreAlgorithm }}</td>
                     <td>{{ document.rankingScoreHuman }}</td>
-                    {% if document.mnemonoBiz is not null %}
-                        <td><a href="{{ path('mnemonobiz_show', {'id': document.mnemonoBiz.id })}}">{{ document.mnemonoBiz.name }}</a></td>
-                    {% else %}
-                        <td>null</td>
-                    {% endif %}
                     {% if document.importFromRef is not null %}
                         <td>{{ document.importFrom }}<td>
                     {% else %}
@@ -103,15 +86,20 @@
                     {% else %}
                         <td>null<td>
                     {% endif %}
-                    <td>{{ document.publishStatus }}</td>
+                    {% if document.lastModDate is not null %}
+                        <td>{{ document.lastModDate.format('Y-m-d') }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+    <div>
         <div class="text-center">
             {{ knp_pagination_render(pagination) }}
         </div>
-    </div>
+    {#</div>#}
     {% block footer %}
         <div class="container">
             {{ parent() }}

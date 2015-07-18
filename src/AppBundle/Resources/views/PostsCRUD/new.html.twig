@@ -1,17 +1,4 @@
-{% extends "AppBundle:layout:layout.html.twig" %}
-
-{% block headerBar %}
-    <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="{{ path('@BackendHome') }}">Dashboard</a>
-        </li>
-    </ul>
-    <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="{{ path('posts_home') }}">Posts</a>
-        </li>
-    </ul>
-{% endblock %}
+{% extends "AppBundle:PostsCRUD:layout.html.twig" %}
 
 {% block mainContent %}
     <style>

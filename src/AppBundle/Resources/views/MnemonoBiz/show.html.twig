@@ -1,19 +1,12 @@
-{% extends "AppBundle:layout:layout.html.twig" %}
-
-{% block headerBar %}
-    <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="{{ path('@BackendHome') }}">Dashboard</a>
-        </li>
-    </ul>
-    <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="{{ path('mnemonobiz_home') }}">MnemonoBiz</a>
-        </li>
-    </ul>
-{% endblock %}
+{% extends "AppBundle:MnemonoBiz:layout.html.twig" %}
 
 {% block mainContent %}
+    <style>
+        ul{
+            padding: 0;
+            list-style-type: none;
+        }
+    </style>
     <div class="container">
 
         <h2>MnemonoBiz</h2>

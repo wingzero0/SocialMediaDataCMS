@@ -1,0 +1,15 @@
+{% extends "AppBundle:layout:layout.html.twig" %}
+
+{% block headerBar %}
+    <ul class="nav navbar-nav">
+        <li>
+            <a href="{{ path('@BackendHome') }}">Dashboard</a>
+        </li>
+        <li class="active">
+            <a href="{{ path('mnemonobiz_home') }}">MnemonoBiz</a>
+        </li>
+        <li>
+            <a href="{{ path('posts_home') }}">Posts</a>
+        </li>
+    </ul>
+{% endblock %}

@@ -36,9 +36,11 @@ class PostType extends AbstractType
                 'required' => false
             ))
             ->add('lastModDate','date', array(
+                'read_only' => true,
                 'required' => false
             ))
             ->add('rankingScoreAlgorithm','number', array(
+                'read_only' => true,
                 'required' => false
             ))
             ->add('rankingScoreHuman','number', array(
