@@ -111,11 +111,9 @@ class SyncFbPageToBizCommand extends BaseCommand{
         if (!empty($websites)){
             $biz->setWebsites($websites);
         }
-        if (isset($pageRaw["location"])){
-            $location = $this->createLocation($pageRaw);
-            $biz->setLocation($location);
-        }
-        $biz->setName($pageRaw["name"])
+        $location = $this->createLocation($pageRaw);
+        $biz->setLocation($location)
+            ->setName($pageRaw["name"])
             ->setImportFrom("facebookPage")
             ->setImportFromRef($page)
             ->setLastModDate(new \DateTime());
@@ -129,6 +127,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
     private function createLocation($pageRaw){
         $city = null;
         $country = null;
+        $street = null;
         if (isset($pageRaw["mnemono"])){
             if (isset($pageRaw["mnemono"]["location"]["city"])){
                 $city = $pageRaw["mnemono"]["location"]["city"];
@@ -138,12 +137,14 @@ class SyncFbPageToBizCommand extends BaseCommand{
             }
         }
 
-        $street = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
-        if ($city == null){
-            $city = (isset($pageRaw["location"]["city"]) ? $pageRaw["location"]["city"] : null);
-        }
-        if ($country == null){
-            $country = (isset($pageRaw["location"]["country"]) ? $pageRaw["location"]["country"] : null);
+        if (isset($pageRaw["location"])){
+            $street = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
+            if ($city == null){
+                $city = (isset($pageRaw["location"]["city"]) ? $pageRaw["location"]["city"] : null);
+            }
+            if ($country == null){
+                $country = (isset($pageRaw["location"]["country"]) ? $pageRaw["location"]["country"] : null);
+            }
         }
 
         $location = new Location();
