@@ -31,19 +31,20 @@ class SyncFbPageToBizCommand extends BaseCommand{
             ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
-        $fbIds = $input->getOption('fbId');
         $action = $input->getOption('action');
         if ($action == "dumpFromFb"){
             $this->createBizFromFbPageCollection();
-        }else if (!empty($fbIds)){
-            foreach ($fbIds as $fbId){
-                if ($action=="createFromFb"){
+        }else if ($action == "createFromFb"){
+            $fbIds = $input->getOption('fbId');
+            if (!empty($fbIds)){
+                foreach ($fbIds as $fbId){
                     $this->createBizByFbPage($fbId);
                 }
+            }else{
+                $output->writeln("no fbId");
             }
-        }else{
-            $output->writeln("no fbId");
         }
+
     }
     private function createBizFromFbPageCollection(){
         $dm = $this->getDM();
@@ -110,6 +111,9 @@ class SyncFbPageToBizCommand extends BaseCommand{
         }
         if (!empty($websites)){
             $biz->setWebsites($websites);
+        }
+        if (isset($pageRaw["mnemono"]) && isset($pageRaw["mnemono"]["category"])){
+            $biz->setCategory($pageRaw["mnemono"]["category"]);
         }
         $location = $this->createLocation($pageRaw);
         $biz->setLocation($location)
