@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new FOS\CommentBundle\FOSCommentBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new CodingGuys\CMSBundle\CodingGuysCMSBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
