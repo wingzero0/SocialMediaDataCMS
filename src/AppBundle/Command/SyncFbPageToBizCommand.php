@@ -24,7 +24,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
             ->addOption('action', null,
                 InputOption::VALUE_OPTIONAL,
                 'over write current biz value with facebook page',
-                'dumpFromFb')
+                'createFromFbCollection')
             ->addOption('fbId', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'the specific fbId you want to sync')
@@ -32,8 +32,10 @@ class SyncFbPageToBizCommand extends BaseCommand{
     }
     protected function execute(InputInterface $input, OutputInterface $output){
         $action = $input->getOption('action');
-        if ($action == "dumpFromFb"){
+        if ($action == "createFromFbCollection"){
             $this->createBizFromFbPageCollection();
+        }else if ($action == "updateFromFbCollection"){
+            $this->updateBizFromFbPageCollection();
         }else if ($action == "createFromFb"){
             $fbIds = $input->getOption('fbId');
             if (!empty($fbIds)){
@@ -43,8 +45,37 @@ class SyncFbPageToBizCommand extends BaseCommand{
             }else{
                 $output->writeln("no fbId");
             }
+        }else if ($action == "updateFromFb"){
+            $fbIds = $input->getOption('fbId');
+            if (!empty($fbIds)){
+                foreach ($fbIds as $fbId){
+                    $this->updateBizByFbPage($fbId);
+                }
+            }else{
+                $output->writeln("no fbId");
+            }
         }
 
+    }
+    private function updateBizFromFbPageCollection(){
+        $dm = $this->getDM();
+        $skip = 0;
+        $limit = 10;
+        do{
+            $pages = $dm->createQueryBuilder($this->facebookPageDocumentPath)
+                ->field("exception")->notEqual(true)
+                ->limit($limit)->skip($skip)
+                ->getQuery()->execute();
+            $fetchCount = $pages->count(true);
+            if ($fetchCount > 0){
+                foreach($pages as $page){
+                    if ($page instanceof FacebookPage){
+                        $this->updateBizByFbPage($page->getFbId());
+                    }
+                    $skip++;
+                }
+            }
+        }while($fetchCount > 0);
     }
     private function createBizFromFbPageCollection(){
         $dm = $this->getDM();
@@ -56,7 +87,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
                 ->limit($limit)->skip($skip)
                 ->getQuery()->execute();
             $newAdd = $pages->count(true);
-            if ($pages->count() > 0){
+            if ($newAdd > 0){
                 foreach($pages as $page){
                     if ($page instanceof FacebookPage){
                         $this->createBizByFbPage($page->getFbId());
@@ -66,25 +97,35 @@ class SyncFbPageToBizCommand extends BaseCommand{
             }
         }while($newAdd > 0);
     }
+
+    private function updateBizByFbPage($fbId){
+        $page = $this->queryPageByFbId($fbId);
+
+        $pageRaw = $this->queryPageRawByFbId($fbId);
+
+        $biz = $this->queryBizByFbPage($page);
+
+        if ($biz instanceof MnemonoBiz && $page instanceof FacebookPage){
+            $dm = $this->getDM();
+            $biz = $this->updateBiz($biz, $page, $pageRaw);
+            $dm->persist($biz);
+            $dm->flush();
+            $dm->clear();
+        }
+
+
+        return $biz;
+    }
     private function createBizByFbPage($fbId){
-        $dm = $this->getDM();
-        $page = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-            //->hydrate(false)
-            ->field("fbId")->equals($fbId)
-            ->getQuery()->getSingleResult();
+        $page = $this->queryPageByFbId($fbId);
 
-        $pageRaw = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-            ->hydrate(false)
-            ->field("fbId")->equals($fbId)
-            ->getQuery()->getSingleResult();
+        $pageRaw = $this->queryPageRawByFbId($fbId);
 
-        $biz = $dm->createQueryBuilder($this->mnemonoBizDocumentPath)
-            ->field("importFrom")->equals("facebookPage")
-            ->field("importFromRef")->references($page)
-            ->getQuery()->getSingleResult();
+        $biz = $this->queryBizByFbPage($page);
 
         if ($biz == null && $page instanceof FacebookPage){
             $biz = $this->bizBuilder($page, $pageRaw);
+            $dm = $this->getDM();
             $dm->persist($biz);
             $dm->flush();
 
@@ -102,6 +143,16 @@ class SyncFbPageToBizCommand extends BaseCommand{
      */
     private function bizBuilder(FacebookPage $page, $pageRaw){
         $biz = new MnemonoBiz();
+        return $this->updateBiz($biz, $page, $pageRaw);
+    }
+
+    /**
+     * @param MnemonoBiz $biz
+     * @param FacebookPage $page
+     * @param $pageRaw
+     * @return MnemonoBiz
+     */
+    private function updateBiz(MnemonoBiz $biz, FacebookPage $page, $pageRaw){
         $websites = array();
         if (isset($pageRaw['link'])){
             $websites[] = $pageRaw['link'];
@@ -157,5 +208,46 @@ class SyncFbPageToBizCommand extends BaseCommand{
             ->setAddress($street);
         $this->getDM()->persist($location);
         return $location;
+    }
+
+    /**
+     * @param string $fbId
+     * @return FacebookPage|null
+     */
+    private function queryPageByFbId($fbId)
+    {
+        $dm = $this->getDM();
+        $page = $dm->createQueryBuilder($this->facebookPageDocumentPath)
+            ->field("fbId")->equals($fbId)
+            ->getQuery()->getSingleResult();
+        return $page;
+    }
+
+    /**
+     * @param string $fbId
+     * @return array
+     */
+    private function queryPageRawByFbId($fbId)
+    {
+        $dm = $this->getDM();
+        $pageRaw = $dm->createQueryBuilder($this->facebookPageDocumentPath)
+            ->hydrate(false)
+            ->field("fbId")->equals($fbId)
+            ->getQuery()->getSingleResult();
+        return $pageRaw;
+    }
+
+    /**
+     * @param FacebookPage $page
+     * @return mixed
+     */
+    private function queryBizByFbPage(FacebookPage $page)
+    {
+        $dm = $this->getDM();
+        $biz = $dm->createQueryBuilder($this->mnemonoBizDocumentPath)
+            ->field("importFrom")->equals("facebookPage")
+            ->field("importFromRef")->references($page)
+            ->getQuery()->getSingleResult();
+        return $biz;
     }
 }
