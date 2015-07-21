@@ -24,7 +24,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             ->addOption('action', null,
                 InputOption::VALUE_OPTIONAL,
                 'over write current biz value with facebook page',
-                'dumpFromFb')
+                'createFromFbCollection')
             ->addOption('fromDate', null,
                 InputOption::VALUE_OPTIONAL,
                 'from date parameter, for --action=dumpFromFb',
@@ -42,15 +42,28 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
     protected function execute(InputInterface $input, OutputInterface $output){
         $action = $input->getOption('action');
-        if ($action == "dumpFromFb"){
+        if ($action == "createFromFbCollection"){
             $fromDate = $input->getOption("fromDate");
             $toDate = $input->getOption("toDate");
             $this->createPostFromFbFeedCollection($fromDate, $toDate);
+        }else if ($action == "updateFromFbCollection"){
+            $fromDate = $input->getOption("fromDate");
+            $toDate = $input->getOption("toDate");
+            $this->updatePostFromFbFeedCollection($fromDate, $toDate);
         }else if ($action == "createFromFb"){
             $fbIds = $input->getOption('fbId');
             if (!empty($fbIds)){
                 foreach ($fbIds as $fbId){
                     $this->createPostByFeedId($fbId);
+                }
+            }else{
+                $output->writeln("no fbId");
+            }
+        }else if ($action == "updateFromFb"){
+            $fbIds = $input->getOption('fbId');
+            if (!empty($fbIds)){
+                foreach ($fbIds as $fbId){
+                    $this->updatePostByFbId($fbId);
                 }
             }else{
                 $output->writeln("no fbId");
@@ -78,12 +91,73 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     }
 
     /**
+     * @param string $fromDate
+     * @param string $toDate
+     */
+    private function updatePostFromFbFeedCollection($fromDate, $toDate){
+        $dm = $this->getDM();
+        $feeds = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
+            ->field("createdTime")->gte($fromDate)
+            ->field("createdTime")->lte($toDate)
+            ->getQuery()->execute();
+
+        foreach($feeds as $feed){
+            if ($feed instanceof FacebookFeed){
+                $post = $this->queryPostByFeed($feed);
+                $this->updatePostByRef($post);
+            }
+        }
+    }
+
+    /**
+     * @param string $fbId
+     */
+    private function updatePostByFbId($fbId){
+        $feed = $this->queryFeedByFbId($fbId);
+        $post = $this->queryPostByFeed($feed);
+        $this->updatePostByRef($post);
+    }
+
+
+    /**
+     * @param Post $post
+     */
+    private function updatePostByRef(Post $post){
+        $ref = $post->getImportFromRef();
+        if ($ref instanceof FacebookFeed){
+            $post->setContent($ref->getMessage());
+            $post->setMeta($this->fbMetaBuilder($ref));
+            $this->persistPost($post);
+        }
+    }
+
+    /**
+     * @param $fbId
+     * @return FacebookFeed|null
+     */
+    private function queryFeedByFbId($fbId){
+        $feed = $this->getDM()->createQueryBuilder($this->facebookFeedDocumentPath)
+            ->field("fbId")->equals($fbId)->getQuery()->getSingleResult();
+        return $feed;
+    }
+
+    /**
+     * @param FacebookFeed $feed
+     * @return Post|null
+     */
+    private function queryPostByFeed(FacebookFeed $feed){
+        $post = $this->getDM()->createQueryBuilder($this->postDocumentPath)
+            ->field("importFrom")->equals("facebookFeed")
+            ->field("importFromRef")->references($feed)
+            ->getQuery()->getSingleResult();
+        return $post;
+    }
+
+    /**
      * @param string $fbId
      */
     private function createPostByFeedId($fbId){
-        $dm = $this->getDM();
-        $feed = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
-            ->field("fbId")->equals($fbId)->getQuery()->getSingleResult();
+        $feed = $this->queryFeedByFbId($fbId);
         if ($feed instanceof FacebookFeed){
             $post = $this->createPost($feed);
             if ($post != null){$this->persistPost($post);}
@@ -103,10 +177,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @return Post
      */
     private function createPost(FacebookFeed $feed){
-        $post = $this->getDM()->createQueryBuilder($this->postDocumentPath)
-            ->field("importFrom")->equals("facebookFeed")
-            ->field("importFromRef")->references($feed)
-            ->getQuery()->getSingleResult();
+        $post = $this->queryPostByFeed($feed);
         if ($post != null){
             return null;
         }

@@ -1,6 +1,7 @@
 ### download Composer and install project package
     curl -s http://getcomposer.org/installer | php
     php composer.phar install
+    app/console assets:install web --symlink --relative
 
 ### clear cache
     app/console cache:clear --env=prod
@@ -26,7 +27,7 @@ if you use the generator
 created by single feed
     app/console mnemono:sync:fbfeedtopost --action createFromFb --fbId xxxxxx
 created by batch
-    app/console mnemono:sync:fbfeedtopost --action dumpFromFb --fromDate 2015-06-01 --toDate 2015-06-30
+    app/console mnemono:sync:fbfeedtopost --action createFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
 
 ### create user account
     http://yourServer/app_dev.php/register
