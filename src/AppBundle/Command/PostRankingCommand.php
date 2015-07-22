@@ -30,7 +30,7 @@ class PostRankingCommand extends BaseCommand{
             foreach ($ids as $id){
                 $post = $this->getDM()->getRepository($this->postDocumentPath)
                     ->find($id);
-                $this->getPostRank($post);
+                echo $this->getPostRank($post)."\n";
             }
         }else{
             $output->writeln("no id");
@@ -39,15 +39,39 @@ class PostRankingCommand extends BaseCommand{
 
     private function getPostRank(Post $post){
         $fbFeed = $post->getImportFromRef();
+        $score = 0.0;
         if ($fbFeed instanceof FacebookFeed){
             $timestamps = $this->getDM()->getRepository($this->facebookFeedTimestampDocumentPath)
-                ->findAllByFeed($fbFeed, 10);
+                ->findAllByFeed($fbFeed, 12);
             echo "finding timestamp"."\n";
+            $likes = array();
+            $comments = array();
             foreach($timestamps as $timestamp){
                 if ($timestamp instanceof FacebookFeedTimestamp){
-                    echo $timestamp->getLikesTotalCount()."\n";
+                    $likes[] = $timestamp->getLikesTotalCount();
+                    $comments[] = $timestamp->getCommentsTotalCount();
                 }
             }
+            $tmpLikeScore = 0;
+            $tmpCommentScore = 0;
+            for ($i = 0;$i < count($likes) - 1; $i++){
+                $tmpLikeScore += ($likes[$i] - $likes[$i + 1]);
+                $tmpCommentScore += ($comments[$i] - $comments[$i+1]);
+            }
+            echo $tmpLikeScore."\n";
+            echo $tmpCommentScore."\n";
+            $score += ($tmpLikeScore * $this->getWeighting("deltaLike")
+                + $tmpCommentScore * $this->getWeighting("deltaComment"));
+            var_dump($likes);
+            var_dump($comments);
+            if (!empty($likes)){
+                $score += ($likes[0] * $this->getWeighting("totalLikes")
+                    + $comments[0] * $this->getWeighting("totalComments"));
+            }
         }
+        return $score;
+    }
+    private function getWeighting($key){
+        return 1.0;
     }
 }
