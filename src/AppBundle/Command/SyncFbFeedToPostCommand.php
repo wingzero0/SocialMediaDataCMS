@@ -146,10 +146,8 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @return Post|null
      */
     private function queryPostByFeed(FacebookFeed $feed){
-        $post = $this->getDM()->createQueryBuilder($this->postDocumentPath)
-            ->field("importFrom")->equals("facebookFeed")
-            ->field("importFromRef")->references($feed)
-            ->getQuery()->getSingleResult();
+        $post = $this->getDM()->getRepository($this->postDocumentPath)
+            ->findOneByFeed($feed);
         return $post;
     }
 

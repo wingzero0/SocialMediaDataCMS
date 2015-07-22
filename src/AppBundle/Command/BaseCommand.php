@@ -15,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class BaseCommand extends ContainerAwareCommand{
     protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
     protected $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";
+    protected $facebookFeedTimestampDocumentPath = "AppBundle:Facebook\\FacebookFeedTimestamp";
     protected $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
     protected $postDocumentPath = "AppBundle:Post";
     /**
