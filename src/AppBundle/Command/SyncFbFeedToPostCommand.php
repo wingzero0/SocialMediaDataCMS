@@ -77,17 +77,34 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      */
     private function createPostFromFbFeedCollection($fromDate, $toDate){
         $dm = $this->getDM();
-        $feeds = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
-            ->field("createdTime")->gte($fromDate)
-            ->field("createdTime")->lte($toDate)
-            ->getQuery()->execute();
+        $limit = 100;
+        $lastFeedId = null;
+        $firstRun = true;
+        do{
+            $qb = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
+                ->field("createdTime")->gte($fromDate)
+                ->field("createdTime")->lte($toDate)
+                ->limit($limit)->sort("id");
 
-        foreach($feeds as $feed){
-            if ($feed instanceof FacebookFeed){
-                $post = $this->createPost($feed);
-                if ($post != null){$this->persistPost($post);}
+            if (!$firstRun){
+               $qb->field("id")->gte($lastFeedId);
             }
-        }
+            $feeds = $qb->getQuery()->execute();
+
+            $newFeedCount = $feeds->count(true);
+            print_r($newFeedCount);
+
+            foreach($feeds as $feed){
+                if ($feed instanceof FacebookFeed){
+                    $post = $this->createPost($feed);
+                    if ($post != null){$this->persistPost($post);}
+                    $lastFeedId = $feed->getId();
+                    $post = null;
+                }
+                $feed = null;
+            }
+            $firstRun = false;
+        }while($newFeedCount > 0);
     }
 
     /**

@@ -7,13 +7,17 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class PostRepository extends DocumentRepository
 {
-    public function findAllByFeed(FacebookFeed $feed, $limit){
-        $feedTimestamps = $this->createQueryBuilder()
-            ->field("fbFeed")->references($feed)
-            ->limit($limit)
+    /**
+     * @param FacebookFeed $feed
+     * @return AppBundle\Document\Post|null
+     */
+    public function findOneByFeed(FacebookFeed $feed){
+        $post = $this->createQueryBuilder()
+            ->field("importFrom")->equals("facebookFeed")
+            ->field("importFromRef")->references($feed)
             ->sort("id", "desc")
-            ->getQuery()->execute();
+            ->getQuery()->getSingleResult();
 
-        return $feedTimestamps;
+        return $post;
     }
 }
