@@ -77,7 +77,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      */
     private function createPostFromFbFeedCollection($fromDate, $toDate){
         $dm = $this->getDM();
-        $limit = 100;
+        $limit = 10;
         $lastFeedId = null;
         $firstRun = true;
         do{
@@ -96,14 +96,15 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
             foreach($feeds as $feed){
                 if ($feed instanceof FacebookFeed){
-                    $post = $this->createPost($feed);
-                    if ($post != null){$this->persistPost($post);}
+                    //$post = $this->createPost($feed);
+                    //if ($post != null){$this->persistPost($post);}
                     $lastFeedId = $feed->getId();
                     $post = null;
                 }
                 $feed = null;
             }
             $firstRun = false;
+            $qb = null;
         }while($newFeedCount > 0);
     }
 
