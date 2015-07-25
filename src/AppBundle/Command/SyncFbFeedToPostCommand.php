@@ -77,34 +77,63 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      */
     private function createPostFromFbFeedCollection($fromDate, $toDate){
         $dm = $this->getDM();
-        $limit = 10;
+        $limit = 1;
         $lastFeedId = null;
         $firstRun = true;
+
+        $client = new \MongoClient();
+        $col = $client->selectCollection("Mnemono", "FacebookFeed");
         do{
+
+            $query = null;
+            if (!$firstRun){
+                $query = array(
+                    "created_time" => array(
+                        "\$gte" => $fromDate,
+                        "\$lte" => $toDate
+                    ),
+                    "_id" => array(
+                        "\$gt" => new \MongoId($lastFeedId)
+                    ),
+                );
+            }else{
+                $query = array(
+                    "created_time" => array(
+                        "\$gte" => $fromDate,
+                        "\$lte" => $toDate
+                    ),
+                );
+            }
+            $feeds = $col->find($query)->limit(1);
+/*
             $qb = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
                 ->field("createdTime")->gte($fromDate)
                 ->field("createdTime")->lte($toDate)
-                ->limit($limit)->sort("id");
+                ->hydrate(false)
+                ->limit($limit)->sort("id")
+
+                ;
 
             if (!$firstRun){
-               $qb->field("id")->gte($lastFeedId);
+               $qb->field("id")->gt($lastFeedId);
             }
             $feeds = $qb->getQuery()->execute();
-
+*/
             $newFeedCount = $feeds->count(true);
             print_r($newFeedCount);
-
             foreach($feeds as $feed){
                 if ($feed instanceof FacebookFeed){
                     //$post = $this->createPost($feed);
                     //if ($post != null){$this->persistPost($post);}
                     $lastFeedId = $feed->getId();
                     $post = null;
+                }else{
+                    $lastFeedId = (string) $feed["_id"];
                 }
                 $feed = null;
             }
             $firstRun = false;
-            $qb = null;
+            $dm->clear();
         }while($newFeedCount > 0);
     }
 
