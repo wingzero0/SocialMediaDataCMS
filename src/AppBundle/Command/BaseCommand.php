@@ -6,6 +6,7 @@
  */
 
 namespace AppBundle\Command;
+use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,19 +21,16 @@ abstract class BaseCommand extends ContainerAwareCommand{
     protected $postDocumentPath = "AppBundle:Post";
     private $documentManager = null;
     /**
+     * @param bool $reset
      * @return null|DocumentManager
      */
-    protected function getDM(){
-        if ($this->documentManager != null){
-            return $this->documentManager;
+    protected function getDM($reset = false){
+        if ($this->documentManager == null){
+            $this->documentManager = $this->getContainer()->get("doctrine_mongodb")->getManager();
         }
-        $dm = $this->getContainer()->get("doctrine_mongodb")->getManager();
-        if ($dm instanceof DocumentManager){
-            $this->documentManager = $dm;
-            return $this->documentManager;
-        }else{
-            echo "dm is not documentMananger"."\n";
+        if ($reset == true && $this->documentManager instanceof DocumentManager){
+            $this->documentManager = DocumentManager::create(new Connection(), $this->documentManager->getConfiguration());
         }
-        return null;
+        return $this->documentManager;
     }
 }

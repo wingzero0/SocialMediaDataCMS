@@ -10,6 +10,7 @@ namespace AppBundle\Command;
 use AppBundle\Command\BaseCommand;
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\Facebook\FacebookFeedTimestamp;
+use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -30,20 +31,34 @@ class PostRankingCommand extends BaseCommand{
             foreach ($ids as $id){
                 $post = $this->getDM()->getRepository($this->postDocumentPath)
                     ->find($id);
-                echo $this->getPostRank($post)."\n";
+                $this->updatePostLocalScore($post);
+                $this->updatePostFinalScore($post);
             }
         }else{
             $output->writeln("no id");
         }
     }
 
-    private function getPostRank(Post $post){
+    private function updatePostFinalScore(Post $post){
+        $localWeight = $this->getWeighting("localWeight");
+        $globalWeight = $this->getWeighting("globalWeight");
+        $adminWeight = $this->getWeighting("adminWeight");
+
+        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
+        $this->persistPost($post);
+        return $finalScore;
+    }
+
+    /**
+     * @param Post $post
+     * @return float|int
+     */
+    private function updatePostLocalScore(Post $post){
         $fbFeed = $post->getImportFromRef();
         $score = 0.0;
         if ($fbFeed instanceof FacebookFeed){
             $timestamps = $this->getDM()->getRepository($this->facebookFeedTimestampDocumentPath)
                 ->findAllByFeed($fbFeed, 12);
-            echo "finding timestamp"."\n";
             $likes = array();
             $comments = array();
             foreach($timestamps as $timestamp){
@@ -52,26 +67,39 @@ class PostRankingCommand extends BaseCommand{
                     $comments[] = $timestamp->getCommentsTotalCount();
                 }
             }
-            $tmpLikeScore = 0;
-            $tmpCommentScore = 0;
+            $deltaLikeScore = 0;
+            $deltaCommentScore = 0;
             for ($i = 0;$i < count($likes) - 1; $i++){
-                $tmpLikeScore += ($likes[$i] - $likes[$i + 1]);
-                $tmpCommentScore += ($comments[$i] - $comments[$i+1]);
+                $deltaLikeScore += ($likes[$i] - $likes[$i + 1]);
+                $deltaCommentScore += ($comments[$i] - $comments[$i+1]);
             }
-            echo $tmpLikeScore."\n";
-            echo $tmpCommentScore."\n";
-            $score += ($tmpLikeScore * $this->getWeighting("deltaLike")
-                + $tmpCommentScore * $this->getWeighting("deltaComment"));
-            var_dump($likes);
-            var_dump($comments);
+            $score += ($deltaLikeScore * $this->getWeighting("deltaLike")
+                + $deltaCommentScore * $this->getWeighting("deltaComment"));
             if (!empty($likes)){
                 $score += ($likes[0] * $this->getWeighting("totalLikes")
                     + $comments[0] * $this->getWeighting("totalComments"));
             }
         }
+        $post->setLocalScore($score);
+        $this->persistPost($post);
         return $score;
     }
+
+    /**
+     * @param $key
+     * @return float
+     */
     private function getWeighting($key){
+        //TODO read it from paramater table;
         return 1.0;
+    }
+
+    /**
+     * @param Post $post
+     */
+    private function persistPost(Post $post){
+        $dm = $this->getDM();
+        $dm->persist($post);
+        $dm->flush();
     }
 }

@@ -84,6 +84,11 @@ class MnemonoBiz{
     protected $lastModUser;
 
     /**
+     * @MongoDB\Float
+     */
+    protected $globalScore;
+
+    /**
      * Get id
      *
      * @return id $id
@@ -399,5 +404,30 @@ class MnemonoBiz{
     public function getLastModUser()
     {
         return $this->lastModUser;
+    }
+
+    /**
+     * Set globalScore
+     *
+     * @param float $globalScore
+     * @return self
+     */
+    public function setGlobalScore($globalScore)
+    {
+        $this->globalScore = $globalScore;
+        return $this;
+    }
+
+    /**
+     * Get globalScore
+     *
+     * @return float $globalScore
+     */
+    public function getGlobalScore()
+    {
+        if ($this->globalScore === null){
+            return 0.0;
+        }
+        return $this->globalScore;
     }
 }
