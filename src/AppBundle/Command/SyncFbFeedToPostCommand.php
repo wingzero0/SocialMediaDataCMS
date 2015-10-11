@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use AppBundle\Repository\Facebook\FacebookFeedRepository;
 
 class SyncFbFeedToPostCommand extends BaseCommand{
     protected function configure(){
@@ -113,18 +114,28 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function updatePostFromFbFeedCollection($fromDate, $toDate){
-        $dm = $this->getDM();
-        $feeds = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
-            ->field("createdTime")->gte($fromDate)
-            ->field("createdTime")->lte($toDate)
-            ->getQuery()->execute();
+        $limit = 100;
+        $lastFeedId = null;
+        $firstRun = true;
+        do {
+            $this->resetDM();
+            $qb = $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
 
-        foreach($feeds as $feed){
-            if ($feed instanceof FacebookFeed){
-                $post = $this->queryPostByFeed($feed);
-                $this->updatePostByRef($post);
+            if (!$firstRun){
+                $qb->field("id")->gt($lastFeedId);
             }
-        }
+            $feeds = $qb->getQuery()->execute();
+
+            $newFeedCount = $feeds->count(true);
+            print_r($newFeedCount);
+            //TODO consider the memory issues
+            foreach($feeds as $feed){
+                if ($feed instanceof FacebookFeed){
+                    $post = $this->queryPostByFeed($feed);
+                    $this->updatePostByRef($post);
+                }
+            }
+        }while ($newFeedCount > 0);
     }
 
     /**
@@ -222,5 +233,13 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         $meta->setFbTotalLikes($likes["summary"]["total_count"]);
         $meta->setFbTotalComments($comments["summary"]["total_count"]);
         return $meta;
+    }
+
+    /**
+     * @return FacebookFeedRepository
+     */
+    private function getFbFeedRepo(){
+        $dm = $this->getDM();
+        return $dm->getRepository($this->facebookFeedDocumentPath);
     }
 }

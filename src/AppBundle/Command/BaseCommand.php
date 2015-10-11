@@ -33,4 +33,7 @@ abstract class BaseCommand extends ContainerAwareCommand{
         }
         return $this->documentManager;
     }
+    protected function resetDM(){
+        $this->getDM(true);
+    }
 }
