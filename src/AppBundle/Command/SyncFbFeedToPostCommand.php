@@ -77,36 +77,12 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function createPostFromFbFeedCollection($fromDate, $toDate){
-        $limit = 100;
-        $lastFeedId = null;
-        $firstRun = true;
-
-        do{
-            $dm = $this->getDM(true);
-            $qb = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
-                ->field("createdTime")->gte($fromDate)
-                ->field("createdTime")->lte($toDate)
-                ->limit($limit)->sort("id")
-                ;
-
-            if (!$firstRun){
-               $qb->field("id")->gt($lastFeedId);
+        $this->loopFbFeedCollection($fromDate, $toDate,
+            function(FacebookFeed $feed){
+                $post = $this->createPost($feed);
+                if ($post != null){$this->persistPost($post);}
             }
-            $feeds = $qb->getQuery()->execute();
-
-            $newFeedCount = $feeds->count(true);
-            print_r($newFeedCount);
-            foreach($feeds as $feed){
-                if ($feed instanceof FacebookFeed){
-                    $post = $this->createPost($feed);
-                    if ($post != null){$this->persistPost($post);}
-                    $lastFeedId = $feed->getId();
-                }else{
-                    $newFeedCount = -1; //something go wrong;
-                }
-            }
-            $firstRun = false;
-        }while($newFeedCount > 0);
+        );
     }
 
     /**
@@ -114,10 +90,22 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function updatePostFromFbFeedCollection($fromDate, $toDate){
+        $this->loopFbFeedCollection($fromDate, $toDate,
+            function(FacebookFeed $feed) {
+                $post = $this->queryPostByFeed($feed);
+                if ($post instanceof Post) {
+                    $this->updatePostByRef($post);
+                }
+            }
+        );
+    }
+
+    private function loopFbFeedCollection($fromDate, $toDate, $callBack){
         $limit = 100;
         $lastFeedId = null;
         $firstRun = true;
-        do {
+
+        do{
             $this->resetDM();
             $qb = $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
 
@@ -128,14 +116,16 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
             $newFeedCount = $feeds->count(true);
             print_r($newFeedCount);
-            //TODO consider the memory issues
             foreach($feeds as $feed){
                 if ($feed instanceof FacebookFeed){
-                    $post = $this->queryPostByFeed($feed);
-                    $this->updatePostByRef($post);
+                    $callBack($feed);
+                    $lastFeedId = $feed->getId();
+                }else{
+                    $newFeedCount = -1; //something go wrong;
                 }
             }
-        }while ($newFeedCount > 0);
+            $firstRun = false;
+        }while($newFeedCount > 0);
     }
 
     /**
@@ -201,7 +191,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
     /**
      * @param FacebookFeed $feed
-     * @return Post
+     * @return Post|null
      */
     private function createPost(FacebookFeed $feed){
         $post = $this->queryPostByFeed($feed);

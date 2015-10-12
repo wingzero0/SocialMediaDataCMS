@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 
 /**
- * @MongoDB\Document(collection="FacebookFeed")
+ * @MongoDB\Document(collection="FacebookFeed", repositoryClass="AppBundle\Repository\Facebook\FacebookFeedRepository")
  * @ExclusionPolicy("none")
  */
 class FacebookFeed {

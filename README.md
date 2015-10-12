@@ -21,13 +21,17 @@ if you use the generator
     app/console doctrine:mongodb:fixtures:load
 
 ### create MnemonoBiz by FacebookPage
+created by single fans page
     app/console mnemono:sync:fbpagetobiz --action createFromFb --fbId xxxxx
+created by batch
+    app/console mnemono:sync:fbpagetobiz --action createFromFbCollection
 
 ### create Post by FacebookFeed
 created by single feed
     app/console mnemono:sync:fbfeedtopost --action createFromFb --fbId xxxxxx
-created by batch
+By batch
     app/console mnemono:sync:fbfeedtopost --action createFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
+    app/console mnemono:sync:fbfeedtopost --action updateFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
 
 ### create user account
     http://yourServer/app_dev.php/register
