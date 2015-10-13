@@ -11,6 +11,7 @@ namespace AppBundle\Command;
 use AppBundle\Document\Facebook\FacebookPage;
 use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
+use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Command\BaseCommand;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,44 +59,47 @@ class SyncFbPageToBizCommand extends BaseCommand{
 
     }
     private function updateBizFromFbPageCollection(){
-        $dm = $this->getDM();
-        $skip = 0;
-        $limit = 10;
-        do{
-            $pages = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-                ->field("exception")->notEqual(true)
-                ->limit($limit)->skip($skip)
-                ->getQuery()->execute();
-            $fetchCount = $pages->count(true);
-            if ($fetchCount > 0){
-                foreach($pages as $page){
-                    if ($page instanceof FacebookPage){
-                        $this->updateBizByFbPage($page->getFbId());
-                    }
-                    $skip++;
-                }
+        $this->loopFbPageCollection(
+            function (FacebookPage $page){
+                $this->updateBizByFbPage($page->getFbId());
             }
-        }while($fetchCount > 0);
+        );
     }
     private function createBizFromFbPageCollection(){
-        $dm = $this->getDM();
-        $skip = 0;
-        $limit = 10;
+        $this->loopFbPageCollection(
+            function(FacebookPage $page){
+                $this->createBizByFbPage($page->getFbId());
+            }
+        );
+
+    }
+
+    private function loopFbPageCollection($callBack){
+        $limit = 100;
+        $lastPageId = null;
+        $firstRun = true;
+
         do{
-            $pages = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-                ->field("exception")->notEqual(true)
-                ->limit($limit)->skip($skip)
-                ->getQuery()->execute();
-            $newAdd = $pages->count(true);
-            if ($newAdd > 0){
-                foreach($pages as $page){
-                    if ($page instanceof FacebookPage){
-                        $this->createBizByFbPage($page->getFbId());
-                    }
-                    $skip++;
+            $this->resetDM();
+            $qb = $this->getFbPageRepo()->getQueryBuilder($limit);
+
+            if (!$firstRun){
+                $qb->field("id")->gt($lastPageId);
+            }
+            $pages = $qb->getQuery()->execute();
+
+            $newPageCount = $pages->count(true);
+
+            foreach($pages as $page){
+                if ($page instanceof FacebookPage){
+                    $callBack($page);
+                    $lastPageId = $page->getId();
+                }else{
+                    $newPageCount = -1;
                 }
             }
-        }while($newAdd > 0);
+            $firstRun = false;
+        }while($newPageCount > 0);
     }
 
     private function updateBizByFbPage($fbId){
@@ -249,5 +253,12 @@ class SyncFbPageToBizCommand extends BaseCommand{
             ->field("importFromRef")->references($page)
             ->getQuery()->getSingleResult();
         return $biz;
+    }
+
+    /**
+     * @return FacebookPageRepository
+     */
+    private function getFbPageRepo(){
+        return $this->getDM()->getRepository($this->facebookPageDocumentPath);
     }
 }
