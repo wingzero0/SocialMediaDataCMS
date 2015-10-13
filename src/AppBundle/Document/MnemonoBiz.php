@@ -32,10 +32,12 @@ class MnemonoBiz{
     protected $longDesc;
     /**
      * @MongoDB\String
+     * @MongoDB\Index
      */
     protected $category;
     /**
      * @MongoDB\Collection
+     * @MongoDB\Index
      */
     protected $tags;
     /**

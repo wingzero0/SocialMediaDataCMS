@@ -27,10 +27,12 @@ class Post extends BaseThread{
     protected $id;
     /**
      * @MongoDB\Collection
+     * @MongoDB\Index
      */
     protected $tags;
     /**
      * @MongoDB\String
+     * @MongoDB\Index
      */
     protected $mnemonoCat;
     /**
@@ -47,6 +49,7 @@ class Post extends BaseThread{
     protected $rankingScoreHuman;
     /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\MnemonoBiz")
+     * @MongoDB\Index
      */
     protected $mnemonoBiz;
     /**
@@ -62,6 +65,7 @@ class Post extends BaseThread{
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
+     * @MongoDB\Index
      */
     protected $importFromRef;
     /**

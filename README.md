@@ -25,6 +25,7 @@ created by single fans page
     app/console mnemono:sync:fbpagetobiz --action createFromFb --fbId xxxxx
 created by batch
     app/console mnemono:sync:fbpagetobiz --action createFromFbCollection
+    app/console mnemono:sync:fbpagetobiz --action updateFromFbCollection
 
 ### create Post by FacebookFeed
 created by single feed
