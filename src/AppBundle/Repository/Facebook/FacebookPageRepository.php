@@ -9,6 +9,7 @@
 namespace AppBundle\Repository\Facebook;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use AppBundle\Document\Facebook\FacebookPage;
 
 class FacebookPageRepository extends DocumentRepository{
     /**
@@ -20,6 +21,19 @@ class FacebookPageRepository extends DocumentRepository{
             ->field("exception")->notEqual(true)
             ->limit($limit)->sort("id");
         return $qb;
+    }
+
+    /**
+     * @return FacebookPage|null
+     */
+    public function findOneById($id){
+        $qb = $this->getQueryBuilder(1)
+            ->field("id")->equals($id);
+        $cursor = $qb->getQuery()->execute();
+        foreach($cursor as $fbPage){
+            return $fbPage;
+        }
+        return null;
     }
 
 }

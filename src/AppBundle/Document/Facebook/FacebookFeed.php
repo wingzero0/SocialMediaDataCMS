@@ -101,28 +101,6 @@ class FacebookFeed {
     }
 
     /**
-     * Set commentTotalCount
-     *
-     * @param int $commentTotalCount
-     * @return self
-     */
-    public function setCommentTotalCount($commentTotalCount)
-    {
-        $this->commentTotalCount = $commentTotalCount;
-        return $this;
-    }
-
-    /**
-     * Get commentTotalCount
-     *
-     * @return int $commentTotalCount
-     */
-    public function getCommentTotalCount()
-    {
-        return $this->commentTotalCount;
-    }
-
-    /**
      * Set likes
      *
      * @param raw $likes
@@ -145,6 +123,18 @@ class FacebookFeed {
     }
 
     /**
+     * @return int
+     */
+    public function getLikesTotalCount()
+    {
+        $likesRaw = $this->getLikes();
+        if (isset($likesRaw["summary"]) && isset($likesRaw["summary"]["total_count"])){
+            return intval($likesRaw["summary"]["total_count"]);
+        }
+        return 0;
+    }
+
+    /**
      * Set comments
      *
      * @param raw $comments
@@ -164,6 +154,18 @@ class FacebookFeed {
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCommentsTotalCount()
+    {
+        $commentsRaw = $this->getComments();
+        if (isset($commentsRaw["summary"]) && isset($commentsRaw["summary"]["total_count"])){
+            return intval($commentsRaw["summary"]["total_count"]);
+        }
+        return 0;
     }
 
     /**

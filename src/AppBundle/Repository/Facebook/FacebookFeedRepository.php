@@ -7,7 +7,7 @@
 
 namespace AppBundle\Repository\Facebook;
 
-use AppBundle\Document\Facebook\FacebookFeed;
+use AppBundle\Document\Facebook\FacebookPage;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class FacebookFeedRepository extends DocumentRepository{
@@ -22,6 +22,20 @@ class FacebookFeedRepository extends DocumentRepository{
             ->field("createdTime")->gte($fromDate)
             ->field("createdTime")->lte($toDate)
             ->limit($limit)->sort("id")
+        ;
+        return $qb;
+    }
+
+    /**
+     * @param FacebookPage $fbPage
+     * @param string $fromDate
+     * @param string $toDate
+     * @param int $limit
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
+    public function getQueryBuilderByPageAndDateRange(FacebookPage $fbPage, $fromDate, $toDate, $limit = 100){
+        $qb = $this->getQueryBuilderByDateRange($fromDate, $toDate, $limit)
+            ->field("fbPage")->references($fbPage)
         ;
         return $qb;
     }

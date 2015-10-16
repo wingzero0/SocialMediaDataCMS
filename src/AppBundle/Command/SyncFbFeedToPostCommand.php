@@ -224,12 +224,4 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         $meta->setFbTotalComments($comments["summary"]["total_count"]);
         return $meta;
     }
-
-    /**
-     * @return FacebookFeedRepository
-     */
-    private function getFbFeedRepo(){
-        $dm = $this->getDM();
-        return $dm->getRepository($this->facebookFeedDocumentPath);
-    }
 }

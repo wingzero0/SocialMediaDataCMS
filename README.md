@@ -36,3 +36,6 @@ By batch
 
 ### create user account
     http://yourServer/app_dev.php/register
+
+### create collection and index (remove the post embedded attribute first)
+    app/console doctrine:mongodb:schema:create
