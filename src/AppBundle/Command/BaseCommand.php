@@ -15,11 +15,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\MongoDB\Query\Builder;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use AppBundle\Repository\Settings\WeightingRepository;
 
 abstract class BaseCommand extends ContainerAwareCommand{
     protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
     protected $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";
     protected $facebookFeedTimestampDocumentPath = "AppBundle:Facebook\\FacebookFeedTimestamp";
+    protected $weightingDocumentPath = "AppBundle:Settings\\Weighting";
     protected $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
     protected $postDocumentPath = "AppBundle:Post";
     private $documentManager = null;
@@ -84,5 +86,11 @@ abstract class BaseCommand extends ContainerAwareCommand{
      */
     protected function getFbFeedRepo(){
         return $this->getDM()->getRepository($this->facebookFeedDocumentPath);
+    }
+    /**
+     * @return WeightingRepository
+     */
+    protected function getWeightingRepo(){
+        return $this->getDM()->getRepository($this->weightingDocumentPath);
     }
 }

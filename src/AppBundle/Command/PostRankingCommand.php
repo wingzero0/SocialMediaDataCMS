@@ -90,8 +90,11 @@ class PostRankingCommand extends BaseCommand{
      * @return float
      */
     private function getWeighting($key){
-        //TODO read it from paramater table;
-        return 1.0;
+        $value = $this->getWeightingRepo()->findOneByName($key);
+        if ($value == null){
+            return 1.0;
+        }
+        return $value;
     }
 
     /**
