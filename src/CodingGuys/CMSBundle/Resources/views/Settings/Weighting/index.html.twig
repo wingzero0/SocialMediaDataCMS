@@ -1,0 +1,38 @@
+{% extends "CodingGuysCMSBundle:Settings:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        th, li{
+            white-space: nowrap;
+        }
+        ul{
+            padding: 0;
+            list-style-type: none;
+        }
+    </style>
+    <div class="container">
+        <h1 class="page-header"><strong>Settings</strong></h1>
+        <div class="navbar-header">
+            <a class="btn btn-primary btn-large" href="{{ path('weighting_create') }}"> Create Weighting </a>
+        </div>
+        <table class="records_list table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for document in pagination %}
+                <tr>
+                    <td><a href="{{ document.id }}">{{ document.name }}</a></td>
+                    <td>{{ document.value }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+{% endblock %}

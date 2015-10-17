@@ -9,14 +9,28 @@ namespace CodingGuys\CMSBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Knp\Component\Pager\Paginator;
+use AppBundle\Repository\Settings\WeightingRepository;
 
 class CMSBaseController extends Controller{
-    protected function retError($responseType, $message){
-        $retData = array("ret" => "0", "message" => $message);
-        if ($responseType == "json"){
-            return new JsonResponse($retData);
-        }else{
-            return $this->render('AppBundle:Default:404.html.twig', $retData);
-        }
+
+    /**
+     * @return DocumentManager
+     */
+    protected function getDM(){
+        return $this->get('doctrine_mongodb')->getManager();
+    }
+    /**
+     * @return Paginator
+     */
+    protected function getKnpPaginator(){
+        return $this->get('knp_paginator');
+    }
+    /**
+     * @return WeightingRepository
+     */
+    protected function getWeightingRepo(){
+        return $this->getDM()->getRepository("AppBundle:Settings\\Weighting");
     }
 }

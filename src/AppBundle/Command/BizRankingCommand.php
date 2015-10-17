@@ -63,10 +63,11 @@ class BizRankingCommand extends BaseCommand{
         }
         echo "feedCount:". $feedCount."\n";
         $avgLike /= $feedCount;
-        echo "avgLike:". $avgLike."\n";
+        echo "avgLikes:". $avgLike."\n";
         $avgComment /= $feedCount;
-        echo "avgComment:".$avgComment."\n";
-        $biz->setGlobalScore($avgLike / 10 + $avgComment);
+        echo "avgComments:".$avgComment."\n";
+        $globalScore = $avgLike * $this->getWeighting("avgLikes") + $avgComment * $this->getWeighting("avgComments");
+        $biz->setGlobalScore($globalScore);
         $this->getDM()->persist($page);
         $this->getDM()->persist($biz);
         $this->getDM()->flush();
@@ -95,5 +96,16 @@ class BizRankingCommand extends BaseCommand{
         $fromDate = clone $toDate;
         $fromDate->sub(new \DateInterval('P'.$windowSize.'D'));
         return array($fromDate->format(\DateTime::ISO8601), $toDate->format(\DateTime::ISO8601));
+    }
+    /**
+     * @param $key
+     * @return float
+     */
+    private function getWeighting($key){
+        $weighting = $this->getWeightingRepo()->findOneByName($key);
+        if ($weighting == null){
+            return 1.0;
+        }
+        return $weighting->getValue();
     }
 }

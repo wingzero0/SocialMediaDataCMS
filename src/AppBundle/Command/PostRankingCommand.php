@@ -73,8 +73,8 @@ class PostRankingCommand extends BaseCommand{
                 $deltaLikeScore += ($likes[$i] - $likes[$i + 1]);
                 $deltaCommentScore += ($comments[$i] - $comments[$i+1]);
             }
-            $score += ($deltaLikeScore * $this->getWeighting("deltaLike")
-                + $deltaCommentScore * $this->getWeighting("deltaComment"));
+            $score += ($deltaLikeScore * $this->getWeighting("deltaLikes")
+                + $deltaCommentScore * $this->getWeighting("deltaComments"));
             if (!empty($likes)){
                 $score += ($likes[0] * $this->getWeighting("totalLikes")
                     + $comments[0] * $this->getWeighting("totalComments"));
@@ -90,11 +90,11 @@ class PostRankingCommand extends BaseCommand{
      * @return float
      */
     private function getWeighting($key){
-        $value = $this->getWeightingRepo()->findOneByName($key);
-        if ($value == null){
+        $weighting = $this->getWeightingRepo()->findOneByName($key);
+        if ($weighting == null){
             return 1.0;
         }
-        return $value;
+        return $weighting->getValue();
     }
 
     /**
