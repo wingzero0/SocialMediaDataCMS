@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use AppBundle\Repository\Facebook\FacebookFeedRepository;
 
 class SyncFbFeedToPostCommand extends BaseCommand{
     protected function configure(){
@@ -76,18 +77,12 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function createPostFromFbFeedCollection($fromDate, $toDate){
-        $dm = $this->getDM();
-        $feeds = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
-            ->field("createdTime")->gte($fromDate)
-            ->field("createdTime")->lte($toDate)
-            ->getQuery()->execute();
-
-        foreach($feeds as $feed){
-            if ($feed instanceof FacebookFeed){
+        $this->loopFbFeedCollection($fromDate, $toDate,
+            function(FacebookFeed $feed){
                 $post = $this->createPost($feed);
                 if ($post != null){$this->persistPost($post);}
             }
-        }
+        );
     }
 
     /**
@@ -95,18 +90,42 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function updatePostFromFbFeedCollection($fromDate, $toDate){
-        $dm = $this->getDM();
-        $feeds = $dm->createQueryBuilder($this->facebookFeedDocumentPath)
-            ->field("createdTime")->gte($fromDate)
-            ->field("createdTime")->lte($toDate)
-            ->getQuery()->execute();
-
-        foreach($feeds as $feed){
-            if ($feed instanceof FacebookFeed){
+        $this->loopFbFeedCollection($fromDate, $toDate,
+            function(FacebookFeed $feed) {
                 $post = $this->queryPostByFeed($feed);
-                $this->updatePostByRef($post);
+                if ($post instanceof Post) {
+                    $this->updatePostByRef($post);
+                }
             }
-        }
+        );
+    }
+
+    private function loopFbFeedCollection($fromDate, $toDate, $callBack){
+        $limit = 100;
+        $lastFeedId = null;
+        $firstRun = true;
+
+        do{
+            $this->resetDM();
+            $qb = $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
+
+            if (!$firstRun){
+                $qb->field("id")->gt($lastFeedId);
+            }
+            $feeds = $qb->getQuery()->execute();
+
+            $newFeedCount = $feeds->count(true);
+            print_r($newFeedCount);
+            foreach($feeds as $feed){
+                if ($feed instanceof FacebookFeed){
+                    $callBack($feed);
+                    $lastFeedId = $feed->getId();
+                }else{
+                    $newFeedCount = -1; //something go wrong;
+                }
+            }
+            $firstRun = false;
+        }while($newFeedCount > 0);
     }
 
     /**
@@ -146,10 +165,8 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @return Post|null
      */
     private function queryPostByFeed(FacebookFeed $feed){
-        $post = $this->getDM()->createQueryBuilder($this->postDocumentPath)
-            ->field("importFrom")->equals("facebookFeed")
-            ->field("importFromRef")->references($feed)
-            ->getQuery()->getSingleResult();
+        $post = $this->getDM()->getRepository($this->postDocumentPath)
+            ->findOneByFeed($feed);
         return $post;
     }
 
@@ -174,7 +191,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
     /**
      * @param FacebookFeed $feed
-     * @return Post
+     * @return Post|null
      */
     private function createPost(FacebookFeed $feed){
         $post = $this->queryPostByFeed($feed);

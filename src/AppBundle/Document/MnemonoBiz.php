@@ -32,10 +32,12 @@ class MnemonoBiz{
     protected $longDesc;
     /**
      * @MongoDB\String
+     * @MongoDB\Index
      */
     protected $category;
     /**
      * @MongoDB\Collection
+     * @MongoDB\Index
      */
     protected $tags;
     /**
@@ -82,6 +84,11 @@ class MnemonoBiz{
      * @MongoDB\ReferenceOne(targetDocument="User")
      */
     protected $lastModUser;
+
+    /**
+     * @MongoDB\Float
+     */
+    protected $globalScore;
 
     /**
      * Get id
@@ -399,5 +406,30 @@ class MnemonoBiz{
     public function getLastModUser()
     {
         return $this->lastModUser;
+    }
+
+    /**
+     * Set globalScore
+     *
+     * @param float $globalScore
+     * @return self
+     */
+    public function setGlobalScore($globalScore)
+    {
+        $this->globalScore = $globalScore;
+        return $this;
+    }
+
+    /**
+     * Get globalScore
+     *
+     * @return float $globalScore
+     */
+    public function getGlobalScore()
+    {
+        if ($this->globalScore === null){
+            return 0.0;
+        }
+        return $this->globalScore;
     }
 }

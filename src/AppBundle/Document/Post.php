@@ -7,6 +7,7 @@
 
 namespace AppBundle\Document;
 
+use AppBundle\Document\MnemonoBiz;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use FOS\CommentBundle\Document\Thread as BaseThread;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -15,7 +16,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 
 /**
- * @MongoDB\Document(collection="Post")
+ * @MongoDB\Document(collection="Post", repositoryClass="AppBundle\Repository\PostRepository")
  * @MongoDB\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ExclusionPolicy("none")
  */
@@ -26,10 +27,12 @@ class Post extends BaseThread{
     protected $id;
     /**
      * @MongoDB\Collection
+     * @MongoDB\Index
      */
     protected $tags;
     /**
      * @MongoDB\String
+     * @MongoDB\Index
      */
     protected $mnemonoCat;
     /**
@@ -46,6 +49,7 @@ class Post extends BaseThread{
     protected $rankingScoreHuman;
     /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\MnemonoBiz")
+     * @MongoDB\Index
      */
     protected $mnemonoBiz;
     /**
@@ -61,6 +65,7 @@ class Post extends BaseThread{
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
+     * @MongoDB\Index
      */
     protected $importFromRef;
     /**
@@ -82,6 +87,27 @@ class Post extends BaseThread{
      * @MongoDB\String
      */
     protected $content;
+    /**
+     * @MongoDB\Float
+     */
+    protected $adminScore;
+    /**
+     * @MongoDB\Float
+     */
+    protected $localScore;
+    /**
+     * @MongoDB\Float
+     */
+    protected $finalScore;
+
+    public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
+        $global = $this->getMnemonoBiz()->getGlobalScore();
+        $local = $this->getLocalScore();
+        $admin = $this->getAdminScore();
+        $finalScore = $globalWeight * $global + $localWeight * $local + $adminWeight * $admin;
+        $this->setFinalScore( $finalScore );
+        return $finalScore;
+    }
 
     /**
      * Get id
@@ -196,7 +222,7 @@ class Post extends BaseThread{
     /**
      * Get mnemonoBiz
      *
-     * @return AppBundle\Document\MnemonoBiz $mnemonoBiz
+     * @return MnemonoBiz $mnemonoBiz
      */
     public function getMnemonoBiz()
     {
@@ -333,5 +359,74 @@ class Post extends BaseThread{
     public function getPublishStatus()
     {
         return $this->publishStatus;
+    }
+
+    /**
+     * Set localScore
+     *
+     * @param float $localScore
+     * @return self
+     */
+    public function setLocalScore($localScore)
+    {
+        $this->localScore = $localScore;
+        return $this;
+    }
+
+    /**
+     * Get localScore
+     *
+     * @return float $localScore
+     */
+    public function getLocalScore()
+    {
+        return $this->localScore;
+    }
+
+    /**
+     * Set adminScore
+     *
+     * @param float $adminScore
+     * @return self
+     */
+    public function setAdminScore($adminScore)
+    {
+        $this->adminScore = $adminScore;
+        return $this;
+    }
+
+    /**
+     * Get adminScore
+     *
+     * @return float $adminScore
+     */
+    public function getAdminScore()
+    {
+        if ($this->adminScore === null){
+            return 0.0;
+        }
+        return $this->adminScore;
+    }
+
+    /**
+     * Set finalScore
+     *
+     * @param float $finalScore
+     * @return self
+     */
+    public function setFinalScore($finalScore)
+    {
+        $this->finalScore = $finalScore;
+        return $this;
+    }
+
+    /**
+     * Get finalScore
+     *
+     * @return float $finalScore
+     */
+    public function getFinalScore()
+    {
+        return $this->finalScore;
     }
 }
