@@ -183,6 +183,11 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
     private function persistPost(Post $post){
         $dm = $this->getDM();
+        $timing = new \DateTime();
+        if (!$post->getId()){
+            $post->setCreateAt($timing);
+        }
+        $post->setUpdateAt($timing);
         $dm->persist($post->getMeta());
         $dm->persist($post);
         $dm->flush();

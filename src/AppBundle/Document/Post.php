@@ -81,8 +81,8 @@ class Post extends BaseThread{
     /**
      * @MongoDB\String
      */
-    // passible value: draft(by use), review(by admin), published,
     protected $publishStatus;
+    // passible value: draft(by use), review(by admin), published,
     /**
      * @MongoDB\String
      */
@@ -99,6 +99,21 @@ class Post extends BaseThread{
      * @MongoDB\Float
      */
     protected $finalScore;
+    /**
+     * @MongoDB\Date
+     */
+    protected $createAt;
+    /**
+     * @MongoDB\Date
+     */
+    protected $updateAt;
+
+    /**
+     * @MongoDB\Boolean
+     * @MongoDB\Index
+     */
+    protected $spotlight;
+
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
         $global = $this->getMnemonoBiz()->getGlobalScore();
@@ -428,5 +443,71 @@ class Post extends BaseThread{
     public function getFinalScore()
     {
         return $this->finalScore;
+    }
+
+    /**
+     * Set createAt
+     *
+     * @param date $createAt
+     * @return self
+     */
+    public function setCreateAt($createAt)
+    {
+        $this->createAt = $createAt;
+        return $this;
+    }
+
+    /**
+     * Get createAt
+     *
+     * @return date $createAt
+     */
+    public function getCreateAt()
+    {
+        return $this->createAt;
+    }
+
+    /**
+     * Set updateAt
+     *
+     * @param date $updateAt
+     * @return self
+     */
+    public function setUpdateAt($updateAt)
+    {
+        $this->updateAt = $updateAt;
+        return $this;
+    }
+
+    /**
+     * Get updateAt
+     *
+     * @return date $updateAt
+     */
+    public function getUpdateAt()
+    {
+        return $this->updateAt;
+    }
+
+    /**
+     * Set spotlight
+     *
+     * @param boolean $spotlight
+     * @return self
+     */
+    public function setSpotlight($spotlight)
+    {
+        $this->spotlight = $spotlight;
+        return $this;
+    }
+
+    /**
+     * Get spotlight
+     *
+     * @return boolean $spotlight
+     */
+    public function getSpotlight()
+    {
+        return $this->spotlight;
     }
 }
