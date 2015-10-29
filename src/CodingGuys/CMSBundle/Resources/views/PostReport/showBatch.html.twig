@@ -1,0 +1,13 @@
+{% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
+
+{% block mainContent %}
+    <p>{{ count }}</p>
+    <table>
+        {% for pr in postForReview %}
+            <tr><td>{{ pr.rankPosition }}</td>
+                <td>{{ pr.post.finalScore }}</td>
+                </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

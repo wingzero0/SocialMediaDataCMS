@@ -44,6 +44,7 @@ class PreprocessPostReportCommand extends BaseCommand{
         $batchNo = $tmp->sec;
 
         foreach ($this->allBiz as $biz){
+            // TODO should control biz order
             $this->process($biz, $batchNo);
         }
     }
@@ -89,7 +90,10 @@ class PreprocessPostReportCommand extends BaseCommand{
      */
     private function getPostQueryBuilder(MnemonoBiz $biz, $limit, $skip){
         $postRepo = $this->getPostRepo();
-        return $postRepo->getQueryBuilderFindAllByBizAndDateRange($biz, $this->startDate, $this->endDate, $limit, $skip);
+        return $postRepo->getQueryBuilderFindAllByBizAndDateRange($biz, $this->startDate, $this->endDate, $limit, $skip)
+            ->field("finalScore")->exists(true)
+            ->field("finalScore")->notEqual(null)
+            ->sort("finalScore", "desc");
     }
 
     /**

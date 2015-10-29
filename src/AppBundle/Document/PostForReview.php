@@ -14,7 +14,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 
 /**
- * @MongoDB\Document(collection="PostForReview")
+ * @MongoDB\Document(collection="PostForReview", repositoryClass="AppBundle\Repository\PostForReviewRepository")
  * @MongoDB\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ExclusionPolicy("none")
  */
