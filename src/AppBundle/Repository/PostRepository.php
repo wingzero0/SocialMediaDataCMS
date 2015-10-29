@@ -20,4 +20,19 @@ class PostRepository extends DocumentRepository
 
         return $post;
     }
+
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param int $limit
+     * @param int $skip
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
+    public function getQueryBuilderFindAllFeedByDateRange(\DateTime $startDate, \DateTime $endDate, $limit = 100, $skip = 0){
+        $qb = $this->createQueryBuilder()
+            ->field("updateAt")->gte($startDate)
+            ->field("updateAt")->lte($endDate)
+            ->skip($skip)->limit($limit);
+        return $qb;
+    }
 }
