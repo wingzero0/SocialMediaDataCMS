@@ -97,6 +97,7 @@ class Post extends BaseThread{
     protected $localScore;
     /**
      * @MongoDB\Float
+     * @MongoDB\Index
      */
     protected $finalScore;
     /**
@@ -105,6 +106,7 @@ class Post extends BaseThread{
     protected $createAt;
     /**
      * @MongoDB\Date
+     * @MongoDB\Index
      */
     protected $updateAt;
 

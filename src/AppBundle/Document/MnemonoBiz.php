@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 
 /**
- * @MongoDB\Document(collection="MnemonoBiz")
+ * @MongoDB\Document(collection="MnemonoBiz", repositoryClass="AppBundle\Repository\MnemonoBizRepository"))
  * @ExclusionPolicy("none")
  */
 class MnemonoBiz{
@@ -89,6 +89,12 @@ class MnemonoBiz{
      * @MongoDB\Float
      */
     protected $globalScore;
+
+    /**
+     * @MongoDB\Date
+     * @MongoDB\Index
+     */
+    protected $lastPostUpdateAt;
 
     /**
      * Get id
@@ -431,5 +437,29 @@ class MnemonoBiz{
             return 0.0;
         }
         return $this->globalScore;
+    }
+
+    /**
+     * Set lastPostUpdateAt
+     *
+     * @param \DateTime $lastPostUpdateAt
+     * @return self
+     */
+    public function setLastPostUpdateAt(\DateTime $lastPostUpdateAt)
+    {
+        if ($this->lastPostUpdateAt == null || $lastPostUpdateAt > $this->lastPostUpdateAt){
+            $this->lastPostUpdateAt = $lastPostUpdateAt;
+        }
+        return $this;
+    }
+
+    /**
+     * Get lastPostUpdateAt
+     *
+     * @return date $lastPostUpdateAt
+     */
+    public function getLastPostUpdateAt()
+    {
+        return $this->lastPostUpdateAt;
     }
 }

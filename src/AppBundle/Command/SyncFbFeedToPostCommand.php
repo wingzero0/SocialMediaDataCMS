@@ -188,6 +188,9 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             $post->setCreateAt($timing);
         }
         $post->setUpdateAt($timing);
+        $biz = $post->getMnemonoBiz();
+        $biz->setLastPostUpdateAt($timing);
+        $dm->persist($biz);
         $dm->persist($post->getMeta());
         $dm->persist($post);
         $dm->flush();

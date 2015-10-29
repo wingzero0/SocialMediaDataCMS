@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Document\Facebook\FacebookFeed;
+use AppBundle\Document\MnemonoBiz;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class PostRepository extends DocumentRepository
@@ -22,14 +23,16 @@ class PostRepository extends DocumentRepository
     }
 
     /**
+     * @param MnemonoBiz $biz
      * @param \DateTime $startDate
      * @param \DateTime $endDate
      * @param int $limit
      * @param int $skip
      * @return \Doctrine\MongoDB\Query\Builder
      */
-    public function getQueryBuilderFindAllFeedByDateRange(\DateTime $startDate, \DateTime $endDate, $limit = 100, $skip = 0){
+    public function getQueryBuilderFindAllByBizAndDateRange(MnemonoBiz $biz, \DateTime $startDate, \DateTime $endDate, $limit = 100, $skip = 0){
         $qb = $this->createQueryBuilder()
+            ->field("mnemonoBiz")->references($biz)
             ->field("updateAt")->gte($startDate)
             ->field("updateAt")->lte($endDate)
             ->skip($skip)->limit($limit);

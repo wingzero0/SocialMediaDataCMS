@@ -17,6 +17,7 @@ use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostRepository;
+use AppBundle\Repository\MnemonoBizRepository;
 
 abstract class BaseCommand extends ContainerAwareCommand{
     protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
@@ -121,5 +122,11 @@ abstract class BaseCommand extends ContainerAwareCommand{
      */
     protected function getPostRepo(){
         return $this->getDM()->getRepository($this->postDocumentPath);
+    }
+    /**
+     * @return MnemonoBizRepository
+     */
+    protected function getMnemenoBizRepo(){
+        return $this->getDM()->getRepository($this->mnemonoBizDocumentPath);
     }
 }
