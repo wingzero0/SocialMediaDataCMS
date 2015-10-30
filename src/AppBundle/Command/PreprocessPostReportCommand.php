@@ -66,6 +66,7 @@ class PreprocessPostReportCommand extends BaseCommand{
                 $postR->setPost($post);
                 $postR->setBatch($batchNo);
                 $postR->setRankPosition($i);
+                $postR->setRankScore($post->getFinalScore());
                 $postR->setTags($post->getTags());
                 $dm->merge($postR);
                 $dm->flush();

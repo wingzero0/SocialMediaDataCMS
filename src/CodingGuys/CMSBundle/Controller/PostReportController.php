@@ -36,7 +36,9 @@ class PostReportController extends CMSBaseController{
      */
     public function showBatchAction(Request $request, $batchId){
         $qb = $this->getPostForReviewRepo()->getQueryBuilderFindByBatch(intval($batchId));
-        $postForReview = $qb->limit(100)->sort("rankPosition")->getQuery()->execute();
+        $postForReview = $qb->limit(100)->sort(
+            array("rankPosition" => "asc", "rankScore" => "desc")
+        )->getQuery()->execute();
         return array("postForReview" => $postForReview, "count" => $postForReview->count());
     }
 }

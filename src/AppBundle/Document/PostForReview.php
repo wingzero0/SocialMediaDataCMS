@@ -17,6 +17,12 @@ use JMS\Serializer\Annotation\Since;
  * @MongoDB\Document(collection="PostForReview", repositoryClass="AppBundle\Repository\PostForReviewRepository")
  * @MongoDB\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ExclusionPolicy("none")
+ * @MongoDB\Indexes(
+ *   @MongoDB\Index(keys={"rankPosition"="desc", "rankScore"="desc"}),
+ *   @MongoDB\Index(keys={"batch"="desc","rankPosition"="desc", "rankScore"="desc"}),
+ *   @MongoDB\Index(keys={"batch"="desc","tags"="asc","rankPosition"="desc", "rankScore"="desc"}),
+ * )
+ * 
  */
 class PostForReview {
     /**
@@ -30,7 +36,6 @@ class PostForReview {
     protected $post;
     /**
      * @MongoDB\Int
-     * @MongoDB\Index
      */
     protected $batch;
 
@@ -39,6 +44,11 @@ class PostForReview {
      * @MongoDB\Index
      */
     protected $rankPosition;
+    /**
+     * @MongoDB\Float
+     * @MongoDB\Index
+     */
+    protected $rankScore;
 
     /**
      * @MongoDB\Collection
@@ -142,5 +152,27 @@ class PostForReview {
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * Set rankScore
+     *
+     * @param float $rankScore
+     * @return self
+     */
+    public function setRankScore($rankScore)
+    {
+        $this->rankScore = $rankScore;
+        return $this;
+    }
+
+    /**
+     * Get rankScore
+     *
+     * @return float $rankScore
+     */
+    public function getRankScore()
+    {
+        return $this->rankScore;
     }
 }

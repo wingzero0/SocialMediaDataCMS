@@ -4,7 +4,7 @@
     <p>{{ count }}</p>
     <table>
         {% for pr in postForReview %}
-            <tr><td>{{ pr.rankPosition }}</td>
+            <tr><td>{{ pr.rankPosition }}</td><td>-</td>
                 <td>{{ pr.post.finalScore }}</td>
                 </tr>
         {% endfor %}
