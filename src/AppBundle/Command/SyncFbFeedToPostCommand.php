@@ -115,7 +115,6 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             $feeds = $qb->getQuery()->execute();
 
             $newFeedCount = $feeds->count(true);
-            print_r($newFeedCount);
             foreach($feeds as $feed){
                 if ($feed instanceof FacebookFeed){
                     $callBack($feed);
@@ -189,9 +188,12 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         }
         $post->setUpdateAt($timing);
         $biz = $post->getMnemonoBiz();
+        if (!$biz instanceof MnemonoBiz) {
+            var_dump($post->getImportFromRef()->getId());
+        }
         $biz->setLastPostUpdateAt($timing);
         $dm->persist($biz);
-        $dm->persist($post->getMeta());
+        //$dm->persist($post->getMeta());
         $dm->persist($post);
         $dm->flush();
         $dm->clear();

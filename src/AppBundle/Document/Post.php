@@ -8,6 +8,7 @@
 namespace AppBundle\Document;
 
 use AppBundle\Document\MnemonoBiz;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use FOS\CommentBundle\Document\Thread as BaseThread;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -156,6 +157,19 @@ class Post extends BaseThread{
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * @param string $tag
+     */
+    public function addTag($tag){
+        if ($this->getTags() == null){
+            $this->setTags(new ArrayCollection());
+        }
+        $tags = $this->getTags();
+        if ($tags instanceof ArrayCollection && !($tags->contains($tag))){
+            $tags->add($tag);
+        }
     }
 
     /**
