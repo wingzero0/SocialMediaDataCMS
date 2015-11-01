@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Knp\Component\Pager\Paginator;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostForReviewRepository;
+use AppBundle\Repository\PostRepository;
 use AppBundle\Utility\DocumentPath;
 
 class CMSBaseController extends Controller{
@@ -40,6 +41,13 @@ class CMSBaseController extends Controller{
      */
     protected function getPostForReviewRepo(){
         return $this->getDM()->getRepository(DocumentPath::$postForReviewDocumentPath);
+    }
+
+    /**
+     * @return PostRepository
+     */
+    protected function getPostRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$postDocumentPath);
     }
 
 }

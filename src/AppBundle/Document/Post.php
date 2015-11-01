@@ -127,6 +127,16 @@ class Post extends BaseThread{
         return $finalScore;
     }
 
+    public function getBriefContent(){
+        $content = $this->getContent();
+        $pattern = "/^(.){0,20}/um";
+        $matches = array();
+        $result = preg_match($pattern, $content, $matches);
+        if ($result > 0){
+            return $matches[0];
+        }
+    }
+
     /**
      * Get id
      *
@@ -152,7 +162,7 @@ class Post extends BaseThread{
     /**
      * Get tags
      *
-     * @return collection $tags
+     * @return array $tags
      */
     public function getTags()
     {
@@ -164,11 +174,12 @@ class Post extends BaseThread{
      */
     public function addTag($tag){
         if ($this->getTags() == null){
-            $this->setTags(new ArrayCollection());
+            $this->setTags(array());
         }
         $tags = $this->getTags();
-        if ($tags instanceof ArrayCollection && !($tags->contains($tag))){
-            $tags->add($tag);
+        if (!in_array($tag, $tags)){
+            $tags[] = $tag;
+            $this->setTags($tags);
         }
     }
 
@@ -525,5 +536,19 @@ class Post extends BaseThread{
     public function getSpotlight()
     {
         return $this->spotlight;
+    }
+
+    /**
+     * Get spotlight
+     *
+     * @return boolean $spotlight
+     */
+    public function isSpotlight()
+    {
+        if ($this->spotlight == true){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

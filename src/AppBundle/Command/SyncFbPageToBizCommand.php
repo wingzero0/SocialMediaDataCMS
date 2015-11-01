@@ -134,6 +134,8 @@ class SyncFbPageToBizCommand extends BaseCommand{
             $dm->flush();
 
             $dm->clear();
+        }else{
+            echo $fbId . ": biz is not null or Page is not FacebookPage\n";
         }
 
 

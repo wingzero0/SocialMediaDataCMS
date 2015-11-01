@@ -11,6 +11,7 @@ namespace CodingGuys\CMSBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\Post;
 use CodingGuys\CMSBundle\Form\PostType;
@@ -157,6 +158,36 @@ class PostsCRUDController extends CMSBaseController{
             'form' => $editForm->createView(),
         );
 
+    }
+
+    /**
+     * set or unset a post as a spotlight post
+     *
+     * @Route("/{id}/spotlight", name="posts_spotlight")
+     * @Method({"PUT"})
+     */
+    public function spotlightAction(Request $request, $id){
+        $document = $this->getPostRepo()->find($id);
+
+        if (!$document instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $setFlag = intval($request->get("set"));
+
+        $ret = array();
+        if ($setFlag > 0){
+            $document->setSpotlight(true);
+            $ret = array("spotlight" => true);
+        }else{
+            $document->setSpotlight(false);
+            $ret = array("spotlight" => false);
+        }
+
+        $this->getDM()->persist($document);
+        $this->getDM()->flush();
+
+        return new JsonResponse($ret);
     }
 
     /**

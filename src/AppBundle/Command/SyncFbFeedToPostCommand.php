@@ -193,7 +193,6 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         }
         $biz->setLastPostUpdateAt($timing);
         $dm->persist($biz);
-        //$dm->persist($post->getMeta());
         $dm->persist($post);
         $dm->flush();
         $dm->clear();
@@ -222,6 +221,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
+            $post->addTag($biz->getCategory());
         }
         return $post;
     }
