@@ -144,6 +144,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         $ref = $post->getImportFromRef();
         if ($ref instanceof FacebookFeed){
             $post->setContent($ref->getMessage());
+            $post->setOriginalLink($ref->getShortLink());
             $post->setMeta($this->fbMetaBuilder($ref));
             $this->persistPost($post);
         }
@@ -212,6 +213,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         $post->setImportFromRef($feed);
         $post->setContent($feed->getMessage());
         $post->setPublishStatus("review");
+        $post->setOriginalLink($feed->getShortLink());
         $meta = $this->fbMetaBuilder($feed);
         $post->setMeta($meta);
         $biz = $this->getDM()->createQueryBuilder($this->mnemonoBizDocumentPath)

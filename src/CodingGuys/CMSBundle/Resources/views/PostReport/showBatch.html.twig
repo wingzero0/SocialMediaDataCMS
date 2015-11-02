@@ -1,9 +1,20 @@
 {% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
 
 {% block mainContent %}
-    <p>{{ count }}</p>
+<div class="container">
     <table>
-        {% for pr in postForReview %}
+        <thead>
+            <tr>
+                <th>Rank Position</th>
+                <th>finalScore</th>
+                <th>content</th>
+                <th>tags</th>
+                <th>status</th>
+                <th>spotlight action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pr in pagination %}
             <tr>
                 <td>{{ pr.rankPosition }}</td>
                 <td>{{ pr.post.finalScore }}</td>
@@ -15,6 +26,13 @@
                 </td>
                 <td>
                     {% if not pr.post.isSpotlight %}
+                        --
+                    {% else %}
+                        Spotlight
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not pr.post.isSpotlight %}
                         <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':pr.post.id }) }}" data-action="1" data-id="{{ pr.post.id }}" href="#">enable</a>
                     {% else %}
                         <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':pr.post.id }) }}" data-action="0" data-id="{{ pr.post.id }}" href="#">disable</a>
@@ -22,11 +40,16 @@
                 </td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
-
+    <div class="text-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
+    <script src="{{ asset('bundles/codingguyscms/js/paginatorCSS.js') }}"></script>
     <script>
         $(document).ready(function(){
             $(".spotlightTrigger").each(function(i, element){

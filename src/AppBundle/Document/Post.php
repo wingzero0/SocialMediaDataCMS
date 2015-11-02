@@ -70,6 +70,10 @@ class Post extends BaseThread{
      */
     protected $importFromRef;
     /**
+     * @MongoDB\String
+     */
+    protected $originalLink;
+    /**
      * @MongoDB\EmbedOne(
      *   discriminatorField="importFrom",
      *   discriminatorMap={
@@ -116,6 +120,15 @@ class Post extends BaseThread{
      * @MongoDB\Index
      */
     protected $spotlight;
+    /**
+     * @MongoDB\Date
+     */
+    protected $expireDate;
+    /**
+     * @MongoDB\Boolean
+     * @MongoDB\Index
+     */
+    protected $softDelete;
 
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
@@ -550,5 +563,71 @@ class Post extends BaseThread{
         }else{
             return false;
         }
+    }
+
+    /**
+     * Set expireDate
+     *
+     * @param date $expireDate
+     * @return self
+     */
+    public function setExpireDate($expireDate)
+    {
+        $this->expireDate = $expireDate;
+        return $this;
+    }
+
+    /**
+     * Get expireDate
+     *
+     * @return date $expireDate
+     */
+    public function getExpireDate()
+    {
+        return $this->expireDate;
+    }
+
+    /**
+     * Set softDelete
+     *
+     * @param boolean $softDelete
+     * @return self
+     */
+    public function setSoftDelete($softDelete)
+    {
+        $this->softDelete = $softDelete;
+        return $this;
+    }
+
+    /**
+     * Get softDelete
+     *
+     * @return boolean $softDelete
+     */
+    public function getSoftDelete()
+    {
+        return $this->softDelete;
+    }
+
+    /**
+     * Set originalLink
+     *
+     * @param string $originalLink
+     * @return self
+     */
+    public function setOriginalLink($originalLink)
+    {
+        $this->originalLink = $originalLink;
+        return $this;
+    }
+
+    /**
+     * Get originalLink
+     *
+     * @return string $originalLink
+     */
+    public function getOriginalLink()
+    {
+        return $this->originalLink;
     }
 }

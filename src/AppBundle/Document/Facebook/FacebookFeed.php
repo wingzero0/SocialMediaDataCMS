@@ -78,6 +78,10 @@ class FacebookFeed {
         return $this->fbId;
     }
 
+    public function getShortLink(){
+        return "https://www.facebook.com/" . $this->getFbId();
+    }
+
     /**
      * Set message
      *

@@ -18,27 +18,41 @@ use CodingGuys\CMSBundle\Controller\CMSBaseController;
  */
 class PostReportController extends CMSBaseController{
     /**
-     * Displays all the batch number in DB
+     * find the lasted batch number
      *
      * @Route("/", name="post_report_home")
      * @Method("GET")
      * @Template()
      */
     public function indexAction(Request $request){
-        return array("test" => 'it works');
+        $batchNum = $this->getPostForReviewRepo()->findLastBatchNum();
+        return $this->redirect($this->generateUrl("post_report_batch", array("batchNum" => $batchNum)));
     }
     /**
      * Displays all post in batch
      *
-     * @Route("/{batchId}", name="post_report_batch")
+     * @Route("/{batchNum}", name="post_report_batch")
      * @Method("GET")
      * @Template()
      */
-    public function showBatchAction(Request $request, $batchId){
-        $qb = $this->getPostForReviewRepo()->getQueryBuilderFindByBatch(intval($batchId));
-        $postForReview = $qb->limit(100)->sort(
+    public function showBatchAction(Request $request, $batchNum){
+        $limit = 50;
+        $page = intval($request->get('page', 1));
+        $qb = $this->getPostForReviewRepo()->getQueryBuilderFindByBatch(intval($batchNum));
+
+        $query = $qb->limit(100)->sort(
             array("rankPosition" => "asc", "rankScore" => "desc")
-        )->getQuery()->execute();
-        return array("postForReview" => $postForReview, "count" => $postForReview->count());
+        )->getQuery();
+
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $page,
+            $limit
+        );
+
+        return array(
+            'pagination' => $pagination,
+        );
     }
 }
