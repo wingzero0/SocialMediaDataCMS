@@ -7,6 +7,7 @@
 
 namespace AppBundle\Document\Facebook;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use AppBundle\Document\Facebook\FacebookPage;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
@@ -175,10 +176,10 @@ class FacebookFeed {
     /**
      * Set fbPage
      *
-     * @param AppBundle\Document\Facebook\FacebookPage $fbPage
+     * @param FacebookPage $fbPage
      * @return self
      */
-    public function setFbPage(\AppBundle\Document\Facebook\FacebookPage $fbPage)
+    public function setFbPage(FacebookPage $fbPage)
     {
         $this->fbPage = $fbPage;
         return $this;
@@ -187,7 +188,7 @@ class FacebookFeed {
     /**
      * Get fbPage
      *
-     * @return AppBundle\Document\Facebook\FacebookPage $fbPage
+     * @return FacebookPage $fbPage
      */
     public function getFbPage()
     {

@@ -9,6 +9,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Command\BaseCommand;
 use AppBundle\Document\Facebook\FacebookFeed;
+use AppBundle\Document\Facebook\FacebookPage;
 use AppBundle\Document\Facebook\FacebookMeta;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
@@ -77,7 +78,10 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function createPostFromFbFeedCollection($fromDate, $toDate){
-        $this->loopFbFeedCollection($fromDate, $toDate,
+        $this->loopCollectionWithQueryBuilder(
+            function($limit) use ($fromDate, $toDate){
+                return $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
+            },
             function(FacebookFeed $feed){
                 $post = $this->createPost($feed);
                 if ($post != null){$this->persistPost($post);}
@@ -204,6 +208,11 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @return Post|null
      */
     private function createPost(FacebookFeed $feed){
+        $fbPage = $feed->getFbPage();
+        if ($fbPage->getExcpetion() == true){
+            return null;
+        }
+
         $post = $this->queryPostByFeed($feed);
         if ($post != null){
             return null;
