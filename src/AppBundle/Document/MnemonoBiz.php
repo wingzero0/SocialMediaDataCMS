@@ -12,6 +12,9 @@ use JMS\Serializer\Annotation\Since;
 /**
  * @MongoDB\Document(collection="MnemonoBiz", repositoryClass="AppBundle\Repository\MnemonoBizRepository"))
  * @ExclusionPolicy("none")
+ * @MongoDB\Indexes(
+ *   @MongoDB\Index(keys={"importFrom"="asc", "importFromRef.$id"="desc"}),
+ * )
  */
 class MnemonoBiz{
     /**

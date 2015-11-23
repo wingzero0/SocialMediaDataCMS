@@ -16,7 +16,6 @@ class PostRepository extends DocumentRepository
         $post = $this->createQueryBuilder()
             ->field("importFrom")->equals("facebookFeed")
             ->field("importFromRef")->references($feed)
-            ->sort("id", "desc")
             ->getQuery()->getSingleResult();
 
         return $post;

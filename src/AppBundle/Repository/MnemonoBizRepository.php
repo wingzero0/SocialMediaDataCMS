@@ -7,6 +7,7 @@
 
 namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use AppBundle\Document\Facebook\FacebookPage;
 
 class MnemonoBizRepository extends DocumentRepository{
     /**
@@ -22,5 +23,9 @@ class MnemonoBizRepository extends DocumentRepository{
             ->field("lastPostUpdateAt")->lte($endDate)
             ->skip($skip)->limit($limit);
         return $qb;
+    }
+
+    public function findOneByFbPage(FacebookPage $page){
+
     }
 }
