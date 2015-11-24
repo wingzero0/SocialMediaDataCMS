@@ -241,8 +241,18 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         $likes = $feed->getLikes();
         $comments = $feed->getComments();
         $meta->setFbId($feed->getFbId());
-        $meta->setFbTotalLikes($likes["summary"]["total_count"]);
-        $meta->setFbTotalComments($comments["summary"]["total_count"]);
+
+        $likeCount = 0;
+        if (isset($likes["summary"]) && isset($likes["summary"]["total_count"])){
+            $likeCount = $likes["summary"]["total_count"];
+        }
+        $meta->setFbTotalLikes($likeCount);
+
+        $commentCount = 0;
+        if (isset($comments["summary"]) && isset($comments["summary"]["total_count"])){
+            $commentCount = $comments["summary"]["total_count"];
+        }
+        $meta->setFbTotalComments($commentCount);
         return $meta;
     }
 }
