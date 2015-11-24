@@ -20,6 +20,10 @@ use JMS\Serializer\Annotation\Since;
  * @MongoDB\Document(collection="Post", repositoryClass="AppBundle\Repository\PostRepository")
  * @MongoDB\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ExclusionPolicy("none")
+ * @MongoDB\Indexes(
+ *   @MongoDB\Index(keys={"mnemonoBiz"="desc", "updateAt"="desc"}),
+ *   @MongoDB\Index(keys={"importFrom"="asc", "importFromRef.$id"="desc"}),
+ * )
  */
 class Post extends BaseThread{
     /**
@@ -66,7 +70,6 @@ class Post extends BaseThread{
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
-     * @MongoDB\Index
      */
     protected $importFromRef;
     /**

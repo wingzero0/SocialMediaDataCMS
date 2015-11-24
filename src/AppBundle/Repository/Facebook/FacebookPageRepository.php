@@ -36,4 +36,14 @@ class FacebookPageRepository extends DocumentRepository{
         return null;
     }
 
+    /**
+     * @param string $fbId
+     * @return FacebookPage|null
+     */
+    public function findOneByFbId($fbId){
+        $qb = $this->getQueryBuilder()
+            ->field("fbId")->equals($fbId)
+            ->field("exception")->notEqual(true);
+        return $qb->getQuery()->getSingleResult();
+    }
 }

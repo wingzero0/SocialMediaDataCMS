@@ -59,47 +59,24 @@ class SyncFbPageToBizCommand extends BaseCommand{
 
     }
     private function updateBizFromFbPageCollection(){
-        $this->loopFbPageCollection(
+        $this->loopCollectionWithQueryBuilder(
+            function ($limit){
+                return $this->getFbPageRepo()->getQueryBuilder($limit);
+            },
             function (FacebookPage $page){
                 $this->updateBizByFbPage($page->getFbId());
             }
         );
     }
     private function createBizFromFbPageCollection(){
-        $this->loopFbPageCollection(
+        $this->loopCollectionWithQueryBuilder(
+            function ($limit){
+                return $this->getFbPageRepo()->getQueryBuilder($limit);
+            },
             function(FacebookPage $page){
                 $this->createBizByFbPage($page->getFbId());
             }
         );
-
-    }
-
-    private function loopFbPageCollection($callBack){
-        $limit = 100;
-        $lastPageId = null;
-        $firstRun = true;
-
-        do{
-            $this->resetDM();
-            $qb = $this->getFbPageRepo()->getQueryBuilder($limit);
-
-            if (!$firstRun){
-                $qb->field("id")->gt($lastPageId);
-            }
-            $pages = $qb->getQuery()->execute();
-
-            $newPageCount = $pages->count(true);
-
-            foreach($pages as $page){
-                if ($page instanceof FacebookPage){
-                    $callBack($page);
-                    $lastPageId = $page->getId();
-                }else{
-                    $newPageCount = -1;
-                }
-            }
-            $firstRun = false;
-        }while($newPageCount > 0);
     }
 
     private function updateBizByFbPage($fbId){
@@ -222,11 +199,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
      */
     private function queryPageByFbId($fbId)
     {
-        $dm = $this->getDM();
-        $page = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-            ->field("fbId")->equals($fbId)
-            ->getQuery()->getSingleResult();
-        return $page;
+        return $this->getFbPageRepo()->findOneByFbId($fbId);
     }
 
     /**
