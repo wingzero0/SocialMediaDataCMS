@@ -61,7 +61,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
     private function updateBizFromFbPageCollection(){
         $this->loopCollectionWithQueryBuilder(
             function ($limit){
-                return $this->getFbPageRepo()->getQueryBuilder($limit);
+                return $this->getFacebookPageRepo()->getQueryBuilder($limit);
             },
             function (FacebookPage $page){
                 $this->updateBizByFbPage($page->getFbId());
@@ -71,7 +71,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
     private function createBizFromFbPageCollection(){
         $this->loopCollectionWithQueryBuilder(
             function ($limit){
-                return $this->getFbPageRepo()->getQueryBuilder($limit);
+                return $this->getFacebookPageRepo()->getQueryBuilder($limit);
             },
             function(FacebookPage $page){
                 $this->createBizByFbPage($page->getFbId());
@@ -199,21 +199,16 @@ class SyncFbPageToBizCommand extends BaseCommand{
      */
     private function queryPageByFbId($fbId)
     {
-        return $this->getFbPageRepo()->findOneByFbId($fbId);
+        return $this->getFacebookPageRepo()->findOneByFbId($fbId);
     }
 
     /**
      * @param string $fbId
-     * @return array
+     * @return array|null
      */
     private function queryPageRawByFbId($fbId)
     {
-        $dm = $this->getDM();
-        $pageRaw = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-            ->hydrate(false)
-            ->field("fbId")->equals($fbId)
-            ->getQuery()->getSingleResult();
-        return $pageRaw;
+        return $this->getFacebookPageRepo()->findOneRawByFbId($fbId);
     }
 
     /**
@@ -222,18 +217,6 @@ class SyncFbPageToBizCommand extends BaseCommand{
      */
     private function queryBizByFbPage(FacebookPage $page)
     {
-        $dm = $this->getDM();
-        $biz = $dm->createQueryBuilder($this->mnemonoBizDocumentPath)
-            ->field("importFrom")->equals("facebookPage")
-            ->field("importFromRef")->references($page)
-            ->getQuery()->getSingleResult();
-        return $biz;
-    }
-
-    /**
-     * @return FacebookPageRepository
-     */
-    private function getFbPageRepo(){
-        return $this->getDM()->getRepository($this->facebookPageDocumentPath);
+        return $this->getMnemenoBizRepo()->findOneByFbPage($page);
     }
 }

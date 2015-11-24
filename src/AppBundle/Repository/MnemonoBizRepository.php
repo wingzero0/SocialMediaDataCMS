@@ -8,6 +8,7 @@
 namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Document\Facebook\FacebookPage;
+use AppBundle\Document\MnemonoBiz;
 
 class MnemonoBizRepository extends DocumentRepository{
     /**
@@ -25,7 +26,15 @@ class MnemonoBizRepository extends DocumentRepository{
         return $qb;
     }
 
+    /**
+     * @param FacebookPage $page
+     * @return MnemonoBiz|null
+     */
     public function findOneByFbPage(FacebookPage $page){
-
+        $biz = $this->createQueryBuilder()
+            ->field("importFrom")->equals("facebookPage")
+            ->field("importFromRef")->references($page)
+            ->getQuery()->getSingleResult();
+        return $biz;
     }
 }

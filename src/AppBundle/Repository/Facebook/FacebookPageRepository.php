@@ -8,13 +8,14 @@
 
 namespace AppBundle\Repository\Facebook;
 
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Document\Facebook\FacebookPage;
 
 class FacebookPageRepository extends DocumentRepository{
     /**
      * @param int $limit
-     * @return \Doctrine\MongoDB\Query\Builder
+     * @return Builder
      */
     public function getQueryBuilder($limit = 100){
         $qb = $this->createQueryBuilder()
@@ -42,8 +43,19 @@ class FacebookPageRepository extends DocumentRepository{
      */
     public function findOneByFbId($fbId){
         $qb = $this->getQueryBuilder()
-            ->field("fbId")->equals($fbId)
-            ->field("exception")->notEqual(true);
+            ->field("fbId")->equals($fbId);
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @param string $fbId
+     * @return array|null
+     */
+    public function findOneRawByFbId($fbId){
+        $qb = $this->getQueryBuilder()
+            ->hydrate(false)
+            ->field("fbId")->equals($fbId);
+
         return $qb->getQuery()->getSingleResult();
     }
 }
