@@ -26,11 +26,17 @@ class PreprocessPostReportCommand extends BaseCommand{
         ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
-        $output->writeln("finish");
-        $this->getAllUpdatedPost();
+        $allBiz = $this->getAllUpdatedBiz();
+        $tmp = new \MongoDate();
+        $batchNo = $tmp->sec;
+
+        foreach ($allBiz as $biz){
+            // TODO should control biz order
+            $this->createPostsForReview($biz, $batchNo);
+        }
     }
 
-    private function getAllUpdatedPost(){
+    private function getAllUpdatedBiz(){
         $this->resetDateRange();
         $this->allBiz = array();
         $this->loopCollectionWithSkipParam(function($limit, $skip){
@@ -40,16 +46,10 @@ class PreprocessPostReportCommand extends BaseCommand{
             $this->allBiz[$bizId] = $biz;
         });
         echo count($this->allBiz);
-        $tmp = new \MongoDate();
-        $batchNo = $tmp->sec;
-
-        foreach ($this->allBiz as $biz){
-            // TODO should control biz order
-            $this->process($biz, $batchNo);
-        }
+        return $this->allBiz;
     }
 
-    private function process(MnemonoBiz $biz, $batchNo){
+    private function createPostsForReview(MnemonoBiz $biz, $batchNo){
         $updatedPosts = array();
         $this->loopCollectionWithSkipParam(function($limit, $skip) use ($biz){
             $this->getDM()->persist($biz);

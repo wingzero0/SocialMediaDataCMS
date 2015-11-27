@@ -23,9 +23,17 @@ class PostRankingCommand extends BaseCommand{
             ->addOption('id', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'the id of post which you want to rank')
+            ->addOption('genTest', null,
+                InputOption::VALUE_NONE,
+                'generate a test list of command for dummy testing')
         ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
+        $genTestFlag = $input->getOption('genTest');
+        if ($genTestFlag){
+            $this->genTestList();
+            return;
+        }
         $ids = $input->getOption('id');
         if (!empty($ids)){
             foreach ($ids as $id){
@@ -37,6 +45,10 @@ class PostRankingCommand extends BaseCommand{
         }else{
             $output->writeln("no id");
         }
+    }
+
+    private function genTestList(){
+        echo "test\n";
     }
 
     private function updatePostFinalScore(Post $post){
