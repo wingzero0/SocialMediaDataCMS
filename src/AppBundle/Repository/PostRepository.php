@@ -37,4 +37,15 @@ class PostRepository extends DocumentRepository
             ->skip($skip)->limit($limit);
         return $qb;
     }
+
+    /**
+     * @param int $skip
+     * @param int $limit
+     * @return array|null
+     */
+    public function findAllWithSkipAndLimit($skip = 0, $limit = 100){
+        $qb = $this->createQueryBuilder()
+            ->skip($skip)->limit($limit)->sort(array("_id" => -1));
+        return $qb->getQuery()->execute();
+    }
 }

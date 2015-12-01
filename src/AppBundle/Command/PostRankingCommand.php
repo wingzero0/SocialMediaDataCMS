@@ -37,8 +37,7 @@ class PostRankingCommand extends BaseCommand{
         $ids = $input->getOption('id');
         if (!empty($ids)){
             foreach ($ids as $id){
-                $post = $this->getDM()->getRepository($this->postDocumentPath)
-                    ->find($id);
+                $post = $this->getPostRepo()->find($id);
                 $this->updatePostLocalScore($post);
                 $this->updatePostFinalScore($post);
             }
@@ -49,6 +48,17 @@ class PostRankingCommand extends BaseCommand{
 
     private function genTestList(){
         echo "test\n";
+        $posts = $this->getPostRepo()->findAllWithSkipAndLimit();
+        $counter = 0;
+        foreach($posts as $post){
+            if($counter > 100){
+                break;
+            }
+            print_r($post->getId()."\n");
+            $this->updatePostLocalScore($post);
+            $this->updatePostFinalScore($post);
+            $counter++;
+        }
     }
 
     private function updatePostFinalScore(Post $post){
