@@ -22,7 +22,7 @@ class PreprocessPostReportCommand extends BaseCommand{
     private $allBiz;
     protected function configure(){
         $this->setName("mnemono:post:review")
-            ->setDescription("calculate a post ranking score")
+            ->setDescription("generate ranking snapshot for review")
         ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){

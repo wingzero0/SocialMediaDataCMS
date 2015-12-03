@@ -43,6 +43,7 @@ By batch
 ### rank
     app/console mnemono:rank:biz --id xxxxx
     app/console mnemono:rank:post --id xxxxx
+    app/console mnemono:rank:post --genTest
 
 ### review
     app/console mnemono:post:review

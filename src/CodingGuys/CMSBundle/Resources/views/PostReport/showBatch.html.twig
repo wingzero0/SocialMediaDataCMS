@@ -2,7 +2,7 @@
 
 {% block mainContent %}
 <div class="container">
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Rank Position</th>
@@ -62,7 +62,7 @@
                         "method": "PUT",
                         "data": { "set" : action },
                         "success": function(data){
-                            console.log(data);
+                            window.location.reload();
                         },
                         "dataType": 'json',
                     });

@@ -214,6 +214,28 @@ class PostsCRUDController extends CMSBaseController{
     }
 
     /**
+     * show a raw data of Post source.
+     *
+     * @Route("/{id}/sourceRaw", name="posts_source_raw")
+     * @Method("GET")
+     */
+    public function sourceRawAction(Request $request, $id)
+    {
+        $post = $this->getPostRepo()->find($id);
+
+        if (! $post instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $sourceObj = $post->getImportFromRef();
+        $this->queryRawData($sourceObj);
+    }
+
+    private function queryRawData($obj){
+
+    }
+
+    /**
      * Creates a form to edit a Post document.
      *
      * @param Post $document The document
