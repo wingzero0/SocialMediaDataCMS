@@ -11,6 +11,7 @@
                 <th>tags</th>
                 <th>status</th>
                 <th>spotlight action</th>
+                <th>raw data</th>
             </tr>
         </thead>
         <tbody>
@@ -26,7 +27,7 @@
                 </td>
                 <td>
                     {% if not pr.post.isSpotlight %}
-                        --
+
                     {% else %}
                         Spotlight
                     {% endif %}
@@ -37,6 +38,9 @@
                     {% else %}
                         <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':pr.post.id }) }}" data-action="0" data-id="{{ pr.post.id }}" href="#">disable</a>
                     {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('posts_source_raw', {'id':pr.post.id}) }}" target="_blank">raw</a>
                 </td>
             </tr>
         {% endfor %}

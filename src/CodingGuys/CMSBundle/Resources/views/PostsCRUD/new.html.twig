@@ -65,6 +65,9 @@
             {{ form_errors(form.publishStatus) }}
             {{ form_widget(form.publishStatus, {'attr': {'class': 'form-control'} }) }}
         </div>
+        <li>
+            <a href="{{ path('posts_source_raw', {'id':form.vars.value.id}) }}" target="_blank">raw</a>
+        </li>
         {% do form.tags.setRendered %}
         {% do form.lastModDate.setRendered %}
         {% do form.mnemonoBiz.setRendered %}
@@ -77,6 +80,7 @@
                     Back to the list
                 </a>
             </li>
+
         </ul>
     </div>
     {% block footer %}

@@ -8,6 +8,7 @@
 
 namespace CodingGuys\CMSBundle\Controller;
 
+use AppBundle\Document\Facebook\FacebookFeed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -218,6 +219,7 @@ class PostsCRUDController extends CMSBaseController{
      *
      * @Route("/{id}/sourceRaw", name="posts_source_raw")
      * @Method("GET")
+     * @Template()
      */
     public function sourceRawAction(Request $request, $id)
     {
@@ -228,11 +230,15 @@ class PostsCRUDController extends CMSBaseController{
         }
 
         $sourceObj = $post->getImportFromRef();
-        $this->queryRawData($sourceObj);
+        $rawData = $this->queryRawData($sourceObj);
+        $strOutput = print_r($rawData, true);
+        return array("strOutput" => $strOutput);
     }
 
     private function queryRawData($obj){
-
+        if ($obj instanceof FacebookFeed){
+            return $this->getFacebookFeedRepo()->getRawById($obj->getId());
+        }
     }
 
     /**

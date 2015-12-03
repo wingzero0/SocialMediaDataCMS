@@ -14,6 +14,7 @@ use Knp\Component\Pager\Paginator;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostForReviewRepository;
 use AppBundle\Repository\PostRepository;
+use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Utility\DocumentPath;
 
 class CMSBaseController extends Controller{
@@ -48,6 +49,13 @@ class CMSBaseController extends Controller{
      */
     protected function getPostRepo(){
         return $this->getDM()->getRepository(DocumentPath::$postDocumentPath);
+    }
+
+    /**
+     * @return FacebookFeedRepository
+     */
+    protected function getFacebookFeedRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
     }
 
 }
