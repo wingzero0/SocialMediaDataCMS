@@ -230,15 +230,23 @@ class PostsCRUDController extends CMSBaseController{
         }
 
         $sourceObj = $post->getImportFromRef();
-        $rawData = $this->queryRawData($sourceObj);
-        $strOutput = print_r($rawData, true);
-        return array("strOutput" => $strOutput);
+        $ret = $this->queryRawData($sourceObj);
+        $strOutput = print_r($ret["rawData"], true);
+        return array("possibleLinks" => $ret["possibleLinks"], "strOutput" => $strOutput);
     }
 
     private function queryRawData($obj){
+        $possibleLinks = array();
         if ($obj instanceof FacebookFeed){
-            return $this->getFacebookFeedRepo()->getRawById($obj->getId());
+            $rawData = $this->getFacebookFeedRepo()->getRawById($obj->getId());
+
+            if (isset($rawData["link"])){
+                $possibleLinks[] = $rawData["link"];
+            }
+            $possibleLinks[] = "https://www.facebook.com/" . $rawData["fbID"];
+            return array("possibleLinks" => $possibleLinks, "rawData" => $rawData);
         }
+        return array("possibleLinks" => $possibleLinks, "rawData" => null);
     }
 
     /**
