@@ -9,7 +9,8 @@
                 <th>finalScore</th>
                 <th>content</th>
                 <th>tags</th>
-                <th>status</th>
+                <th>publish status</th>
+                <th>spotlight status</th>
                 <th>spotlight action</th>
                 <th>raw data</th>
             </tr>
@@ -24,6 +25,9 @@
                     {% for tag in pr.tags %}
                         {{ tag }}
                     {% endfor %}
+                </td>
+                <td>
+                    {{ pr.post.publishStatus }}
                 </td>
                 <td>
                     {% if not pr.post.isSpotlight %}

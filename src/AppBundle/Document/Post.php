@@ -200,6 +200,24 @@ class Post extends BaseThread{
     }
 
     /**
+     * @param string $tag
+     */
+    public function removeTag($tag){
+        if ($this->getTags() == null){
+            $this->setTags(array());
+        }
+        $oldTags = $this->getTags();
+        $newTags = array();
+        foreach($oldTags as $ot){
+            if ($tag !== $ot){
+                $newTags[] = $ot;
+            }
+        }
+
+        $this->setTags($newTags);
+    }
+
+    /**
      * Set mnemonoCat
      *
      * @param string $mnemonoCat

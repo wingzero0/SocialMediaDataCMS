@@ -64,6 +64,10 @@ class PostType extends AbstractType
                 'label'    => 'Spotlight',
                 'required' => false,
             ))
+            ->add('softDelete', 'checkbox', array(
+                'label'    => 'Delete',
+                'required' => false,
+            ))
         ;
     }
 
