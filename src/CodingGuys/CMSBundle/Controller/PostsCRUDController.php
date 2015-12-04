@@ -8,9 +8,11 @@
 
 namespace CodingGuys\CMSBundle\Controller;
 
+use AppBundle\Document\Facebook\FacebookFeed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\Post;
 use CodingGuys\CMSBundle\Form\PostType;
@@ -160,6 +162,36 @@ class PostsCRUDController extends CMSBaseController{
     }
 
     /**
+     * set or unset a post as a spotlight post
+     *
+     * @Route("/{id}/spotlight", name="posts_spotlight")
+     * @Method({"PUT"})
+     */
+    public function spotlightAction(Request $request, $id){
+        $document = $this->getPostRepo()->find($id);
+
+        if (!$document instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $setFlag = intval($request->get("set"));
+
+        $ret = array();
+        if ($setFlag > 0){
+            $document->setSpotlight(true);
+            $ret = array("spotlight" => true);
+        }else{
+            $document->setSpotlight(false);
+            $ret = array("spotlight" => false);
+        }
+
+        $this->getDM()->persist($document);
+        $this->getDM()->flush();
+
+        return new JsonResponse($ret);
+    }
+
+    /**
      * Deletes a Post document.
      *
      * @Route("/{id}", name="posts_delete")
@@ -180,6 +212,41 @@ class PostsCRUDController extends CMSBaseController{
             $dm->remove($document);
             $dm->flush();
         }
+    }
+
+    /**
+     * show a raw data of Post source.
+     *
+     * @Route("/{id}/sourceRaw", name="posts_source_raw")
+     * @Method("GET")
+     * @Template()
+     */
+    public function sourceRawAction(Request $request, $id)
+    {
+        $post = $this->getPostRepo()->find($id);
+
+        if (! $post instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $sourceObj = $post->getImportFromRef();
+        $ret = $this->queryRawData($sourceObj);
+        $strOutput = print_r($ret["rawData"], true);
+        return array("possibleLinks" => $ret["possibleLinks"], "strOutput" => $strOutput);
+    }
+
+    private function queryRawData($obj){
+        $possibleLinks = array();
+        if ($obj instanceof FacebookFeed){
+            $rawData = $this->getFacebookFeedRepo()->getRawById($obj->getId());
+
+            if (isset($rawData["link"])){
+                $possibleLinks[] = $rawData["link"];
+            }
+            $possibleLinks[] = "https://www.facebook.com/" . $rawData["fbID"];
+            return array("possibleLinks" => $possibleLinks, "rawData" => $rawData);
+        }
+        return array("possibleLinks" => $possibleLinks, "rawData" => null);
     }
 
     /**

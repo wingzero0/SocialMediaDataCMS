@@ -1,0 +1,83 @@
+{% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Rank Position</th>
+                <th>finalScore</th>
+                <th>content</th>
+                <th>tags</th>
+                <th>publish status</th>
+                <th>spotlight status</th>
+                <th>spotlight action</th>
+                <th>raw data</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pr in pagination %}
+            <tr>
+                <td>{{ pr.rankPosition }}</td>
+                <td>{{ pr.post.finalScore }}</td>
+                <td><a href="{{ path('posts_edit', {'id':pr.post.id}) }}" target="_blank">-- {{ pr.post.briefContent }}</a></td>
+                <td>
+                    {% for tag in pr.tags %}
+                        {{ tag }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ pr.post.publishStatus }}
+                </td>
+                <td>
+                    {% if not pr.post.isSpotlight %}
+
+                    {% else %}
+                        Spotlight
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not pr.post.isSpotlight %}
+                        <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':pr.post.id }) }}" data-action="1" data-id="{{ pr.post.id }}" href="#">enable</a>
+                    {% else %}
+                        <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':pr.post.id }) }}" data-action="0" data-id="{{ pr.post.id }}" href="#">disable</a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('posts_source_raw', {'id':pr.post.id}) }}" target="_blank">raw</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/codingguyscms/js/paginatorCSS.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $(".spotlightTrigger").each(function(i, element){
+                $(element).click(function(e){
+                    e.preventDefault();
+                    var action = $(element).attr("data-action");
+                    var url = $(element).attr("data-url");
+                    $.ajax({
+                        "url": url,
+                        "method": "PUT",
+                        "data": { "set" : action },
+                        "success": function(data){
+                            window.location.reload();
+                        },
+                        "dataType": 'json',
+                    });
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
+

@@ -39,3 +39,11 @@ By batch
 
 ### create collection and index (remove the post embedded attribute first)
     app/console doctrine:mongodb:schema:create
+
+### rank
+    app/console mnemono:rank:biz --id xxxxx
+    app/console mnemono:rank:post --id xxxxx
+    app/console mnemono:rank:post --genTest
+
+### review
+    app/console mnemono:post:review

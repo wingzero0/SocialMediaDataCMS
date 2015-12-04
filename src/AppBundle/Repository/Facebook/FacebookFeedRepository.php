@@ -39,4 +39,12 @@ class FacebookFeedRepository extends DocumentRepository{
         ;
         return $qb;
     }
+
+    /**
+     * @param string $id
+     * @return array|null
+     */
+    public function getRawById($id){
+        return $this->createQueryBuilder()->hydrate(false)->field("id")->equals($id)->getQuery()->getSingleResult();
+    }
 }

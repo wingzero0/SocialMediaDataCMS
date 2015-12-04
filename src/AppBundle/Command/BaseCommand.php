@@ -16,6 +16,8 @@ use Doctrine\MongoDB\Query\Builder;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
+use AppBundle\Repository\PostRepository;
+use AppBundle\Repository\MnemonoBizRepository;
 
 abstract class BaseCommand extends ContainerAwareCommand{
     protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
@@ -75,6 +77,28 @@ abstract class BaseCommand extends ContainerAwareCommand{
         }while($recordCount > 0);
     }
 
+    protected function loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack){
+        $limit = 100;
+        $skip = 0;
+
+        do{
+            $this->resetDM();
+            $qb = $queryBuilderCallback($limit, $skip);
+
+            if (!$qb instanceof Builder){
+                break;
+            }
+
+            $cursor = $qb->getQuery()->execute();
+
+            $recordCount = $cursor->count(true);
+            foreach($cursor as $record){
+                $reducerCallBack($record);
+            }
+            $skip += $recordCount;
+        }while($recordCount > 0);
+    }
+
     /**
      * @return FacebookPageRepository
      */
@@ -92,5 +116,17 @@ abstract class BaseCommand extends ContainerAwareCommand{
      */
     protected function getWeightingRepo(){
         return $this->getDM()->getRepository($this->weightingDocumentPath);
+    }
+    /**
+     * @return PostRepository
+     */
+    protected function getPostRepo(){
+        return $this->getDM()->getRepository($this->postDocumentPath);
+    }
+    /**
+     * @return MnemonoBizRepository
+     */
+    protected function getMnemenoBizRepo(){
+        return $this->getDM()->getRepository($this->mnemonoBizDocumentPath);
     }
 }

@@ -1,0 +1,21 @@
+{% extends "CodingGuysCMSBundle:PostsCRUD:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <div>
+        <p>possibleLinks</p>
+        <ul class="list-group">
+            {% for link in possibleLinks %}
+                <li class="list-group-item"><a href="{{ link }}">{{ link }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <p>raw data</p>
+        <pre>
+{{ strOutput }}
+        </pre>
+    </div>
+
+</div>
+{% endblock %}

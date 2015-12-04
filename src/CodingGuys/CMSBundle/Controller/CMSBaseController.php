@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Knp\Component\Pager\Paginator;
 use AppBundle\Repository\Settings\WeightingRepository;
+use AppBundle\Repository\PostForReviewRepository;
+use AppBundle\Repository\PostRepository;
+use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use AppBundle\Utility\DocumentPath;
 
 class CMSBaseController extends Controller{
 
@@ -31,6 +35,27 @@ class CMSBaseController extends Controller{
      * @return WeightingRepository
      */
     protected function getWeightingRepo(){
-        return $this->getDM()->getRepository("AppBundle:Settings\\Weighting");
+        return $this->getDM()->getRepository(DocumentPath::$weightingDocumentPath);
     }
+    /**
+     * @return PostForReviewRepository
+     */
+    protected function getPostForReviewRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$postForReviewDocumentPath);
+    }
+
+    /**
+     * @return PostRepository
+     */
+    protected function getPostRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$postDocumentPath);
+    }
+
+    /**
+     * @return FacebookFeedRepository
+     */
+    protected function getFacebookFeedRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
+    }
+
 }

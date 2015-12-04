@@ -51,9 +51,21 @@ class PostType extends AbstractType
             ->add('importFrom', 'text', array(
                 'read_only' => true
             ))
-            ->add('publishStatus')
+            ->add('publishStatus', 'choice', array(
+                'empty_value' => false,
+                'required' => true,
+                'choices' => array('draft' => 'Draft', 'review' => 'Review', 'published' => 'published'),
+            ))
             ->add('content','textarea', array(
                 'attr' => array('rows' => '10'),
+                'required' => false,
+            ))
+            ->add('spotlight', 'checkbox', array(
+                'label'    => 'Spotlight',
+                'required' => false,
+            ))
+            ->add('softDelete', 'checkbox', array(
+                'label'    => 'Delete',
                 'required' => false,
             ))
         ;

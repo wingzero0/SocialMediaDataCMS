@@ -59,47 +59,24 @@ class SyncFbPageToBizCommand extends BaseCommand{
 
     }
     private function updateBizFromFbPageCollection(){
-        $this->loopFbPageCollection(
+        $this->loopCollectionWithQueryBuilder(
+            function ($limit){
+                return $this->getFacebookPageRepo()->getQueryBuilder($limit);
+            },
             function (FacebookPage $page){
                 $this->updateBizByFbPage($page->getFbId());
             }
         );
     }
     private function createBizFromFbPageCollection(){
-        $this->loopFbPageCollection(
+        $this->loopCollectionWithQueryBuilder(
+            function ($limit){
+                return $this->getFacebookPageRepo()->getQueryBuilder($limit);
+            },
             function(FacebookPage $page){
                 $this->createBizByFbPage($page->getFbId());
             }
         );
-
-    }
-
-    private function loopFbPageCollection($callBack){
-        $limit = 100;
-        $lastPageId = null;
-        $firstRun = true;
-
-        do{
-            $this->resetDM();
-            $qb = $this->getFbPageRepo()->getQueryBuilder($limit);
-
-            if (!$firstRun){
-                $qb->field("id")->gt($lastPageId);
-            }
-            $pages = $qb->getQuery()->execute();
-
-            $newPageCount = $pages->count(true);
-
-            foreach($pages as $page){
-                if ($page instanceof FacebookPage){
-                    $callBack($page);
-                    $lastPageId = $page->getId();
-                }else{
-                    $newPageCount = -1;
-                }
-            }
-            $firstRun = false;
-        }while($newPageCount > 0);
     }
 
     private function updateBizByFbPage($fbId){
@@ -134,6 +111,8 @@ class SyncFbPageToBizCommand extends BaseCommand{
             $dm->flush();
 
             $dm->clear();
+        }else{
+            echo $fbId . ": biz is not null or Page is not FacebookPage\n";
         }
 
 
@@ -220,25 +199,16 @@ class SyncFbPageToBizCommand extends BaseCommand{
      */
     private function queryPageByFbId($fbId)
     {
-        $dm = $this->getDM();
-        $page = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-            ->field("fbId")->equals($fbId)
-            ->getQuery()->getSingleResult();
-        return $page;
+        return $this->getFacebookPageRepo()->findOneByFbId($fbId);
     }
 
     /**
      * @param string $fbId
-     * @return array
+     * @return array|null
      */
     private function queryPageRawByFbId($fbId)
     {
-        $dm = $this->getDM();
-        $pageRaw = $dm->createQueryBuilder($this->facebookPageDocumentPath)
-            ->hydrate(false)
-            ->field("fbId")->equals($fbId)
-            ->getQuery()->getSingleResult();
-        return $pageRaw;
+        return $this->getFacebookPageRepo()->findOneRawByFbId($fbId);
     }
 
     /**
@@ -247,18 +217,6 @@ class SyncFbPageToBizCommand extends BaseCommand{
      */
     private function queryBizByFbPage(FacebookPage $page)
     {
-        $dm = $this->getDM();
-        $biz = $dm->createQueryBuilder($this->mnemonoBizDocumentPath)
-            ->field("importFrom")->equals("facebookPage")
-            ->field("importFromRef")->references($page)
-            ->getQuery()->getSingleResult();
-        return $biz;
-    }
-
-    /**
-     * @return FacebookPageRepository
-     */
-    private function getFbPageRepo(){
-        return $this->getDM()->getRepository($this->facebookPageDocumentPath);
+        return $this->getMnemenoBizRepo()->findOneByFbPage($page);
     }
 }

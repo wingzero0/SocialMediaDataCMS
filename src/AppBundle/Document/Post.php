@@ -8,6 +8,7 @@
 namespace AppBundle\Document;
 
 use AppBundle\Document\MnemonoBiz;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use FOS\CommentBundle\Document\Thread as BaseThread;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -19,6 +20,10 @@ use JMS\Serializer\Annotation\Since;
  * @MongoDB\Document(collection="Post", repositoryClass="AppBundle\Repository\PostRepository")
  * @MongoDB\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ExclusionPolicy("none")
+ * @MongoDB\Indexes(
+ *   @MongoDB\Index(keys={"mnemonoBiz"="desc", "updateAt"="desc"}),
+ *   @MongoDB\Index(keys={"importFrom"="asc", "importFromRef.$id"="desc"}),
+ * )
  */
 class Post extends BaseThread{
     /**
@@ -65,9 +70,12 @@ class Post extends BaseThread{
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
-     * @MongoDB\Index
      */
     protected $importFromRef;
+    /**
+     * @MongoDB\String
+     */
+    protected $originalLink;
     /**
      * @MongoDB\EmbedOne(
      *   discriminatorField="importFrom",
@@ -81,8 +89,8 @@ class Post extends BaseThread{
     /**
      * @MongoDB\String
      */
-    // passible value: draft(by use), review(by admin), published,
     protected $publishStatus;
+    // passible value: draft(by use), review(by admin), published,
     /**
      * @MongoDB\String
      */
@@ -97,8 +105,34 @@ class Post extends BaseThread{
     protected $localScore;
     /**
      * @MongoDB\Float
+     * @MongoDB\Index
      */
     protected $finalScore;
+    /**
+     * @MongoDB\Date
+     */
+    protected $createAt;
+    /**
+     * @MongoDB\Date
+     * @MongoDB\Index
+     */
+    protected $updateAt;
+
+    /**
+     * @MongoDB\Boolean
+     * @MongoDB\Index
+     */
+    protected $spotlight;
+    /**
+     * @MongoDB\Date
+     */
+    protected $expireDate;
+    /**
+     * @MongoDB\Boolean
+     * @MongoDB\Index
+     */
+    protected $softDelete;
+
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
         $global = $this->getMnemonoBiz()->getGlobalScore();
@@ -107,6 +141,16 @@ class Post extends BaseThread{
         $finalScore = $globalWeight * $global + $localWeight * $local + $adminWeight * $admin;
         $this->setFinalScore( $finalScore );
         return $finalScore;
+    }
+
+    public function getBriefContent(){
+        $content = $this->getContent();
+        $pattern = "/^(.){0,20}/um";
+        $matches = array();
+        $result = preg_match($pattern, $content, $matches);
+        if ($result > 0){
+            return $matches[0];
+        }
     }
 
     /**
@@ -134,11 +178,43 @@ class Post extends BaseThread{
     /**
      * Get tags
      *
-     * @return collection $tags
+     * @return array $tags
      */
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * @param string $tag
+     */
+    public function addTag($tag){
+        if ($this->getTags() == null){
+            $this->setTags(array());
+        }
+        $tags = $this->getTags();
+        if (!in_array($tag, $tags)){
+            $tags[] = $tag;
+            $this->setTags($tags);
+        }
+    }
+
+    /**
+     * @param string $tag
+     */
+    public function removeTag($tag){
+        if ($this->getTags() == null){
+            $this->setTags(array());
+        }
+        $oldTags = $this->getTags();
+        $newTags = array();
+        foreach($oldTags as $ot){
+            if ($tag !== $ot){
+                $newTags[] = $ot;
+            }
+        }
+
+        $this->setTags($newTags);
     }
 
     /**
@@ -428,5 +504,151 @@ class Post extends BaseThread{
     public function getFinalScore()
     {
         return $this->finalScore;
+    }
+
+    /**
+     * Set createAt
+     *
+     * @param date $createAt
+     * @return self
+     */
+    public function setCreateAt($createAt)
+    {
+        $this->createAt = $createAt;
+        return $this;
+    }
+
+    /**
+     * Get createAt
+     *
+     * @return date $createAt
+     */
+    public function getCreateAt()
+    {
+        return $this->createAt;
+    }
+
+    /**
+     * Set updateAt
+     *
+     * @param date $updateAt
+     * @return self
+     */
+    public function setUpdateAt($updateAt)
+    {
+        $this->updateAt = $updateAt;
+        return $this;
+    }
+
+    /**
+     * Get updateAt
+     *
+     * @return date $updateAt
+     */
+    public function getUpdateAt()
+    {
+        return $this->updateAt;
+    }
+
+    /**
+     * Set spotlight
+     *
+     * @param boolean $spotlight
+     * @return self
+     */
+    public function setSpotlight($spotlight)
+    {
+        $this->spotlight = $spotlight;
+        return $this;
+    }
+
+    /**
+     * Get spotlight
+     *
+     * @return boolean $spotlight
+     */
+    public function getSpotlight()
+    {
+        return $this->spotlight;
+    }
+
+    /**
+     * Get spotlight
+     *
+     * @return boolean $spotlight
+     */
+    public function isSpotlight()
+    {
+        if ($this->spotlight == true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * Set expireDate
+     *
+     * @param date $expireDate
+     * @return self
+     */
+    public function setExpireDate($expireDate)
+    {
+        $this->expireDate = $expireDate;
+        return $this;
+    }
+
+    /**
+     * Get expireDate
+     *
+     * @return date $expireDate
+     */
+    public function getExpireDate()
+    {
+        return $this->expireDate;
+    }
+
+    /**
+     * Set softDelete
+     *
+     * @param boolean $softDelete
+     * @return self
+     */
+    public function setSoftDelete($softDelete)
+    {
+        $this->softDelete = $softDelete;
+        return $this;
+    }
+
+    /**
+     * Get softDelete
+     *
+     * @return boolean $softDelete
+     */
+    public function getSoftDelete()
+    {
+        return $this->softDelete;
+    }
+
+    /**
+     * Set originalLink
+     *
+     * @param string $originalLink
+     * @return self
+     */
+    public function setOriginalLink($originalLink)
+    {
+        $this->originalLink = $originalLink;
+        return $this;
+    }
+
+    /**
+     * Get originalLink
+     *
+     * @return string $originalLink
+     */
+    public function getOriginalLink()
+    {
+        return $this->originalLink;
     }
 }
