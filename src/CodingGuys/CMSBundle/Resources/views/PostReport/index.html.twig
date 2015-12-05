@@ -2,9 +2,43 @@
 
 {% block mainContent %}
 <div class="container">
+    <div>
+        <form action="{{ path('post_report_home') }}" method="get">
+            <label for="AppBundle_post_tag" class="required">Tag</label>
+            <input type="text" id="AppBundle_post_tag" name="tag" value="{{ app.request.get("tag") }}"/>
+            <label for="AppBundle_post_publishStatus" class="required">Publish status</label>
+            <select id="AppBundle_post_publishStatus" name="publishStatus">
+                <option value="">All</option>
+                {% for key, label in lovPublishStatus %}
+                    {% if key == app.request.get('publishStatus') %}
+                        <option value="{{ key }}" selected>{{ label }}</option>
+                    {% else %}
+                        <option value="{{ key }}">{{ label }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <label for="AppBundle_post_spotlight" class="required">Spotlight status</label>
+            <select id="AppBundle_post_spotlight" name="spotlight">
+                <option value="">All</option>
+                {% if 'Y' == app.request.get('spotlight') %}
+                    <option value="Y" selected>Y</option>
+                {% else %}
+                    <option value="Y">Y</option>
+                {% endif %}
+
+                {% if 'N' == app.request.get('spotlight') %}
+                    <option value="N" selected>N</option>
+                {% else %}
+                    <option value="N">N</option>
+                {% endif %}
+            </select>
+            <button type="submit" id="AppBundle_post_submit" name="submit" class="btn btn-default">filter</button>
+        </form>
+    </div>
     <table class="table">
         <thead>
             <tr>
+                <th>Row Num</th>
                 <th>Rank Position</th>
                 <th>finalScore</th>
                 <th>content</th>
@@ -16,14 +50,16 @@
             </tr>
         </thead>
         <tbody>
+        {% set rowNum = 1 %}
         {% for post in pagination %}
             <tr>
+                <td>{{ rowNum }}</td>
                 <td>{{ post.rankPosition }}</td>
                 <td>{{ post.finalScore }}</td>
                 <td><a href="{{ path('posts_edit', {'id':post.id}) }}" target="_blank">-- {{ post.briefContent }}</a></td>
                 <td>
                     {% for tag in post.tags %}
-                        {{ tag }}
+                        {{ tag }},
                     {% endfor %}
                 </td>
                 <td>
@@ -47,6 +83,7 @@
                     <a href="{{ path('posts_source_raw', {'id':post.id}) }}" target="_blank">raw</a>
                 </td>
             </tr>
+            {% set rowNum = rowNum + 1 %}
         {% endfor %}
         </tbody>
     </table>

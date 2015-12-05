@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use CodingGuys\CMSBundle\Controller\CMSBaseController;
+use AppBundle\Document\Post;
 
 /**
  * @Route("/dashboard/report")
@@ -39,6 +40,7 @@ class PostReportController extends CMSBaseController{
 
         return array(
             'pagination' => $pagination,
+            'lovPublishStatus' => Post::listOfPublishStatus(),
         );
     }
 
@@ -59,6 +61,10 @@ class PostReportController extends CMSBaseController{
             }else{
                 $qb->field('spotlight')->notEqual(true);
             }
+        }
+        $tag = $request->get('tag');
+        if (!empty($tag)){
+            $qb->field('tags')->equals($tag);
         }
         return $qb;
     }

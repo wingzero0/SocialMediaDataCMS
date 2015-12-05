@@ -11,6 +11,7 @@ namespace CodingGuys\CMSBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use AppBundle\Document\Post;
 
 class PostType extends AbstractType
 {
@@ -54,7 +55,7 @@ class PostType extends AbstractType
             ->add('publishStatus', 'choice', array(
                 'empty_value' => false,
                 'required' => true,
-                'choices' => array('draft' => 'Draft', 'review' => 'Review', 'published' => 'published'),
+                'choices' => Post::listOfPublishStatus(),
             ))
             ->add('content','textarea', array(
                 'attr' => array('rows' => '10'),

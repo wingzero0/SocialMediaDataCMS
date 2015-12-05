@@ -138,6 +138,12 @@ class Post extends BaseThread{
      */
     protected $softDelete;
 
+    /**
+     * @return array key to label
+     */
+    public static function listOfPublishStatus(){
+        return array('draft' => 'Draft', 'review' => 'Review', 'published' => 'Published');
+    }
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
         $global = $this->getMnemonoBiz()->getGlobalScore();
