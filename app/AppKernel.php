@@ -22,6 +22,8 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new FOS\CommentBundle\FOSCommentBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
+            new Mmoreram\GearmanBundle\GearmanBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new CodingGuys\CMSBundle\CodingGuysCMSBundle(),
         );

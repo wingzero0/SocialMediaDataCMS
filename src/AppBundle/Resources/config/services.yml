@@ -1,0 +1,4 @@
+services:
+    SyncFbFeedService:
+        class:  AppBundle\Services\SyncFbFeedService
+        arguments:  [ @service_container ]
