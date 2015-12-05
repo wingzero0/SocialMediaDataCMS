@@ -11,7 +11,6 @@ use AppBundle\Command\BaseCommand;
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\Post;
 use AppBundle\Document\MnemonoBiz;
-use AppBundle\Document\PostForReview;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,7 +48,7 @@ class PreprocessPostReportCommand extends BaseCommand{
         return $this->allBiz;
     }
 
-    private function createPostsForReview(MnemonoBiz $biz, $batchNo){
+    private function createPostsForReview(MnemonoBiz $biz){
         $updatedPosts = array();
         $this->loopCollectionWithSkipParam(function($limit, $skip) use ($biz){
             $this->getDM()->persist($biz);
@@ -60,15 +59,13 @@ class PreprocessPostReportCommand extends BaseCommand{
         $i = 1;
         $this->resetDM();
         $dm = $this->getDM();
+        $dm->persist($biz->getImportFromRef());
+        $dm->persist($biz);
         foreach($updatedPosts as $post){
             if ($post instanceof Post){
-                $postR = new PostForReview();
-                $postR->setPost($post);
-                $postR->setBatch($batchNo);
-                $postR->setRankPosition($i);
-                $postR->setRankScore($post->getFinalScore());
-                $postR->setTags($post->getTags());
-                $dm->merge($postR);
+                $post->setRankPosition($i);
+                $dm->persist($post->getImportFromRef());
+                $dm->persist($post);
                 $dm->flush();
                 $i++;
             }

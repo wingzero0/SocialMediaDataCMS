@@ -20,6 +20,9 @@ if you have the CMSTestData.tgz (include collection: MnemonoBiz, FacebookPage)
 if you use the generator
     app/console doctrine:mongodb:fixtures:load
 
+### create collection and index (remove the post embedded attribute first)
+    app/console doctrine:mongodb:schema:create
+
 ### create MnemonoBiz by FacebookPage
 created by single fans page
     app/console mnemono:sync:fbpagetobiz --action createFromFb --fbId xxxxx
@@ -36,9 +39,6 @@ By batch
 
 ### create user account
     http://yourServer/app_dev.php/register
-
-### create collection and index (remove the post embedded attribute first)
-    app/console doctrine:mongodb:schema:create
 
 ### rank
     app/console mnemono:rank:biz --id xxxxx
