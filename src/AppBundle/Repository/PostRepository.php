@@ -5,6 +5,7 @@ namespace AppBundle\Repository;
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\MnemonoBiz;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
 
 class PostRepository extends DocumentRepository
 {
@@ -47,5 +48,16 @@ class PostRepository extends DocumentRepository
         $qb = $this->createQueryBuilder()
             ->skip($skip)->limit($limit)->sort(array("_id" => -1));
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return Builder
+     */
+    public function getQueryBuilderSortWithRank(){
+        $qb = $this->createQueryBuilder()
+            ->field("rankPosition")->exists(true)
+            ->sort(array("rankPosition" => "asc", "finalScore" => "desc"))
+        ;
+        return $qb;
     }
 }

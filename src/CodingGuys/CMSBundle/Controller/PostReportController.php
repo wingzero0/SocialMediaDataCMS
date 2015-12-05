@@ -7,6 +7,7 @@
 
 namespace CodingGuys\CMSBundle\Controller;
 
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -18,35 +19,20 @@ use CodingGuys\CMSBundle\Controller\CMSBaseController;
  */
 class PostReportController extends CMSBaseController{
     /**
-     * find the lasted batch number
+     * show post by rank
      *
      * @Route("/", name="post_report_home")
      * @Method("GET")
      * @Template()
      */
     public function indexAction(Request $request){
-        $batchNum = $this->getPostForReviewRepo()->findLastBatchNum();
-        return $this->redirect($this->generateUrl("post_report_batch", array("batchNum" => $batchNum)));
-    }
-    /**
-     * Displays all post in batch
-     *
-     * @Route("/{batchNum}", name="post_report_batch")
-     * @Method("GET")
-     * @Template()
-     */
-    public function showBatchAction(Request $request, $batchNum){
         $limit = 50;
         $page = intval($request->get('page', 1));
-        $qb = $this->getPostForReviewRepo()->getQueryBuilderFindByBatch(intval($batchNum));
-
-        $query = $qb->limit(100)->sort(
-            array("rankPosition" => "asc", "rankScore" => "desc")
-        )->getQuery();
-
-        $paginator  = $this->get('knp_paginator');
+        $qb = $this->getPostRepo()->getQueryBuilderSortWithRank();
+        $qb = $this->compileFilter($request, $qb);
+        $paginator  = $this->getPaginator();
         $pagination = $paginator->paginate(
-            $query,
+            $qb->getQuery(),
             $page,
             $limit
         );
@@ -54,5 +40,26 @@ class PostReportController extends CMSBaseController{
         return array(
             'pagination' => $pagination,
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Builder $qb
+     * @return Builder
+     */
+    private function compileFilter(Request $request, Builder $qb){
+        $publishStatus = $request->get('publishStatus');
+        if (!empty($publishStatus)){
+            $qb->field('publishStatus')->equals($publishStatus);
+        }
+        $spotlight = $request->get('spotlight');
+        if (!empty($spotlight)){
+            if ($spotlight == 'Y'){
+                $qb->field('spotlight')->equals(true);
+            }else{
+                $qb->field('spotlight')->notEqual(true);
+            }
+        }
+        return $qb;
     }
 }

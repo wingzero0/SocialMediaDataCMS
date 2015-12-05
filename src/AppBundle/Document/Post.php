@@ -23,6 +23,7 @@ use JMS\Serializer\Annotation\Since;
  * @MongoDB\Indexes(
  *   @MongoDB\Index(keys={"mnemonoBiz"="desc", "updateAt"="desc"}),
  *   @MongoDB\Index(keys={"importFrom"="asc", "importFromRef.$id"="desc"}),
+ *   @MongoDB\Index(keys={"rankPosition"="asc", "finalScore"="desc"}),
  * )
  */
 class Post extends BaseThread{
@@ -108,6 +109,10 @@ class Post extends BaseThread{
      * @MongoDB\Index
      */
     protected $finalScore;
+    /**
+     * @MongoDB\Int
+     */
+    protected $rankPosition;
     /**
      * @MongoDB\Date
      */
@@ -650,5 +655,27 @@ class Post extends BaseThread{
     public function getOriginalLink()
     {
         return $this->originalLink;
+    }
+
+    /**
+     * Set rankPosition
+     *
+     * @param int $rankPosition
+     * @return self
+     */
+    public function setRankPosition($rankPosition)
+    {
+        $this->rankPosition = $rankPosition;
+        return $this;
+    }
+
+    /**
+     * Get rankPosition
+     *
+     * @return int $rankPosition
+     */
+    public function getRankPosition()
+    {
+        return $this->rankPosition;
     }
 }
