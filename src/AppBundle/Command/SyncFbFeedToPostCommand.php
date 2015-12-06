@@ -56,7 +56,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             $fbIds = $input->getOption('fbId');
             if (!empty($fbIds)){
                 foreach ($fbIds as $fbId){
-                    $this->createPostByFeedId($fbId);
+                    $this->createPostByFbId($fbId);
                 }
             }else{
                 $output->writeln("no fbId");
@@ -71,6 +71,22 @@ class SyncFbFeedToPostCommand extends BaseCommand{
                 $output->writeln("no fbId");
             }
         }
+    }
+
+    /**
+     * @param string $fbId
+     */
+    private function createPostByFbId($fbId){
+        $json = json_encode(array("fbId" => $fbId));
+        $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesSyncFbFeedService~createPost', $json);
+    }
+
+    /**
+     * @param string $fbId
+     */
+    private function updatePostByFbId($fbId){
+        $json = json_encode(array("fbId" => $fbId));
+        $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesSyncFbFeedService~updatePost', $json);
     }
 
     /**
@@ -132,16 +148,6 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     }
 
     /**
-     * @param string $fbId
-     */
-    private function updatePostByFbId($fbId){
-        $feed = $this->queryFeedByFbId($fbId);
-        $post = $this->queryPostByFeed($feed);
-        $this->updatePostByRef($post);
-    }
-
-
-    /**
      * @param Post $post
      */
     private function updatePostByRef(Post $post){
@@ -155,16 +161,6 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     }
 
     /**
-     * @param $fbId
-     * @return FacebookFeed|null
-     */
-    private function queryFeedByFbId($fbId){
-        $feed = $this->getDM()->createQueryBuilder($this->facebookFeedDocumentPath)
-            ->field("fbId")->equals($fbId)->getQuery()->getSingleResult();
-        return $feed;
-    }
-
-    /**
      * @param FacebookFeed $feed
      * @return Post|null
      */
@@ -174,13 +170,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
         return $post;
     }
 
-    /**
-     * @param string $fbId
-     */
-    private function createPostByFeedId($fbId){
-        $json = json_encode(array("fbId" => $fbId));
-        $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesSyncFbFeedService~createPost', $json);
-    }
+
 
     private function persistPost(Post $post){
         $dm = $this->getDM();

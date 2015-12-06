@@ -38,43 +38,43 @@ class SyncFbFeedService extends BaseService{
     public function createPost(\GearmanJob $job){
         $key_json = json_decode($job->workload(), true);
         $fbId = $key_json["fbId"];
-        $this->createPostByFeedId($fbId);
+        $this->resetDM();
+        $this->createPostByFbId($fbId);
 
         return true;
     }
 
     /**
-     * @param string $fromDate
-     * @param string $toDate
+     * Job for update post form fbID
+     *
+     * @param \GearmanJob $job Object with job parameters
+     *
+     * @return boolean
+     *
+     * @Gearman\Job(
+     *     iterations = 10,
+     *     name = "updatePost",
+     *     description = "update post"
+     * )
      */
-    private function createPostFromFbFeedCollection($fromDate, $toDate){
-        $this->loopCollectionWithQueryBuilder(
-            function($limit) use ($fromDate, $toDate){
-                return $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
-            },
-            function(FacebookFeed $feed){
-                $post = $this->createPostByFeed($feed);
-                if ($post != null){$this->persistPost($post);}
-            }
-        );
+    public function updatePost(\GearmanJob $job){
+        $key_json = json_decode($job->workload(), true);
+        $fbId = $key_json["fbId"];
+        $this->resetDM();
+        $this->updatePostByFbId($fbId);
+
+        return true;
     }
 
     /**
-     * @param string $fromDate
-     * @param string $toDate
+     * @param string $fbId
      */
-    private function updatePostFromFbFeedCollection($fromDate, $toDate){
-        $this->loopCollectionWithQueryBuilder(
-            function($limit) use ($fromDate, $toDate){
-                return $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
-            },
-            function(FacebookFeed $feed) {
-                $post = $this->queryPostByFeed($feed);
-                if ($post instanceof Post) {
-                    $this->updatePostByRef($post);
-                }
-            }
-        );
+    private function createPostByFbId($fbId){
+        $feed = $this->queryFeedByFbId($fbId);
+        if ($feed instanceof FacebookFeed){
+            $post = $this->createPostByFeed($feed);
+            if ($post != null){$this->persistPost($post);}
+        }
     }
 
     /**
@@ -114,17 +114,6 @@ class SyncFbFeedService extends BaseService{
      */
     private function queryPostByFeed(FacebookFeed $feed){
         return $this->getPostRepo()->findOneByFeed($feed);
-    }
-
-    /**
-     * @param string $fbId
-     */
-    private function createPostByFeedId($fbId){
-        $feed = $this->queryFeedByFbId($fbId);
-        if ($feed instanceof FacebookFeed){
-            $post = $this->createPostByFeed($feed);
-            if ($post != null){$this->persistPost($post);}
-        }
     }
 
     private function persistPost(Post $post){

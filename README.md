@@ -33,6 +33,7 @@ created by batch
 ### create Post by FacebookFeed
 created by single feed
     app/console mnemono:sync:fbfeedtopost --action createFromFb --fbId xxxxxx
+    app/console mnemono:sync:fbfeedtopost --action updateFromFb --fbId xxxxxx
 By batch
     app/console mnemono:sync:fbfeedtopost --action createFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
     app/console mnemono:sync:fbfeedtopost --action updateFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
@@ -47,3 +48,6 @@ By batch
 
 ### review
     app/console mnemono:post:review
+
+### background worker command
+    app/console gearman:worker:execute AppBundleServicesSyncFbFeedService
