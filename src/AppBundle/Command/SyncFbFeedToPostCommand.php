@@ -178,11 +178,8 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $fbId
      */
     private function createPostByFeedId($fbId){
-        $feed = $this->queryFeedByFbId($fbId);
-        if ($feed instanceof FacebookFeed){
-            $post = $this->createPost($feed);
-            if ($post != null){$this->persistPost($post);}
-        }
+        $json = json_encode(array("fbId" => $fbId));
+        $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesSyncFbFeedService~createPost', $json);
     }
 
     private function persistPost(Post $post){

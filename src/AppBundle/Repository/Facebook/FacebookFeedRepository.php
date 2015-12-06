@@ -8,6 +8,7 @@
 namespace AppBundle\Repository\Facebook;
 
 use AppBundle\Document\Facebook\FacebookPage;
+use AppBundle\Document\Facebook\FacebookFeed;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class FacebookFeedRepository extends DocumentRepository{
@@ -46,5 +47,14 @@ class FacebookFeedRepository extends DocumentRepository{
      */
     public function getRawById($id){
         return $this->createQueryBuilder()->hydrate(false)->field("id")->equals($id)->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @param $fbId
+     * @return FacebookFeed|null
+     */
+    public function findOneByFbId($fbId){
+        return $this->createQueryBuilder()
+            ->field("fbId")->equals($fbId)->getQuery()->getSingleResult();
     }
 }
