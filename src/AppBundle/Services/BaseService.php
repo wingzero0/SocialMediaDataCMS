@@ -11,6 +11,7 @@ use AppBundle\Utility\LoopCollectionStrategy;
 use AppBundle\Utility\DocumentPath;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use AppBundle\Repository\Facebook\FacebookFeedTimestampRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\MnemonoBizRepository;
@@ -100,6 +101,13 @@ abstract class BaseService {
      */
     protected function getFbFeedRepo(){
         return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
+    }
+
+    /**
+     * @return FacebookFeedTimestampRepository
+     */
+    protected function getFbFeedTimestampRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$facebookFeedTimestampDocumentPath);
     }
     /**
      * @return WeightingRepository

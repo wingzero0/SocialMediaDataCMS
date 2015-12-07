@@ -37,9 +37,8 @@ class PostRankingCommand extends BaseCommand{
         $ids = $input->getOption('id');
         if (!empty($ids)){
             foreach ($ids as $id){
-                $post = $this->getPostRepo()->find($id);
-                $this->updatePostLocalScore($post);
-                $this->updatePostFinalScore($post);
+                $json = json_encode(array("id" => $id));
+                $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesPostScoreService~updateScore', $json);
             }
         }else{
             $output->writeln("no id");
@@ -55,76 +54,9 @@ class PostRankingCommand extends BaseCommand{
                 break;
             }
             print_r($post->getId()."\n");
-            $this->updatePostLocalScore($post);
-            $this->updatePostFinalScore($post);
+            $json = json_encode(array("id" => $post->getId()));
+            $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesPostScoreService~updateScore', $json);
             $counter++;
         }
-    }
-
-    private function updatePostFinalScore(Post $post){
-        $localWeight = $this->getWeighting("localWeight");
-        $globalWeight = $this->getWeighting("globalWeight");
-        $adminWeight = $this->getWeighting("adminWeight");
-
-        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
-        $this->persistPost($post);
-        return $finalScore;
-    }
-
-    /**
-     * @param Post $post
-     * @return float|int
-     */
-    private function updatePostLocalScore(Post $post){
-        $fbFeed = $post->getImportFromRef();
-        $score = 0.0;
-        if ($fbFeed instanceof FacebookFeed){
-            $timestamps = $this->getDM()->getRepository($this->facebookFeedTimestampDocumentPath)
-                ->findAllByFeed($fbFeed, 12);
-            $likes = array();
-            $comments = array();
-            foreach($timestamps as $timestamp){
-                if ($timestamp instanceof FacebookFeedTimestamp){
-                    $likes[] = $timestamp->getLikesTotalCount();
-                    $comments[] = $timestamp->getCommentsTotalCount();
-                }
-            }
-            $deltaLikeScore = 0;
-            $deltaCommentScore = 0;
-            for ($i = 0;$i < count($likes) - 1; $i++){
-                $deltaLikeScore += ($likes[$i] - $likes[$i + 1]);
-                $deltaCommentScore += ($comments[$i] - $comments[$i+1]);
-            }
-            $score += ($deltaLikeScore * $this->getWeighting("deltaLikes")
-                + $deltaCommentScore * $this->getWeighting("deltaComments"));
-            if (!empty($likes)){
-                $score += ($likes[0] * $this->getWeighting("totalLikes")
-                    + $comments[0] * $this->getWeighting("totalComments"));
-            }
-        }
-        $post->setLocalScore($score);
-        $this->persistPost($post);
-        return $score;
-    }
-
-    /**
-     * @param $key
-     * @return float
-     */
-    private function getWeighting($key){
-        $weighting = $this->getWeightingRepo()->findOneByName($key);
-        if ($weighting == null){
-            return 1.0;
-        }
-        return $weighting->getValue();
-    }
-
-    /**
-     * @param Post $post
-     */
-    private function persistPost(Post $post){
-        $dm = $this->getDM();
-        $dm->persist($post);
-        $dm->flush();
     }
 }

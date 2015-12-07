@@ -99,8 +99,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
                 return $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
             },
             function(FacebookFeed $feed){
-                $post = $this->createPost($feed);
-                if ($post != null){$this->persistPost($post);}
+                $this->createPostByFbId($feed->getFbId());
             }
         );
     }
@@ -110,136 +109,13 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      * @param string $toDate
      */
     private function updatePostFromFbFeedCollection($fromDate, $toDate){
-        $this->loopFbFeedCollection($fromDate, $toDate,
-            function(FacebookFeed $feed) {
-                $post = $this->queryPostByFeed($feed);
-                if ($post instanceof Post) {
-                    $this->updatePostByRef($post);
-                }
+        $this->loopCollectionWithQueryBuilder(
+            function($limit) use ($fromDate, $toDate){
+                return $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
+            },
+            function(FacebookFeed $feed){
+                $this->updatePostByFbId($feed->getFbId());
             }
         );
-    }
-
-    private function loopFbFeedCollection($fromDate, $toDate, $callBack){
-        $limit = 100;
-        $lastFeedId = null;
-        $firstRun = true;
-
-        do{
-            $this->resetDM();
-            $qb = $this->getFbFeedRepo()->getQueryBuilderByDateRange($fromDate, $toDate, $limit);
-
-            if (!$firstRun){
-                $qb->field("id")->gt($lastFeedId);
-            }
-            $feeds = $qb->getQuery()->execute();
-
-            $newFeedCount = $feeds->count(true);
-            foreach($feeds as $feed){
-                if ($feed instanceof FacebookFeed){
-                    $callBack($feed);
-                    $lastFeedId = $feed->getId();
-                }else{
-                    $newFeedCount = -1; //something go wrong;
-                }
-            }
-            $firstRun = false;
-        }while($newFeedCount > 0);
-    }
-
-    /**
-     * @param Post $post
-     */
-    private function updatePostByRef(Post $post){
-        $ref = $post->getImportFromRef();
-        if ($ref instanceof FacebookFeed){
-            $post->setContent($ref->getMessage());
-            $post->setOriginalLink($ref->getShortLink());
-            $post->setMeta($this->fbMetaBuilder($ref));
-            $this->persistPost($post);
-        }
-    }
-
-    /**
-     * @param FacebookFeed $feed
-     * @return Post|null
-     */
-    private function queryPostByFeed(FacebookFeed $feed){
-        $post = $this->getDM()->getRepository($this->postDocumentPath)
-            ->findOneByFeed($feed);
-        return $post;
-    }
-
-
-
-    private function persistPost(Post $post){
-        $dm = $this->getDM();
-        $timing = new \DateTime();
-        if (!$post->getId()){
-            $post->setCreateAt($timing);
-        }
-        $post->setUpdateAt($timing);
-        $biz = $post->getMnemonoBiz();
-        if (!$biz instanceof MnemonoBiz) {
-            var_dump($post->getImportFromRef()->getId());
-        }
-        $biz->setLastPostUpdateAt($timing);
-        $dm->persist($biz);
-        $dm->persist($post);
-        $dm->flush();
-        $dm->clear();
-    }
-
-    /**
-     * @param FacebookFeed $feed
-     * @return Post|null
-     */
-    private function createPost(FacebookFeed $feed){
-        $fbPage = $feed->getFbPage();
-        if ($fbPage->getExcpetion() == true){
-            return null;
-        }
-
-        $post = $this->queryPostByFeed($feed);
-        if ($post != null){
-            return null;
-        }
-        $post = new Post();
-        $post->setImportFrom("facebookFeed");
-        $post->setImportFromRef($feed);
-        $post->setContent($feed->getMessage());
-        $post->setPublishStatus("review");
-        $post->setOriginalLink($feed->getShortLink());
-        $meta = $this->fbMetaBuilder($feed);
-        $post->setMeta($meta);
-        $biz = $this->getDM()->createQueryBuilder($this->mnemonoBizDocumentPath)
-            ->field("importFrom")->equals("facebookPage")
-            ->field("importFromRef")->references($feed->getFbPage())
-            ->getQuery()->getSingleResult();
-
-        if ($biz instanceof MnemonoBiz){
-            $post->setMnemonoBiz($biz);
-            $post->addTag($biz->getCategory());
-        }
-        return $post;
-    }
-    private function fbMetaBuilder(FacebookFeed $feed){
-        $meta = new FacebookMeta();
-        $likes = $feed->getLikes();
-        $comments = $feed->getComments();
-        $meta->setFbId($feed->getFbId());
-
-        $likeCount = 0;
-        if (isset($likes["summary"]) && isset($likes["summary"]["total_count"])){
-            $likeCount = $likes["summary"]["total_count"];
-        }
-        $meta->setFbTotalLikes($likeCount);
-
-        $commentCount = 0;
-        if (isset($comments["summary"]) && isset($comments["summary"]["total_count"])){
-            $commentCount = $comments["summary"]["total_count"];
-        }
-        $meta->setFbTotalComments($commentCount);
-        return $meta;
     }
 }

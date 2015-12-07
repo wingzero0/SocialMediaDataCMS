@@ -15,7 +15,7 @@ use AppBundle\Document\Post;
 
 /**
  * @Gearman\Work(
- *     iterations = 10,
+ *     iterations = 1000,
  *     description = "synchronize fb feed to mnenmono post",
  *     defaultMethod = "doBackground",
  *     service="SyncFbFeedService"
@@ -30,7 +30,7 @@ class SyncFbFeedService extends BaseService{
      * @return boolean
      *
      * @Gearman\Job(
-     *     iterations = 10,
+     *     iterations = 1000,
      *     name = "createPost",
      *     description = "Create post"
      * )
@@ -52,7 +52,7 @@ class SyncFbFeedService extends BaseService{
      * @return boolean
      *
      * @Gearman\Job(
-     *     iterations = 10,
+     *     iterations = 1000,
      *     name = "updatePost",
      *     description = "update post"
      * )
