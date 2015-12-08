@@ -50,7 +50,7 @@
             </tr>
         </thead>
         <tbody>
-        {% set rowNum = 1 %}
+        {% set rowNum = (page - 1) * limit + 1 %}
         {% for post in pagination %}
             <tr>
                 <td>{{ rowNum }}</td>

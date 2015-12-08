@@ -9,23 +9,15 @@ namespace AppBundle\Command;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\MongoDB\Query\Builder;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\MnemonoBizRepository;
+use AppBundle\Utility\LoopCollectionStrategy;
+use AppBundle\Utility\DocumentPath;
 
 abstract class BaseCommand extends ContainerAwareCommand{
-    protected $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
-    protected $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";
-    protected $facebookFeedTimestampDocumentPath = "AppBundle:Facebook\\FacebookFeedTimestamp";
-    protected $weightingDocumentPath = "AppBundle:Settings\\Weighting";
-    protected $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
-    protected $postDocumentPath = "AppBundle:Post";
     private $documentManager = null;
     /**
      * @param bool $reset
@@ -51,82 +43,47 @@ abstract class BaseCommand extends ContainerAwareCommand{
      * it will reset the dm in the loop
      */
     protected function loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack){
-        $limit = 100;
-        $lastFeedId = null;
-        $firstRun = true;
-
-        do{
+        $loopS = new LoopCollectionStrategy();
+        $loopS->loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack, function(){
             $this->resetDM();
-            $qb = $queryBuilderCallback($limit);
-
-            if (!$qb instanceof Builder){
-                break;
-            }
-
-            if (!$firstRun){
-                $qb->field("id")->gt($lastFeedId);
-            }
-            $cursor = $qb->getQuery()->execute();
-
-            $recordCount = $cursor->count(true);
-            foreach($cursor as $record){
-                $reducerCallBack($record);
-                $lastFeedId = $record->getId();
-            }
-            $firstRun = false;
-        }while($recordCount > 0);
+        });
     }
 
     protected function loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack){
-        $limit = 100;
-        $skip = 0;
-
-        do{
+        $loopS = new LoopCollectionStrategy();
+        $loopS->loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack, function(){
             $this->resetDM();
-            $qb = $queryBuilderCallback($limit, $skip);
-
-            if (!$qb instanceof Builder){
-                break;
-            }
-
-            $cursor = $qb->getQuery()->execute();
-
-            $recordCount = $cursor->count(true);
-            foreach($cursor as $record){
-                $reducerCallBack($record);
-            }
-            $skip += $recordCount;
-        }while($recordCount > 0);
+        });
     }
 
     /**
      * @return FacebookPageRepository
      */
     protected function getFacebookPageRepo(){
-        return $this->getDM()->getRepository($this->facebookPageDocumentPath);
+        return $this->getDM()->getRepository(DocumentPath::$facebookPageDocumentPath);
     }
     /**
      * @return FacebookFeedRepository
      */
     protected function getFbFeedRepo(){
-        return $this->getDM()->getRepository($this->facebookFeedDocumentPath);
+        return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
     }
     /**
      * @return WeightingRepository
      */
     protected function getWeightingRepo(){
-        return $this->getDM()->getRepository($this->weightingDocumentPath);
+        return $this->getDM()->getRepository(DocumentPath::$weightingDocumentPath);
     }
     /**
      * @return PostRepository
      */
     protected function getPostRepo(){
-        return $this->getDM()->getRepository($this->postDocumentPath);
+        return $this->getDM()->getRepository(DocumentPath::$postDocumentPath);
     }
     /**
      * @return MnemonoBizRepository
      */
     protected function getMnemenoBizRepo(){
-        return $this->getDM()->getRepository($this->mnemonoBizDocumentPath);
+        return $this->getDM()->getRepository(DocumentPath::$mnemonoBizDocumentPath);
     }
 }

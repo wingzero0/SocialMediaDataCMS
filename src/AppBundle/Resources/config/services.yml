@@ -1,0 +1,7 @@
+services:
+    SyncFbFeedService:
+        class:  AppBundle\Services\SyncFbFeedService
+        arguments:  [ @service_container ]
+    PostScoreService:
+        class:  AppBundle\Services\PostScoreService
+        arguments:  [ @service_container ]
