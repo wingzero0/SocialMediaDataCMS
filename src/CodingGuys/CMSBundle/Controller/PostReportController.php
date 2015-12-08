@@ -40,6 +40,8 @@ class PostReportController extends CMSBaseController{
 
         return array(
             'pagination' => $pagination,
+            'page' => $page,
+            'limit' => $limit,
             'lovPublishStatus' => Post::listOfPublishStatus(),
         );
     }

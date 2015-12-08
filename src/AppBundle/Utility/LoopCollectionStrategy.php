@@ -13,6 +13,7 @@ class LoopCollectionStrategy {
     /**
      * @param $queryBuilderCallback
      * @param $reducerCallBack
+     * @param $resetDMCallBack
      *
      * it will reset the dm in the loop
      */

@@ -18,6 +18,7 @@ use AppBundle\Repository\MnemonoBizRepository;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Mmoreram\GearmanBundle\Service\GearmanClient;
 
 abstract class BaseService {
     private $container;
@@ -53,6 +54,12 @@ abstract class BaseService {
         $this->container = $container;
     }
 
+    /**
+     * @return GearmanClient
+     */
+    protected function getGearman(){
+        return $this->getContainer()->get('gearman');
+    }
     /**
      * @param bool $reset
      * @return null|DocumentManager

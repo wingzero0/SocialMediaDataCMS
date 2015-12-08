@@ -12,6 +12,8 @@ use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\Facebook\FacebookMeta;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
+use Mmoreram\GearmanBundle\Service\GearmanClient;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * @Gearman\Work(
@@ -36,12 +38,18 @@ class SyncFbFeedService extends BaseService{
      * )
      */
     public function createPost(\GearmanJob $job){
-        $key_json = json_decode($job->workload(), true);
-        $fbId = $key_json["fbId"];
-        $this->resetDM();
-        $this->createPostByFbId($fbId);
-
-        return true;
+        try {
+            $key_json = json_decode($job->workload(), true);
+            $fbId = $key_json["fbId"];
+            $this->resetDM();
+            $post = $this->createPostByFbId($fbId);
+            $this->updateScore($post);
+            return true;
+        }catch (\Exception $e){
+            echo $e->getMessage()."\n";
+            echo $e->getTraceAsString()."\n";
+            exit(-1);
+        }
     }
 
     /**
@@ -58,37 +66,59 @@ class SyncFbFeedService extends BaseService{
      * )
      */
     public function updatePost(\GearmanJob $job){
-        $key_json = json_decode($job->workload(), true);
-        $fbId = $key_json["fbId"];
-        $this->resetDM();
-        $this->updatePostByFbId($fbId);
+        try{
+            $key_json = json_decode($job->workload(), true);
+            $fbId = $key_json["fbId"];
+            $this->resetDM();
+            $post = $this->updatePostByFbId($fbId);
+            $this->updateScore($post);
+            return true;
+        }catch (\Exception $e){
+            echo $e->getMessage()."\n";
+            echo $e->getTraceAsString()."\n";
+            exit(-1);
+        }
+    }
 
-        return true;
+    /**
+     * @param Post $post
+     */
+    private function updateScore($post){
+        if ($post instanceof Post){
+            $json = json_encode(array("id" => $post->getId()));
+            $this->getGearman()->doBackgroundJob('AppBundleServicesPostScoreService~updateScore', $json);
+        }
+
     }
 
     /**
      * @param string $fbId
+     * @return Post|null
      */
     private function createPostByFbId($fbId){
         $feed = $this->queryFeedByFbId($fbId);
         if ($feed instanceof FacebookFeed){
             $post = $this->createPostByFeed($feed);
             if ($post != null){$this->persistPost($post);}
+            return $post;
         }
+        return null;
     }
 
     /**
      * @param string $fbId
+     * @return Post
      */
     private function updatePostByFbId($fbId){
         $feed = $this->queryFeedByFbId($fbId);
         $post = $this->queryPostByFeed($feed);
-        $this->updatePostByRef($post);
+        return $this->updatePostByRef($post);
     }
 
 
     /**
      * @param Post $post
+     * @return Post
      */
     private function updatePostByRef(Post $post){
         $ref = $post->getImportFromRef();
@@ -98,6 +128,7 @@ class SyncFbFeedService extends BaseService{
             $post->setMeta($this->fbMetaBuilder($ref));
             $this->persistPost($post);
         }
+        return $post;
     }
 
     /**

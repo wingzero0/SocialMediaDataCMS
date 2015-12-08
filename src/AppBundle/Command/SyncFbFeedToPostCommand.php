@@ -29,11 +29,11 @@ class SyncFbFeedToPostCommand extends BaseCommand{
                 'createFromFbCollection')
             ->addOption('fromDate', null,
                 InputOption::VALUE_OPTIONAL,
-                'from date parameter, for --action=dumpFromFb',
+                'from date parameter, for --action=createFromFbCollection',
                 '')
             ->addOption('toDate', null,
                 InputOption::VALUE_OPTIONAL,
-                'to date parameter, for --action=dumpFromFb',
+                'to date parameter, for --action=createFromFbCollection',
                 '999999')
             ->addOption('fbId', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
