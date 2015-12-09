@@ -1,23 +1,21 @@
 <?php
 /**
  * User: kit
- * Date: 04/07/15
- * Time: 16:10
+ * Date: 12/9/2015
+ * Time: 1:52 PM
  */
 
-namespace CodingGuys\CMSBundle\Controller;
+namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Knp\Component\Pager\Paginator;
-use AppBundle\Repository\Settings\WeightingRepository;
-use AppBundle\Repository\PostRepository;
-use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Utility\DocumentPath;
+use AppBundle\Repository\PostRepository;
+use AppBundle\Repository\Settings\WeightingRepository;
+use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use Knp\Component\Pager\Paginator;
 
-class CMSBaseController extends Controller{
-
+abstract class AppBaseController extends Controller{
     /**
      * @return DocumentManager
      */
@@ -49,9 +47,5 @@ class CMSBaseController extends Controller{
      */
     protected function getFacebookFeedRepo(){
         return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
-    }
-
-    protected function getPaginator(){
-        return $this->get('knp_paginator');
     }
 }

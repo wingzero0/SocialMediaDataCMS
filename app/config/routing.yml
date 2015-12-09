@@ -1,15 +1,12 @@
 coding_guys_api:
-    resource: "@CodingGuysApiBundle/Resources/config/routing.yml"
-    prefix:   /
+    resource: "@CodingGuysApiBundle/Controller"
+    type:     annotation
+    prefix:   /api/
 
 coding_guys_cms:
     resource: "@CodingGuysCMSBundle/Controller/"
     type:     annotation
-    prefix:   /
-
-app:
-    resource: @AppBundle/Controller/
-    type:     annotation
+    prefix:   /cms/
 
 fos_comment_api:
     type: rest

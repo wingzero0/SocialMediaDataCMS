@@ -7,18 +7,18 @@
 
 namespace CodingGuys\CMSBundle\Controller;
 
+use AppBundle\Controller\AppBaseController;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use CodingGuys\CMSBundle\Controller\CMSBaseController;
 use AppBundle\Document\Post;
 
 /**
  * @Route("/dashboard/report")
  */
-class PostReportController extends CMSBaseController{
+class PostReportController extends AppBaseController{
     /**
      * show post by rank
      *
@@ -31,7 +31,7 @@ class PostReportController extends CMSBaseController{
         $page = intval($request->get('page', 1));
         $qb = $this->getPostRepo()->getQueryBuilderSortWithRank();
         $qb = $this->compileFilter($request, $qb);
-        $paginator  = $this->getPaginator();
+        $paginator  = $this->getKnpPaginator();
         $pagination = $paginator->paginate(
             $qb->getQuery(),
             $page,
