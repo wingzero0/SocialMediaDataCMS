@@ -1,0 +1,3 @@
+coding_guys_api_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: CodingGuysApiBundle:Default:index }

@@ -1,3 +1,7 @@
+coding_guys_api:
+    resource: "@CodingGuysApiBundle/Resources/config/routing.yml"
+    prefix:   /
+
 coding_guys_cms:
     resource: "@CodingGuysCMSBundle/Controller/"
     type:     annotation
