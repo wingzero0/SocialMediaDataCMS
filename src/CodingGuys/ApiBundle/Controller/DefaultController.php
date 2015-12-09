@@ -15,7 +15,7 @@ class DefaultController extends AppBaseController
      */
     public function indexAction()
     {
-        $posts = $this->getPostRepo()->getQueryBuilderSortWithRank()
+        $posts = $this->getPostRepo()->getPublicQueryBuilderSortWithRank()
             ->limit(100)
             ->getQuery()->execute();
         $ret = array();

@@ -46,14 +46,6 @@ class Post extends BaseThread{
      */
     protected $lastModDate;
     /**
-     * @MongoDB\Float
-     */
-    protected $rankingScoreAlgorithm;
-    /**
-     * @MongoDB\Float
-     */
-    protected $rankingScoreHuman;
-    /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\MnemonoBiz")
      * @MongoDB\Index
      */
@@ -77,6 +69,10 @@ class Post extends BaseThread{
      * @MongoDB\String
      */
     protected $originalLink;
+    /**
+     * @MongoDB\Collection
+     */
+    protected $imageLinks;
     /**
      * @MongoDB\EmbedOne(
      *   discriminatorField="importFrom",
@@ -145,6 +141,11 @@ class Post extends BaseThread{
         return array('draft' => 'Draft', 'review' => 'Review', 'published' => 'Published');
     }
 
+    public function __constract(){
+        $this->setTags(new ArrayCollection());
+        $this->setImageLinks(new ArrayCollection());
+    }
+
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
         $global = $this->getMnemonoBiz()->getGlobalScore();
         $local = $this->getLocalScore();
@@ -161,6 +162,8 @@ class Post extends BaseThread{
         $result = preg_match($pattern, $content, $matches);
         if ($result > 0){
             return $matches[0];
+        }else{
+            return "";
         }
     }
 
@@ -189,43 +192,11 @@ class Post extends BaseThread{
     /**
      * Get tags
      *
-     * @return array $tags
+     * @return collection $tags
      */
     public function getTags()
     {
         return $this->tags;
-    }
-
-    /**
-     * @param string $tag
-     */
-    public function addTag($tag){
-        if ($this->getTags() == null){
-            $this->setTags(array());
-        }
-        $tags = $this->getTags();
-        if (!in_array($tag, $tags)){
-            $tags[] = $tag;
-            $this->setTags($tags);
-        }
-    }
-
-    /**
-     * @param string $tag
-     */
-    public function removeTag($tag){
-        if ($this->getTags() == null){
-            $this->setTags(array());
-        }
-        $oldTags = $this->getTags();
-        $newTags = array();
-        foreach($oldTags as $ot){
-            if ($tag !== $ot){
-                $newTags[] = $ot;
-            }
-        }
-
-        $this->setTags($newTags);
     }
 
     /**
@@ -251,56 +222,12 @@ class Post extends BaseThread{
     }
 
     /**
-     * Set rankingScoreAlgorithm
-     *
-     * @param float $rankingScoreAlgorithm
-     * @return self
-     */
-    public function setRankingScoreAlgorithm($rankingScoreAlgorithm)
-    {
-        $this->rankingScoreAlgorithm = $rankingScoreAlgorithm;
-        return $this;
-    }
-
-    /**
-     * Get rankingScoreAlgorithm
-     *
-     * @return float $rankingScoreAlgorithm
-     */
-    public function getRankingScoreAlgorithm()
-    {
-        return $this->rankingScoreAlgorithm;
-    }
-
-    /**
-     * Set rankingScoreHuman
-     *
-     * @param float $rankingScoreHuman
-     * @return self
-     */
-    public function setRankingScoreHuman($rankingScoreHuman)
-    {
-        $this->rankingScoreHuman = $rankingScoreHuman;
-        return $this;
-    }
-
-    /**
-     * Get rankingScoreHuman
-     *
-     * @return float $rankingScoreHuman
-     */
-    public function getRankingScoreHuman()
-    {
-        return $this->rankingScoreHuman;
-    }
-
-    /**
      * Set mnemonoBiz
      *
-     * @param AppBundle\Document\MnemonoBiz $mnemonoBiz
+     * @param MnemonoBiz $mnemonoBiz
      * @return self
      */
-    public function setMnemonoBiz(\AppBundle\Document\MnemonoBiz $mnemonoBiz)
+    public function setMnemonoBiz(MnemonoBiz $mnemonoBiz)
     {
         $this->mnemonoBiz = $mnemonoBiz;
         return $this;
@@ -683,5 +610,27 @@ class Post extends BaseThread{
     public function getRankPosition()
     {
         return $this->rankPosition;
+    }
+
+    /**
+     * Set imageLinks
+     *
+     * @param collection $imageLinks
+     * @return self
+     */
+    public function setImageLinks($imageLinks)
+    {
+        $this->imageLinks = $imageLinks;
+        return $this;
+    }
+
+    /**
+     * Get imageLinks
+     *
+     * @return collection $imageLinks
+     */
+    public function getImageLinks()
+    {
+        return $this->imageLinks;
     }
 }

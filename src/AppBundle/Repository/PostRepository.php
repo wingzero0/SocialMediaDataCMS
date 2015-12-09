@@ -56,8 +56,15 @@ class PostRepository extends DocumentRepository
     public function getQueryBuilderSortWithRank(){
         $qb = $this->createQueryBuilder()
             ->field("rankPosition")->exists(true)
+            ->field("softDelete")->notEqual(true)
             ->sort(array("rankPosition" => "asc", "finalScore" => "desc"))
         ;
+        return $qb;
+    }
+
+    public function getPublicQueryBuilderSortWithRank(){
+        $qb = $this->getQueryBuilderSortWithRank()
+            ->field("publishStatus")->equals("published");
         return $qb;
     }
 }

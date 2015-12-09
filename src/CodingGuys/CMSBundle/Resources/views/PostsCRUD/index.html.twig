@@ -37,8 +37,8 @@
                 <th>Action</th>
                 <th>MnemonoBiz</th>
                 <th>Tags</th>
-                <th>RSA</th>
-                <th>RSH</th>
+                <th>Local Score</th>
+                <th>Admin Score</th>
                 <th>Import From</th>
                 <th>Meta</th>
                 <th>Last Modified date</th>
@@ -70,8 +70,8 @@
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{{ document.rankingScoreAlgorithm }}</td>
-                    <td>{{ document.rankingScoreHuman }}</td>
+                    <td>{{ document.localScore }}</td>
+                    <td>{{ document.adminScore }}</td>
                     {% if document.importFromRef is not null %}
                         <td>{{ document.importFrom }}<td>
                     {% else %}

@@ -39,11 +39,11 @@ class PostType extends AbstractType
                 'data' => new \DateTime("now"),
                 'required' => false
             ))
-            ->add('rankingScoreAlgorithm','number', array(
+            ->add('localScore','number', array(
                 'read_only' => true,
                 'required' => false
             ))
-            ->add('rankingScoreHuman','number', array(
+            ->add('adminScore','number', array(
                 'required' => false
             ))
             ->add('mnemonoBiz', new MnemonoBizType(), array(
