@@ -8,6 +8,7 @@
 
 namespace CodingGuys\CMSBundle\Controller;
 
+use AppBundle\Controller\AppBaseController;
 use AppBundle\Document\Facebook\FacebookFeed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -20,7 +21,7 @@ use CodingGuys\CMSBundle\Form\PostType;
 /**
  * @Route("/dashboard/posts")
  */
-class PostsCRUDController extends CMSBaseController{
+class PostsCRUDController extends AppBaseController{
     /**
      * Displays all the Posts in DB
      *

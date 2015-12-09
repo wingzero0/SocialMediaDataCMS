@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new Mmoreram\GearmanBundle\GearmanBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new CodingGuys\CMSBundle\CodingGuysCMSBundle(),
+            new CodingGuys\ApiBundle\CodingGuysApiBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

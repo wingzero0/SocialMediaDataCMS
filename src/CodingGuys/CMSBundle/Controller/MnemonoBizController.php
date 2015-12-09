@@ -10,10 +10,10 @@ namespace CodingGuys\CMSBundle\Controller;
 
 /*use Nelmio\ApiDocBundle\Annotation\ApiDoc;*/
 
+use AppBundle\Controller\AppBaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use CodingGuys\CMSBundle\Controller\CMSBaseController;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\MnemonoBiz;
 use CodingGuys\CMSBundle\Form\MnemonoBizType;
@@ -21,7 +21,7 @@ use CodingGuys\CMSBundle\Form\MnemonoBizType;
 /**
  * @Route("/dashboard/mnemonobiz")
  */
-class MnemonoBizController extends CMSBaseController {
+class MnemonoBizController extends AppBaseController {
     /**
      * @Route("/", name="mnemonobiz_home")
      * @Method("GET")

@@ -7,6 +7,7 @@
 
 namespace CodingGuys\CMSBundle\Controller;
 
+use AppBundle\Controller\AppBaseController;
 use CodingGuys\CMSBundle\Controller\CMSBaseController;
 use CodingGuys\CMSBundle\Form\Settings\WeightingType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,7 +19,7 @@ use AppBundle\Document\Settings\Weighting;
 /**
  * @Route("/dashboard/settings")
  */
-class SettingController extends CMSBaseController{
+class SettingController extends AppBaseController{
     /**
      * @Route("/weighting", name="weighting_home")
      * @Method("GET")
