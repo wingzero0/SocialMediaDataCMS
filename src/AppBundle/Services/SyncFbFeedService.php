@@ -185,13 +185,15 @@ class SyncFbFeedService extends BaseService{
         $post->setContent($feed->getMessage());
         $post->setPublishStatus("review");
         $post->setOriginalLink($feed->getShortLink());
+        $currentDate = new \DateTime();
+        $post->setExpireDate($currentDate->add(new \DateInterval("P7D")));
         $meta = $this->fbMetaBuilder($feed);
         $post->setMeta($meta);
         $biz = $this->getMnemenoBizRepo()->findOneByFbPage($feed->getFbPage());
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
-            $post->addTag($biz->getCategory());
+            $post->setTags(array($biz->getCategory()));
         }
         return $post;
     }

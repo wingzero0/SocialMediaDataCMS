@@ -78,8 +78,8 @@ class PreprocessPostReportCommand extends BaseCommand{
      * @return \Doctrine\MongoDB\Query\Builder
      */
     private function getBizQueryBuilder($limit, $skip){
-        $postRepo = $this->getMnemenoBizRepo();
-        return $postRepo->getQueryBuilderFindAllByDateRange($this->startDate, $this->endDate, $limit, $skip);
+        $bizRepo = $this->getMnemenoBizRepo();
+        return $bizRepo->getQueryBuilderFindAllByDateRange($this->startDate, $this->endDate, $limit, $skip);
     }
     /**
      * @param int $limit
@@ -88,7 +88,7 @@ class PreprocessPostReportCommand extends BaseCommand{
      */
     private function getPostQueryBuilder(MnemonoBiz $biz, $limit, $skip){
         $postRepo = $this->getPostRepo();
-        return $postRepo->getQueryBuilderFindAllByBizAndDateRange($biz, $this->startDate, $this->endDate, $limit, $skip)
+        return $postRepo->getQueryBuilderFindNonExpire($biz, $this->endDate, $limit, $skip)
             ->field("finalScore")->exists(true)
             ->field("finalScore")->notEqual(null)
             ->sort("finalScore", "desc");
