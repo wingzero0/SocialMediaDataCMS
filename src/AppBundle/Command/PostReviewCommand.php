@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PreprocessPostReportCommand extends BaseCommand{
+class PostReviewCommand extends BaseCommand{
     private $endDate;
     private $startDate;
     private $allBiz;
@@ -25,7 +25,8 @@ class PreprocessPostReportCommand extends BaseCommand{
         ;
     }
     protected function execute(InputInterface $input, OutputInterface $output){
-        $allBiz = $this->getAllUpdatedBiz();
+        $this->resetDateRange();
+        $allBiz = $this->getAllBiz();
         $tmp = new \MongoDate();
         $batchNo = $tmp->sec;
 
@@ -36,7 +37,18 @@ class PreprocessPostReportCommand extends BaseCommand{
     }
 
     private function getAllUpdatedBiz(){
-        $this->resetDateRange();
+        $this->allBiz = array();
+        $this->loopCollectionWithSkipParam(function($limit, $skip){
+            return $this->getUpdatedBizQueryBuilder($limit, $skip);
+        }, function(MnemonoBiz $biz){
+            $bizId = (string) ($biz->getId());
+            $this->allBiz[$bizId] = $biz;
+        });
+        echo count($this->allBiz);
+        return $this->allBiz;
+    }
+
+    private function getAllBiz(){
         $this->allBiz = array();
         $this->loopCollectionWithSkipParam(function($limit, $skip){
             return $this->getBizQueryBuilder($limit, $skip);
@@ -52,7 +64,7 @@ class PreprocessPostReportCommand extends BaseCommand{
         $updatedPosts = array();
         $this->loopCollectionWithSkipParam(function($limit, $skip) use ($biz){
             $this->getDM()->persist($biz);
-            return $this->getPostQueryBuilder($biz, $limit, $skip)->sort("finalScore");
+            return $this->getPostQueryBuilder($biz, $limit, $skip)->sort( array("finalScore" => "desc") );
         }, function(Post $post) use (&$updatedPosts){
             $updatedPosts[] = $post;
         });
@@ -77,7 +89,7 @@ class PreprocessPostReportCommand extends BaseCommand{
      * @param int $skip
      * @return \Doctrine\MongoDB\Query\Builder
      */
-    private function getBizQueryBuilder($limit, $skip){
+    private function getUpdatedBizQueryBuilder($limit, $skip){
         $bizRepo = $this->getMnemenoBizRepo();
         return $bizRepo->getQueryBuilderFindAllByDateRange($this->startDate, $this->endDate, $limit, $skip);
     }
@@ -86,9 +98,18 @@ class PreprocessPostReportCommand extends BaseCommand{
      * @param int $skip
      * @return \Doctrine\MongoDB\Query\Builder
      */
+    private function getBizQueryBuilder($limit, $skip){
+        $bizRepo = $this->getMnemenoBizRepo();
+        return $bizRepo->getQueryBuilderFindAll($limit, $skip);
+    }
+    /**
+     * @param int $limit
+     * @param int $skip
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
     private function getPostQueryBuilder(MnemonoBiz $biz, $limit, $skip){
         $postRepo = $this->getPostRepo();
-        return $postRepo->getQueryBuilderFindNonExpire($biz, $this->endDate, $limit, $skip)
+        return $postRepo->getQueryBuilderFindNonExpireByBiz($biz, $this->endDate, $limit, $skip)
             ->field("finalScore")->exists(true)
             ->field("finalScore")->notEqual(null)
             ->sort("finalScore", "desc");

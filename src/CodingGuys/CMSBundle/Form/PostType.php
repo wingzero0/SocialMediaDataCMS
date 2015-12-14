@@ -39,6 +39,9 @@ class PostType extends AbstractType
                 'data' => new \DateTime("now"),
                 'required' => false
             ))
+            ->add('rankPosition','number', array(
+                'required' => false
+            ))
             ->add('localScore','number', array(
                 'read_only' => true,
                 'required' => false
@@ -56,6 +59,9 @@ class PostType extends AbstractType
                 'empty_value' => false,
                 'required' => true,
                 'choices' => Post::listOfPublishStatus(),
+            ))
+            ->add('expireDate','datetime', array(
+                'required' => true,
             ))
             ->add('content','textarea', array(
                 'attr' => array('rows' => '10'),

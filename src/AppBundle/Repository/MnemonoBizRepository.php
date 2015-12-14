@@ -19,9 +19,19 @@ class MnemonoBizRepository extends DocumentRepository{
      * @return \Doctrine\MongoDB\Query\Builder
      */
     public function getQueryBuilderFindAllByDateRange(\DateTime $startDate, \DateTime $endDate, $limit = 100, $skip = 0){
-        $qb = $this->createQueryBuilder()
+        $qb = $this->getQueryBuilderFindAll($limit, $skip)
             ->field("lastPostUpdateAt")->gte($startDate)
-            ->field("lastPostUpdateAt")->lte($endDate)
+            ->field("lastPostUpdateAt")->lte($endDate);
+        return $qb;
+    }
+
+    /**
+     * @param int $limit
+     * @param int $skip
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
+    public function getQueryBuilderFindAll($limit = 100, $skip = 0){
+        $qb = $this->createQueryBuilder()
             ->skip($skip)->limit($limit);
         return $qb;
     }

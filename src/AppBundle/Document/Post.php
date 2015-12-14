@@ -24,6 +24,7 @@ use JMS\Serializer\Annotation\Since;
  *   @MongoDB\Index(keys={"mnemonoBiz"="desc", "updateAt"="desc"}),
  *   @MongoDB\Index(keys={"importFrom"="asc", "importFromRef.$id"="desc"}),
  *   @MongoDB\Index(keys={"rankPosition"="asc", "finalScore"="desc"}),
+ *   @MongoDB\Index(keys={"expireDate"="desc", "rankPosition"="asc", "finalScore"="desc"}),
  * )
  */
 class Post extends BaseThread{
@@ -126,6 +127,7 @@ class Post extends BaseThread{
     protected $spotlight;
     /**
      * @MongoDB\Date
+     * @MongoDB\Index
      */
     protected $expireDate;
     /**

@@ -58,6 +58,11 @@
             {{ form_widget(form.lastModDate, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
+            {{ form_label(form.rankPosition) }}
+            {{ form_errors(form.rankPosition) }}
+            {{ form_widget(form.rankPosition, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
             {{ form_label(form.localScore) }}
             {{ form_errors(form.localScore) }}
             {{ form_widget(form.localScore, {'attr': {'class': 'form-control'} }) }}
@@ -76,6 +81,11 @@
             {{ form_label(form.publishStatus) }}
             {{ form_errors(form.publishStatus) }}
             {{ form_widget(form.publishStatus, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.expireDate) }}
+            {{ form_errors(form.expireDate) }}
+            {{ form_widget(form.expireDate, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
             {{ form_label(form.softDelete) }}
