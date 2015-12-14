@@ -84,9 +84,23 @@ class PostScoreService extends BaseService{
                     + $comments[0] * $this->getWeighting("totalComments"));
             }
         }
+
+        $score = $score * $this->timePenaltyFactor($post);
         $post->setLocalScore($score);
         $this->persistPost($post);
         return $score;
+    }
+
+    private function timePenaltyFactor(Post $post){
+        $createAt = $post->getCreateAt();
+        $currentTime = new \DateTime();
+        $interval = $currentTime->diff($createAt);
+        if ($interval->days <= 1){
+            print_r($interval);
+            return 1.0 / log(1.5);
+        }else{
+            return 1.0 / log($interval->days);
+        }
     }
 
     /**

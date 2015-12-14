@@ -149,6 +149,7 @@ class SyncFbFeedService extends BaseService{
 
     private function persistPost(Post $post){
         $dm = $this->getDM();
+        // TODO set the fb original create at;
         $timing = new \DateTime();
         if (!$post->getId()){
             $post->setCreateAt($timing);

@@ -138,9 +138,9 @@ class PostsCRUDController extends AppBaseController{
      * @Template("CodingGuysCMSBundle:PostsCRUD:new.html.twig")
      */
     public function editAction(Request $request, $id){
-        $document = $this->get('doctrine.odm.mongodb.document_manager')->getRepository('AppBundle:Post')->find($id);
+        $document = $this->getPostRepo()->find($id);
 
-        if (!$document) {
+        if (!($document instanceof Post)) {
             throw $this->createNotFoundException('Unable to find Post document.');
         }
 
@@ -148,7 +148,8 @@ class PostsCRUDController extends AppBaseController{
 
         $editForm->handleRequest($request);
         if($editForm->isValid()){
-            $dm = $this->get('doctrine_mongodb')->getManager();
+            $this->updatePostFinalScore($document);
+            $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
 
@@ -286,5 +287,12 @@ class PostsCRUDController extends AppBaseController{
             ;
     }
 
+    private function updatePostFinalScore(Post $post){
+        $localWeight = $this->getWeighting("localWeight");
+        $globalWeight = $this->getWeighting("globalWeight");
+        $adminWeight = $this->getWeighting("adminWeight");
 
+        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
+        return $finalScore;
+    }
 }
