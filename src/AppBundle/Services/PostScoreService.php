@@ -62,20 +62,26 @@ class PostScoreService extends BaseService{
         $fbFeed = $post->getImportFromRef();
         $score = 0.0;
         if ($fbFeed instanceof FacebookFeed){
-            $timestamps = $this->getFbFeedTimestampRepo()->findAllByFeed($fbFeed, 12);
+            $feedTimestamps = $this->getFbFeedTimestampRepo()->findAllByFeed($fbFeed, 12);
             $likes = array();
             $comments = array();
-            foreach($timestamps as $timestamp){
-                if ($timestamp instanceof FacebookFeedTimestamp){
-                    $likes[] = $timestamp->getLikesTotalCount();
-                    $comments[] = $timestamp->getCommentsTotalCount();
+            $updateTimeArray = array();
+            foreach($feedTimestamps as $feedTimestamp){
+                if ($feedTimestamp instanceof FacebookFeedTimestamp){
+                    $likes[] = $feedTimestamp->getLikesTotalCount();
+                    $comments[] = $feedTimestamp->getCommentsTotalCount();
+                    $updateTimeArray[] = $feedTimestamp->getUpdateTime();
                 }
             }
             $deltaLikeScore = 0;
             $deltaCommentScore = 0;
             for ($i = 0;$i < count($likes) - 1; $i++){
-                $deltaLikeScore += ($likes[$i] - $likes[$i + 1]);
-                $deltaCommentScore += ($comments[$i] - $comments[$i+1]);
+                $timestamp1 = $updateTimeArray[$i];
+                $timestamp2 = $updateTimeArray[$i + 1];
+                $penaltyFactor = $this->timePenaltyFactor($timestamp1, $timestamp2);
+
+                $deltaLikeScore += ($likes[$i] - $likes[$i + 1]) * $penaltyFactor;
+                $deltaCommentScore += ($comments[$i] - $comments[$i+1]) * $penaltyFactor;
             }
             $score += ($deltaLikeScore * $this->getWeighting("deltaLikes")
                 + $deltaCommentScore * $this->getWeighting("deltaComments"));
@@ -85,18 +91,15 @@ class PostScoreService extends BaseService{
             }
         }
 
-        $score = $score * $this->timePenaltyFactor($post);
+        $score = $score * $this->timePenaltyFactor(new \DateTime(), $post->getCreateAt());
         $post->setLocalScore($score);
         $this->persistPost($post);
         return $score;
     }
 
-    private function timePenaltyFactor(Post $post){
-        $createAt = $post->getCreateAt();
-        $currentTime = new \DateTime();
-        $interval = $currentTime->diff($createAt);
+    private function timePenaltyFactor(\DateTime $dateTime1, \DateTime $dateTime2){
+        $interval = $dateTime1->diff($dateTime2);
         if ($interval->days <= 1){
-            print_r($interval);
             return 1.0 / log(1.5);
         }else{
             return 1.0 / log($interval->days);

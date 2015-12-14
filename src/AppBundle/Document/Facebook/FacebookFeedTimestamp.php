@@ -30,6 +30,10 @@ class FacebookFeedTimestamp {
      */
     protected $commentsTotalCount;
     /**
+     * @MongoDB\Date
+     */
+    protected $updateTime;
+    /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookPage")
      */
     protected $fbPage;
@@ -135,5 +139,27 @@ class FacebookFeedTimestamp {
     public function getFbFeed()
     {
         return $this->fbFeed;
+    }
+
+    /**
+     * Set updateTime
+     *
+     * @param date $updateTime
+     * @return self
+     */
+    public function setUpdateTime($updateTime)
+    {
+        $this->updateTime = $updateTime;
+        return $this;
+    }
+
+    /**
+     * Get updateTime
+     *
+     * @return date $updateTime
+     */
+    public function getUpdateTime()
+    {
+        return $this->updateTime;
     }
 }
