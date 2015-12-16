@@ -149,6 +149,7 @@ class PostsCRUDController extends AppBaseController{
         $editForm->handleRequest($request);
         if($editForm->isValid()){
             $this->updatePostFinalScore($document);
+            $document->setLastModDate(new \DateTime());
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();

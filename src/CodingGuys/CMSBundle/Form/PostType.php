@@ -36,8 +36,10 @@ class PostType extends AbstractType
                 'required' => false
             ))
             ->add('lastModDate','date', array(
-                'data' => new \DateTime("now"),
-                'required' => false
+                'read_only' => true,
+                'required' => false,
+                'widget' => 'single_text',
+                'format' => 'yyyy-MM-dd',
             ))
             ->add('rankPosition','number', array(
                 'required' => false

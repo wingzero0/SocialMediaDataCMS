@@ -4,6 +4,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\MnemonoBiz;
+use AppBundle\Document\Post;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
@@ -11,7 +12,7 @@ class PostRepository extends DocumentRepository
 {
     /**
      * @param FacebookFeed $feed
-     * @return AppBundle\Document\Post|null
+     * @return Post|null
      */
     public function findOneByFeed(FacebookFeed $feed){
         $post = $this->createQueryBuilder()

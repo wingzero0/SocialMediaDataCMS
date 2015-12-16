@@ -107,11 +107,19 @@ class SyncFbFeedService extends BaseService{
 
     /**
      * @param string $fbId
-     * @return Post
+     * @return Post|null
      */
     private function updatePostByFbId($fbId){
         $feed = $this->queryFeedByFbId($fbId);
+        if (!($feed instanceof FacebookFeed)){
+            echo "FacebookFeed of fbID " . $fbId . " not found\n";
+            return null;
+        }
         $post = $this->queryPostByFeed($feed);
+        if (!($post instanceof Post)){
+            echo "Post of FacebookFeed ID: " . $feed->getId() . " fbID " . $fbId . " not found\n";
+            return null;
+        }
         return $this->updatePostByRef($post);
     }
 
