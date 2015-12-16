@@ -16,13 +16,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PostRankingCommand extends BaseCommand{
+class PostScoreCommand extends BaseCommand{
     protected function configure(){
-        $this->setName("mnemono:rank:post")
-            ->setDescription("calculate a post ranking score")
+        $this->setName("mnemono:post:score")
+            ->setDescription("calculate a post's score")
             ->addOption('id', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'the id of post which you want to rank')
+                'the id of post which you want to calculate score')
             ->addOption('genTest', null,
                 InputOption::VALUE_NONE,
                 'generate a test list of command for dummy testing')

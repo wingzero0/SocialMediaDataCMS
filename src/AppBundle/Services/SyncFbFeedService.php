@@ -107,11 +107,19 @@ class SyncFbFeedService extends BaseService{
 
     /**
      * @param string $fbId
-     * @return Post
+     * @return Post|null
      */
     private function updatePostByFbId($fbId){
         $feed = $this->queryFeedByFbId($fbId);
+        if (!($feed instanceof FacebookFeed)){
+            echo "FacebookFeed of fbID " . $fbId . " not found\n";
+            return null;
+        }
         $post = $this->queryPostByFeed($feed);
+        if (!($post instanceof Post)){
+            echo "Post of FacebookFeed ID: " . $feed->getId() . " fbID " . $fbId . " not found\n";
+            return null;
+        }
         return $this->updatePostByRef($post);
     }
 
@@ -149,6 +157,7 @@ class SyncFbFeedService extends BaseService{
 
     private function persistPost(Post $post){
         $dm = $this->getDM();
+        // TODO set the fb original create at;
         $timing = new \DateTime();
         if (!$post->getId()){
             $post->setCreateAt($timing);
@@ -185,13 +194,15 @@ class SyncFbFeedService extends BaseService{
         $post->setContent($feed->getMessage());
         $post->setPublishStatus("review");
         $post->setOriginalLink($feed->getShortLink());
+        $currentDate = new \DateTime();
+        $post->setExpireDate($currentDate->add(new \DateInterval("P7D")));
         $meta = $this->fbMetaBuilder($feed);
         $post->setMeta($meta);
         $biz = $this->getMnemenoBizRepo()->findOneByFbPage($feed->getFbPage());
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
-            $post->addTag($biz->getCategory());
+            $post->setTags(array($biz->getCategory()));
         }
         return $post;
     }

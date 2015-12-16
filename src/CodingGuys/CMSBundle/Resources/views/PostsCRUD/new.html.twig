@@ -52,10 +52,10 @@
             {{ form_errors(form.mnemonoCat) }}
             {{ form_widget(form.mnemonoCat, {'attr': {'class': 'form-control'} }) }}
         </div>
-        <div class="form-group" style="display: none">
-            {{ form_label(form.lastModDate) }}
-            {{ form_errors(form.lastModDate) }}
-            {{ form_widget(form.lastModDate, {'attr': {'class': 'form-control'} }) }}
+        <div class="form-group">
+            {{ form_label(form.rankPosition) }}
+            {{ form_errors(form.rankPosition) }}
+            {{ form_widget(form.rankPosition, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
             {{ form_label(form.localScore) }}
@@ -68,14 +68,19 @@
             {{ form_widget(form.adminScore, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
-            {{ form_label(form.mnemonoBiz) }}
-            {{ form_errors(form.mnemonoBiz.name) }}
-            {{ form_widget(form.mnemonoBiz.name, {'attr': {'class': 'form-control'} }) }}
+            {{ form_label(form.importFrom) }}
+            {{ form_errors(form.importFrom) }}
+            {{ form_widget(form.importFrom, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
             {{ form_label(form.publishStatus) }}
             {{ form_errors(form.publishStatus) }}
             {{ form_widget(form.publishStatus, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.expireDate) }}
+            {{ form_errors(form.expireDate) }}
+            {{ form_widget(form.expireDate) }}
         </div>
         <div class="form-group">
             {{ form_label(form.softDelete) }}
@@ -88,15 +93,15 @@
             {{ form_widget(form.spotlight, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
+            {{ form_label(form.lastModDate) }}
+            {{ form_errors(form.lastModDate) }}
+            {{ form_widget(form.lastModDate, {'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
             {{ form_label(form.submit) }}
             {{ form_widget(form.submit, {'attr': {'class': 'btn btn-default'} }) }}
         </div>
-
-
         {% do form.tags.setRendered %}
-        {% do form.lastModDate.setRendered %}
-        {% do form.mnemonoBiz.setRendered %}
-        {% do form.importFrom.setRendered %}
         {{ form_end(form) }}
 
     </div>

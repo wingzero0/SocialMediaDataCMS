@@ -4,6 +4,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\MnemonoBiz;
+use AppBundle\Document\Post;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
@@ -11,7 +12,7 @@ class PostRepository extends DocumentRepository
 {
     /**
      * @param FacebookFeed $feed
-     * @return AppBundle\Document\Post|null
+     * @return Post|null
      */
     public function findOneByFeed(FacebookFeed $feed){
         $post = $this->createQueryBuilder()
@@ -20,23 +21,6 @@ class PostRepository extends DocumentRepository
             ->getQuery()->getSingleResult();
 
         return $post;
-    }
-
-    /**
-     * @param MnemonoBiz $biz
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param int $limit
-     * @param int $skip
-     * @return \Doctrine\MongoDB\Query\Builder
-     */
-    public function getQueryBuilderFindAllByBizAndDateRange(MnemonoBiz $biz, \DateTime $startDate, \DateTime $endDate, $limit = 100, $skip = 0){
-        $qb = $this->createQueryBuilder()
-            ->field("mnemonoBiz")->references($biz)
-            ->field("updateAt")->gte($startDate)
-            ->field("updateAt")->lte($endDate)
-            ->skip($skip)->limit($limit);
-        return $qb;
     }
 
     /**
@@ -51,11 +35,47 @@ class PostRepository extends DocumentRepository
     }
 
     /**
+     * @param \DateTime $expireDate
+     * @param int $limit
+     * @param int $skip
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
+    public function getQueryBuilderFindNonExpire(\DateTime $expireDate = null, $limit = 100, $skip = 0){
+        if ($expireDate == null){
+            $expireDate = new \DateTime();
+        }
+        $qb = $this->createQueryBuilder()
+            ->field("expireDate")->gte($expireDate)
+            ->field("softDelete")->notEqual(true)
+            ->skip($skip)->limit($limit);
+        return $qb;
+    }
+
+    /**
+     * @param MnemonoBiz $biz
+     * @param \DateTime $expireDate
+     * @param int $limit
+     * @param int $skip
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
+    public function getQueryBuilderFindNonExpireByBiz(MnemonoBiz $biz, \DateTime $expireDate = null, $limit = 100, $skip = 0){
+        $qb = $this->getQueryBuilderFindNonExpire($expireDate, $limit, $skip)
+            ->field("mnemonoBiz")->references($biz);
+        return $qb;
+    }
+
+
+    /**
+     * @param \DateTime $expireDate
      * @return Builder
      */
-    public function getQueryBuilderSortWithRank(){
+    public function getQueryBuilderSortWithRank(\DateTime $expireDate = null){
+        if ($expireDate == null){
+            $expireDate = new \DateTime();
+        }
         $qb = $this->createQueryBuilder()
             ->field("rankPosition")->exists(true)
+            ->field("expireDate")->gte($expireDate)
             ->field("softDelete")->notEqual(true)
             ->sort(array("rankPosition" => "asc", "finalScore" => "desc"))
         ;

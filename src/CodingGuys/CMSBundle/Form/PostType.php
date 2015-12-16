@@ -36,7 +36,12 @@ class PostType extends AbstractType
                 'required' => false
             ))
             ->add('lastModDate','date', array(
-                'data' => new \DateTime("now"),
+                'read_only' => true,
+                'required' => false,
+                'widget' => 'single_text',
+                'format' => 'yyyy-MM-dd',
+            ))
+            ->add('rankPosition','number', array(
                 'required' => false
             ))
             ->add('localScore','number', array(
@@ -46,9 +51,6 @@ class PostType extends AbstractType
             ->add('adminScore','number', array(
                 'required' => false
             ))
-            ->add('mnemonoBiz', new MnemonoBizType(), array(
-                'read_only' => true
-            ))
             ->add('importFrom', 'text', array(
                 'read_only' => true
             ))
@@ -56,6 +58,9 @@ class PostType extends AbstractType
                 'empty_value' => false,
                 'required' => true,
                 'choices' => Post::listOfPublishStatus(),
+            ))
+            ->add('expireDate','datetime', array(
+                'required' => true,
             ))
             ->add('content','textarea', array(
                 'attr' => array('rows' => '10'),

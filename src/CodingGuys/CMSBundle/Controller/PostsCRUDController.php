@@ -138,17 +138,22 @@ class PostsCRUDController extends AppBaseController{
      * @Template("CodingGuysCMSBundle:PostsCRUD:new.html.twig")
      */
     public function editAction(Request $request, $id){
-        $document = $this->get('doctrine.odm.mongodb.document_manager')->getRepository('AppBundle:Post')->find($id);
+        $document = $this->getPostRepo()->find($id);
 
-        if (!$document) {
+        if (!($document instanceof Post)) {
             throw $this->createNotFoundException('Unable to find Post document.');
         }
+
+        $backupBiz = $document->getMnemonoBiz();
 
         $editForm = $this->createEditForm($document);
 
         $editForm->handleRequest($request);
         if($editForm->isValid()){
-            $dm = $this->get('doctrine_mongodb')->getManager();
+            $this->updatePostFinalScore($document);
+            $document->setMnemonoBiz($backupBiz);
+            $document->setLastModDate(new \DateTime());
+            $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
 
@@ -188,6 +193,34 @@ class PostsCRUDController extends AppBaseController{
 
         $this->getDM()->persist($document);
         $this->getDM()->flush();
+
+        return new JsonResponse($ret);
+    }
+
+    /**
+     * set a post publishStatus as published or not (means reviewed)
+     *
+     * @Route("/{id}/publish", name="posts_publish")
+     * @Method({"PUT"})
+     */
+    public function publishAction(Request $request, $id){
+        $document = $this->getPostRepo()->find($id);
+
+        if (!$document instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $setFlag = intval($request->get("set"));
+
+        $status = "review";
+        if ($setFlag > 0){
+            $status = "published";
+        }
+        $document->setPublishStatus($status);
+
+        $this->getDM()->persist($document);
+        $this->getDM()->flush();
+        $ret = array("status" => $status);
 
         return new JsonResponse($ret);
     }
@@ -244,7 +277,7 @@ class PostsCRUDController extends AppBaseController{
             if (isset($rawData["link"])){
                 $possibleLinks[] = $rawData["link"];
             }
-            $possibleLinks[] = "https://www.facebook.com/" . $rawData["fbID"];
+            $possibleLinks[] = $obj->getShortLink();
             return array("possibleLinks" => $possibleLinks, "rawData" => $rawData);
         }
         return array("possibleLinks" => $possibleLinks, "rawData" => null);
@@ -286,5 +319,12 @@ class PostsCRUDController extends AppBaseController{
             ;
     }
 
+    private function updatePostFinalScore(Post $post){
+        $localWeight = $this->getWeighting("localWeight");
+        $globalWeight = $this->getWeighting("globalWeight");
+        $adminWeight = $this->getWeighting("adminWeight");
 
+        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
+        return $finalScore;
+    }
 }

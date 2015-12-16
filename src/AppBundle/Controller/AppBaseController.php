@@ -48,4 +48,16 @@ abstract class AppBaseController extends Controller{
     protected function getFacebookFeedRepo(){
         return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
     }
+
+    /**
+     * @param string $key the weighting key name
+     * @return float
+     */
+    protected function getWeighting($key){
+        $weighting = $this->getWeightingRepo()->findOneByName($key);
+        if ($weighting == null){
+            return 1.0;
+        }
+        return $weighting->getValue();
+    }
 }

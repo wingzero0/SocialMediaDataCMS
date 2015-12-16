@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class BizRankingCommand extends BaseCommand{
     protected function configure(){
-        $this->setName("mnemono:rank:biz")
+        $this->setName("mnemono:biz:score")
             ->setDescription("calculate a biz ranking score")
             ->addOption('id', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
@@ -29,19 +29,12 @@ class BizRankingCommand extends BaseCommand{
         $ids = $input->getOption('id');
         if (!empty($ids)){
             foreach ($ids as $id){
-                $biz = $this->getBizRepo()->findOneBy(array('id' => $id));
+                $biz = $this->getMnemenoBizRepo()->findOneBy(array('id' => $id));
                 $this->updateBizScore($biz);
             }
         }else{
             $output->writeln("no id");
         }
-    }
-
-    /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
-     */
-    private function getBizRepo(){
-        return $this->getDM()->getRepository($this->mnemonoBizDocumentPath);
     }
 
     private function updateBizScore(MnemonoBiz $biz){

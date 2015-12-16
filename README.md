@@ -41,10 +41,10 @@ By batch
 ### create user account
     http://yourServer/app_dev.php/register
 
-### rank
-    app/console mnemono:rank:biz --id xxxxx
-    app/console mnemono:rank:post --id xxxxx
-    app/console mnemono:rank:post --genTest
+### score
+    app/console mnemono:biz:score --id xxxxx
+    app/console mnemono:post:score --id xxxxx
+    app/console mnemono:post:score --genTest
 
 ### review
     app/console mnemono:post:review
