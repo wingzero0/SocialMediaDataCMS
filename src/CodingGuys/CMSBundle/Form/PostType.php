@@ -51,9 +51,6 @@ class PostType extends AbstractType
             ->add('adminScore','number', array(
                 'required' => false
             ))
-            ->add('mnemonoBiz', new MnemonoBizType(), array(
-                'read_only' => true
-            ))
             ->add('importFrom', 'text', array(
                 'read_only' => true
             ))

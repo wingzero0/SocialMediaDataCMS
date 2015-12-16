@@ -144,11 +144,14 @@ class PostsCRUDController extends AppBaseController{
             throw $this->createNotFoundException('Unable to find Post document.');
         }
 
+        $backupBiz = $document->getMnemonoBiz();
+
         $editForm = $this->createEditForm($document);
 
         $editForm->handleRequest($request);
         if($editForm->isValid()){
             $this->updatePostFinalScore($document);
+            $document->setMnemonoBiz($backupBiz);
             $document->setLastModDate(new \DateTime());
             $dm = $this->getDM();
             $dm->persist($document);
