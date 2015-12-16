@@ -198,6 +198,34 @@ class PostsCRUDController extends AppBaseController{
     }
 
     /**
+     * set a post publishStatus as published or not (means reviewed)
+     *
+     * @Route("/{id}/publish", name="posts_publish")
+     * @Method({"PUT"})
+     */
+    public function publishAction(Request $request, $id){
+        $document = $this->getPostRepo()->find($id);
+
+        if (!$document instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $setFlag = intval($request->get("set"));
+
+        $status = "review";
+        if ($setFlag > 0){
+            $status = "published";
+        }
+        $document->setPublishStatus($status);
+
+        $this->getDM()->persist($document);
+        $this->getDM()->flush();
+        $ret = array("status" => $status);
+
+        return new JsonResponse($ret);
+    }
+
+    /**
      * Deletes a Post document.
      *
      * @Route("/{id}", name="posts_delete")
@@ -249,7 +277,7 @@ class PostsCRUDController extends AppBaseController{
             if (isset($rawData["link"])){
                 $possibleLinks[] = $rawData["link"];
             }
-            $possibleLinks[] = "https://www.facebook.com/" . $rawData["fbID"];
+            $possibleLinks[] = $obj->getShortLink();
             return array("possibleLinks" => $possibleLinks, "rawData" => $rawData);
         }
         return array("possibleLinks" => $possibleLinks, "rawData" => null);
