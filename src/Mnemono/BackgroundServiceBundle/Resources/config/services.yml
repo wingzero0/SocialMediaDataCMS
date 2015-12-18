@@ -1,0 +1,4 @@
+services:
+#    mnemono_background_service.example:
+#        class: Mnemono\BackgroundServiceBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
