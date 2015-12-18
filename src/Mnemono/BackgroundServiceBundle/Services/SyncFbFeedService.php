@@ -4,9 +4,9 @@
  * Date: 05/12/15
  * Time: 9:04 PM
  */
-namespace AppBundle\Services;
+namespace Mnemono\BackgroundServiceBundle\Services;
 
-use AppBundle\Services\BaseService;
+use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\Facebook\FacebookMeta;
@@ -14,6 +14,7 @@ use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use AppBundle\Utility\GearmanServiceName;
 
 /**
  * @Gearman\Work(
@@ -86,7 +87,7 @@ class SyncFbFeedService extends BaseService{
     private function updateScore($post){
         if ($post instanceof Post){
             $json = json_encode(array("id" => $post->getId()));
-            $this->getGearman()->doBackgroundJob('AppBundleServicesPostScoreService~updateScore', $json);
+            $this->getGearman()->doBackgroundJob(GearmanServiceName::$postScoreUpdateJob, $json);
         }
 
     }

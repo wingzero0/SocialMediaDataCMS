@@ -12,6 +12,7 @@ use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\Facebook\FacebookFeedTimestamp;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
+use AppBundle\Utility\GearmanServiceName;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,7 +39,7 @@ class PostScoreCommand extends BaseCommand{
         if (!empty($ids)){
             foreach ($ids as $id){
                 $json = json_encode(array("id" => $id));
-                $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesPostScoreService~updateScore', $json);
+                $this->getGearman()->doBackgroundJob(GearmanServiceName::$postScoreUpdateJob, $json);
             }
         }else{
             $output->writeln("no id");
@@ -55,7 +56,7 @@ class PostScoreCommand extends BaseCommand{
             }
             print_r($post->getId()."\n");
             $json = json_encode(array("id" => $post->getId()));
-            $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesPostScoreService~updateScore', $json);
+            $this->getGearman()->doBackgroundJob(GearmanServiceName::$postScoreUpdateJob, $json);
             $counter++;
         }
     }

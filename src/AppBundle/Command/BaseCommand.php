@@ -16,6 +16,7 @@ use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\MnemonoBizRepository;
 use AppBundle\Utility\LoopCollectionStrategy;
 use AppBundle\Utility\DocumentPath;
+use Mmoreram\GearmanBundle\Service\GearmanClient;
 
 abstract class BaseCommand extends ContainerAwareCommand{
     private $documentManager = null;
@@ -85,5 +86,11 @@ abstract class BaseCommand extends ContainerAwareCommand{
      */
     protected function getMnemenoBizRepo(){
         return $this->getDM()->getRepository(DocumentPath::$mnemonoBizDocumentPath);
+    }
+    /**
+     * @return GearmanClient
+     */
+    protected function getGearman(){
+        return $this->getContainer()->get('gearman');
     }
 }

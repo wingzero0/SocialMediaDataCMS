@@ -1,4 +1,7 @@
 services:
-#    mnemono_background_service.example:
-#        class: Mnemono\BackgroundServiceBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+    SyncFbFeedService:
+        class:  Mnemono\BackgroundServiceBundle\Services\SyncFbFeedService
+        arguments:  [ @service_container ]
+    PostScoreService:
+        class:  Mnemono\BackgroundServiceBundle\Services\PostScoreService
+        arguments:  [ @service_container ]
