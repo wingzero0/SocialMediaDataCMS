@@ -27,6 +27,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new CodingGuys\CMSBundle\CodingGuysCMSBundle(),
             new CodingGuys\ApiBundle\CodingGuysApiBundle(),
+            new Mnemono\BackgroundServiceBundle\MnemonoBackgroundServiceBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

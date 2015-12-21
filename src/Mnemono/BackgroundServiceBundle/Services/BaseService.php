@@ -5,7 +5,7 @@
  * Time: 9:05 PM
  */
 
-namespace AppBundle\Services;
+namespace Mnemono\BackgroundServiceBundle\Services;
 
 use AppBundle\Utility\LoopCollectionStrategy;
 use AppBundle\Utility\DocumentPath;

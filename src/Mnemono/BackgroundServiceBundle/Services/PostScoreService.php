@@ -5,9 +5,9 @@
  * Time: 4:51 PM
  */
 
-namespace AppBundle\Services;
+namespace Mnemono\BackgroundServiceBundle\Services;
 
-use AppBundle\Services\BaseService;
+use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\Post;
 use AppBundle\Document\Facebook\FacebookFeed;

@@ -1,0 +1,7 @@
+services:
+    SyncFbFeedService:
+        class:  Mnemono\BackgroundServiceBundle\Services\SyncFbFeedService
+        arguments:  [ @service_container ]
+    PostScoreService:
+        class:  Mnemono\BackgroundServiceBundle\Services\PostScoreService
+        arguments:  [ @service_container ]

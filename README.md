@@ -50,5 +50,5 @@ By batch
     app/console mnemono:post:review
 
 ### background worker command
-    app/console gearman:worker:execute AppBundleServicesSyncFbFeedService --no-interaction
-    app/console gearman:worker:execute AppBundleServicesPostScoreService --no-interaction
+    app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbFeedService --no-interaction
+    app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostScoreService --no-interaction

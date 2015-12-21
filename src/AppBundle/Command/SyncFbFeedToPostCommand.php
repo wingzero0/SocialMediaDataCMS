@@ -13,6 +13,7 @@ use AppBundle\Document\Facebook\FacebookPage;
 use AppBundle\Document\Facebook\FacebookMeta;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
+use AppBundle\Utility\GearmanServiceName;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -78,7 +79,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      */
     private function createPostByFbId($fbId){
         $json = json_encode(array("fbId" => $fbId));
-        $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesSyncFbFeedService~createPost', $json);
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedCreateJob, $json);
     }
 
     /**
@@ -86,7 +87,7 @@ class SyncFbFeedToPostCommand extends BaseCommand{
      */
     private function updatePostByFbId($fbId){
         $json = json_encode(array("fbId" => $fbId));
-        $this->getContainer()->get('gearman')->doBackgroundJob('AppBundleServicesSyncFbFeedService~updatePost', $json);
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedUpdateJob, $json);
     }
 
     /**

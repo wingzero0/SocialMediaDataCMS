@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: "@AppBundle/Resources/config/services.yml" }
+    - { resource: "@MnemonoBackgroundServiceBundle/Resources/config/services.yml" }
 
 framework:
     #esi:             ~
@@ -109,10 +109,10 @@ gearman:
    # Bundles will parsed searching workers
    bundles:
       # Name of bundle
-      AppBundle:
+      MnemonoBackgroundServiceBundle:
 
          # Bundle name
-         name: AppBundle
+         name: MnemonoBackgroundServiceBundle
 
          # Bundle search can be enabled or disabled
          active: true
