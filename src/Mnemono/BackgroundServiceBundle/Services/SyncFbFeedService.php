@@ -135,6 +135,7 @@ class SyncFbFeedService extends BaseService{
             $post->setContent($ref->getMessage());
             $post->setOriginalLink($ref->getShortLink());
             $post->setMeta($this->fbMetaBuilder($ref));
+            //$post->setImageLinks($ref->getAttachmentImageURL());
             $this->persistPost($post);
         }
         return $post;
@@ -160,9 +161,6 @@ class SyncFbFeedService extends BaseService{
         $dm = $this->getDM();
         // TODO set the fb original create at;
         $timing = new \DateTime();
-        if (!$post->getId()){
-            $post->setCreateAt($timing);
-        }
         $post->setUpdateAt($timing);
         $biz = $post->getMnemonoBiz();
         if (!$biz instanceof MnemonoBiz) {
@@ -195,8 +193,10 @@ class SyncFbFeedService extends BaseService{
         $post->setContent($feed->getMessage());
         $post->setPublishStatus("review");
         $post->setOriginalLink($feed->getShortLink());
-        $currentDate = new \DateTime();
-        $post->setExpireDate($currentDate->add(new \DateInterval("P7D")));
+        $post->setImageLinks($feed->getAttachmentImageURL());
+        $createDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getCreatedTime());
+        $post->setCreateAt($createDate);
+        $post->setExpireDate($createDate->add(new \DateInterval("P7D")));
         $meta = $this->fbMetaBuilder($feed);
         $post->setMeta($meta);
         $biz = $this->getMnemenoBizRepo()->findOneByFbPage($feed->getFbPage());

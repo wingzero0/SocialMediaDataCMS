@@ -8,9 +8,10 @@
 
 namespace CodingGuys\CMSBundle\Form;
 
+use AppBundle\Utility\DocumentPath;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Document\Post;
 
 class PostType extends AbstractType
@@ -26,6 +27,13 @@ class PostType extends AbstractType
                 'read_only' => true
             ))
             ->add('tags','collection', array(
+                'type' => 'text',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'required' => false
+            ))
+            ->add('imageLinks','collection', array(
                 'type' => 'text',
                 'allow_add' => true,
                 'allow_delete' => true,
@@ -78,12 +86,12 @@ class PostType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Document\Post'
+            'data_class' => DocumentPath::$postFolderPath,
         ));
     }
 

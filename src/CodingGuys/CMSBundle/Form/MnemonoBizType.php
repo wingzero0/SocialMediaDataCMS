@@ -8,9 +8,10 @@
 
 namespace CodingGuys\CMSBundle\Form;
 
+use AppBundle\Utility\DocumentPath;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MnemonoBizType extends AbstractType
 {
@@ -69,12 +70,12 @@ class MnemonoBizType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Document\MnemonoBiz'
+            'data_class' => DocumentPath::$mnemonoBizFolderPath,
         ));
     }
 

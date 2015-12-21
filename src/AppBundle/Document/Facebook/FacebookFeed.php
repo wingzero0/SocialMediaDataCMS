@@ -39,6 +39,10 @@ class FacebookFeed {
      */
     protected $comments;
     /**
+     * @MongoDB\Raw
+     */
+    protected $attachments;
+    /**
      * @MongoDB\Field(type="string", name="created_time")
      */
     protected $createdTime;
@@ -215,5 +219,84 @@ class FacebookFeed {
     public function getCreatedTime()
     {
         return $this->createdTime;
+    }
+
+    /**
+     * Set attachments
+     *
+     * @param raw $attachments
+     * @return self
+     */
+    public function setAttachments($attachments)
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * Get attachments
+     *
+     * @return raw $attachments
+     */
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    public function getAttachmentImageURL(){
+        $attachments = $this->getAttachments();
+        if (!$attachments){
+            return array();
+        }
+        if (
+            isset($attachments["data"])
+            && is_array($attachments["data"])
+            && isset($attachments["data"][0]["type"])
+            && isset($attachments["data"][0]["subattachments"])
+        ){
+            if ($attachments["data"][0]["type"] == "album"){
+                return $this->parseSubAttachmentImageURL($attachments["data"][0]["subattachments"]);
+            }
+        }
+        return array();
+    }
+
+    /**
+     * @param array $subAttachments
+     * @return array $imageURLs
+     */
+    private function parseSubAttachmentImageURL($subAttachments){
+        $imageURLs = array();
+        if (
+            isset($subAttachments["data"])
+            && is_array($subAttachments["data"])
+        ){
+            foreach($subAttachments["data"] as $data){
+                if (
+                    isset($data["type"])
+                    && $data["type"] == "photo"
+                    && isset($data["media"])
+                ){
+                    $imageURL = $this->parseMediaImageURL($data["media"]);
+                    $imageURLs[] = $imageURL;
+                }
+            }
+        }
+
+        return $imageURLs;
+    }
+
+    /**
+     * @param array $media
+     * @return string
+     */
+    private function parseMediaImageURL($media){
+        if (
+            isset($media["image"])
+            && isset($media["image"]["src"])
+        ){
+            return $media["image"]["src"];
+        }
+        return null;
     }
 }

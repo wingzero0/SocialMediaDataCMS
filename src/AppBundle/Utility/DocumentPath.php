@@ -13,6 +13,10 @@ class DocumentPath {
     public static $facebookFeedTimestampDocumentPath = "AppBundle:Facebook\\FacebookFeedTimestamp";
     public static $weightingDocumentPath = "AppBundle:Settings\\Weighting";
     public static $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
+    public static $mnemonoBizFolderPath = "AppBundle\\Document\\MnemonoBiz";
     public static $postDocumentPath = "AppBundle:Post";
+    public static $postFolderPath = "AppBundle\\Document\\Post";
+    public static $locationDocumentPath = "AppBundle:Location";
+    public static $locationFolderPath = "AppBundle\\Document\\Location";
     public static $postForReviewDocumentPath = "AppBundle:PostForReview";
 }
