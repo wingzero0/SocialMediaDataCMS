@@ -252,10 +252,20 @@ class FacebookFeed {
             isset($attachments["data"])
             && is_array($attachments["data"])
             && isset($attachments["data"][0]["type"])
-            && isset($attachments["data"][0]["subattachments"])
         ){
-            if ($attachments["data"][0]["type"] == "album"){
+            if (
+                $attachments["data"][0]["type"] == "album"
+                && isset($attachments["data"][0]["subattachments"])
+            ){
                 return $this->parseSubAttachmentImageURL($attachments["data"][0]["subattachments"]);
+            }else if (
+                $attachments["data"][0]["type"] == "photo"
+                && isset($attachments["data"][0]["media"])
+            ){
+                $url = $this->parseMediaImageURL($attachments["data"][0]["media"]);
+                if ($url){
+                    return array($url);
+                }
             }
         }
         return array();
