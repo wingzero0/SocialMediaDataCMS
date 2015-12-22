@@ -14,4 +14,6 @@ class GearmanServiceName {
     public static $syncFbFeedSrevice = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService";
     public static $syncFbFeedCreateJob = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService~createPost";
     public static $syncFbFeedUpdateJob = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService~updatePost";
+    public static $syncFbPageCreateJob = "MnemonoBackgroundServiceBundleServicesSyncFbPageService~createBiz";
+    public static $syncFbPageUpdateJob = "MnemonoBackgroundServiceBundleServicesSyncFbPageService~updateBiz";
 }

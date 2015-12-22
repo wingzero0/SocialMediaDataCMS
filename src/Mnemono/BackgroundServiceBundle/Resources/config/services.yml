@@ -1,4 +1,7 @@
 services:
+    SyncFbPageService:
+        class:  Mnemono\BackgroundServiceBundle\Services\SyncFbPageService
+        arguments:  [ @service_container ]
     SyncFbFeedService:
         class:  Mnemono\BackgroundServiceBundle\Services\SyncFbFeedService
         arguments:  [ @service_container ]

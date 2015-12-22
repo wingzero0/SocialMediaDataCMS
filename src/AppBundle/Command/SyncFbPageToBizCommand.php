@@ -13,6 +13,7 @@ use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Command\BaseCommand;
+use AppBundle\Utility\GearmanServiceName;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,7 +42,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
             $fbIds = $input->getOption('fbId');
             if (!empty($fbIds)){
                 foreach ($fbIds as $fbId){
-                    $this->createBizByFbPage($fbId);
+                    $this->createBizByFbId($fbId);
                 }
             }else{
                 $output->writeln("no fbId");
@@ -50,7 +51,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
             $fbIds = $input->getOption('fbId');
             if (!empty($fbIds)){
                 foreach ($fbIds as $fbId){
-                    $this->updateBizByFbPage($fbId);
+                    $this->updateBizByFbId($fbId);
                 }
             }else{
                 $output->writeln("no fbId");
@@ -64,7 +65,7 @@ class SyncFbPageToBizCommand extends BaseCommand{
                 return $this->getFacebookPageRepo()->getQueryBuilder($limit);
             },
             function (FacebookPage $page){
-                $this->updateBizByFbPage($page->getFbId());
+                $this->updateBizByFbId($page->getFbId());
             }
         );
     }
@@ -74,149 +75,18 @@ class SyncFbPageToBizCommand extends BaseCommand{
                 return $this->getFacebookPageRepo()->getQueryBuilder($limit);
             },
             function(FacebookPage $page){
-                $this->createBizByFbPage($page->getFbId());
+                $this->createBizByFbId($page->getFbId());
             }
         );
     }
 
-    private function updateBizByFbPage($fbId){
-        $page = $this->queryPageByFbId($fbId);
-
-        $pageRaw = $this->queryPageRawByFbId($fbId);
-
-        $biz = $this->queryBizByFbPage($page);
-
-        if ($biz instanceof MnemonoBiz && $page instanceof FacebookPage){
-            $dm = $this->getDM();
-            $biz = $this->updateBiz($biz, $page, $pageRaw);
-            $dm->persist($biz);
-            $dm->flush();
-            $dm->clear();
-        }
-
-
-        return $biz;
-    }
-    private function createBizByFbPage($fbId){
-        $page = $this->queryPageByFbId($fbId);
-
-        $pageRaw = $this->queryPageRawByFbId($fbId);
-
-        $biz = $this->queryBizByFbPage($page);
-
-        if ($biz == null && $page instanceof FacebookPage){
-            $biz = $this->bizBuilder($page, $pageRaw);
-            $dm = $this->getDM();
-            $dm->persist($biz);
-            $dm->flush();
-
-            $dm->clear();
-        }else{
-            echo $fbId . ": biz is not null or Page is not FacebookPage\n";
-        }
-
-
-        return $biz;
+    private function createBizByFbId($fbId){
+        $json = json_encode(array("fbId" => $fbId));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbPageCreateJob, $json);
     }
 
-    /**
-     * @param FacebookPage $page
-     * @param array $pageRaw
-     * @return MnemonoBiz
-     */
-    private function bizBuilder(FacebookPage $page, $pageRaw){
-        $biz = new MnemonoBiz();
-        return $this->updateBiz($biz, $page, $pageRaw);
-    }
-
-    /**
-     * @param MnemonoBiz $biz
-     * @param FacebookPage $page
-     * @param $pageRaw
-     * @return MnemonoBiz
-     */
-    private function updateBiz(MnemonoBiz $biz, FacebookPage $page, $pageRaw){
-        $websites = array();
-        if (isset($pageRaw['link'])){
-            $websites[] = $pageRaw['link'];
-        }
-        if (isset($pageRaw['website'])){
-            $websites[] = $pageRaw['website'];
-        }
-        if (!empty($websites)){
-            $biz->setWebsites($websites);
-        }
-        if (isset($pageRaw["mnemono"]) && isset($pageRaw["mnemono"]["category"])){
-            $biz->setCategory($pageRaw["mnemono"]["category"]);
-        }
-        $location = $this->createLocation($pageRaw);
-        $biz->setLocation($location)
-            ->setName($pageRaw["name"])
-            ->setImportFrom("facebookPage")
-            ->setImportFromRef($page)
-            ->setLastModDate(new \DateTime());
-        return $biz;
-    }
-
-    /**
-     * @param $pageRaw
-     * @return Location
-     */
-    private function createLocation($pageRaw){
-        $city = null;
-        $country = null;
-        $street = null;
-        if (isset($pageRaw["mnemono"])){
-            if (isset($pageRaw["mnemono"]["location"]["city"])){
-                $city = $pageRaw["mnemono"]["location"]["city"];
-            }
-            if (isset($pageRaw["mnemono"]["location"]["country"])){
-                $country = $pageRaw["mnemono"]["location"]["country"];
-            }
-        }
-
-        if (isset($pageRaw["location"])){
-            $street = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
-            if ($city == null){
-                $city = (isset($pageRaw["location"]["city"]) ? $pageRaw["location"]["city"] : null);
-            }
-            if ($country == null){
-                $country = (isset($pageRaw["location"]["country"]) ? $pageRaw["location"]["country"] : null);
-            }
-        }
-
-        $location = new Location();
-        $location->setCity($city)
-            ->setCountry($country)
-            ->setAddress($street);
-        $this->getDM()->persist($location);
-        return $location;
-    }
-
-    /**
-     * @param string $fbId
-     * @return FacebookPage|null
-     */
-    private function queryPageByFbId($fbId)
-    {
-        return $this->getFacebookPageRepo()->findOneByFbId($fbId);
-    }
-
-    /**
-     * @param string $fbId
-     * @return array|null
-     */
-    private function queryPageRawByFbId($fbId)
-    {
-        return $this->getFacebookPageRepo()->findOneRawByFbId($fbId);
-    }
-
-    /**
-     * @param FacebookPage $page
-     * @return mixed
-     */
-    private function queryBizByFbPage(FacebookPage $page)
-    {
-        return $this->getMnemenoBizRepo()->findOneByFbPage($page);
+    private function updateBizByFbId($fbId){
+        $json = json_encode(array("fbId" => $fbId));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbPageUpdateJob, $json);
     }
 }
