@@ -108,6 +108,36 @@ class PostsCRUDController extends AppBaseController{
     }
 
     /**
+     * Create a Post manually
+     *
+     * @Route("/create", name="posts_create")
+     * @Method({"GET","POST"})
+     * @Template("CodingGuysCMSBundle:PostsCRUD:new.html.twig")
+     */
+    public function createAction(Request $request){
+        $document = new Post();
+        $newForm = $this->createNewForm($document);
+
+        $newForm->handleRequest($request);
+
+        if($newForm->isValid()){
+            $this->updatePostFinalScore($document);
+            //$document->setMnemonoBiz($backupBiz);
+            $document->setLastModDate(new \DateTime());
+            $dm = $this->getDM();
+            $dm->persist($document);
+            $dm->flush();
+
+            return $this->redirect($this->generateUrl('posts_edit',array('id' => $id)));
+        }
+
+        return array(
+            'header' => "Create Post",
+            'form' => $newForm->createView(),
+        );
+    }
+
+    /**
      * Finds and displays a Post document.
      *
      * @Route("/{id}", name="posts_show")
@@ -115,7 +145,7 @@ class PostsCRUDController extends AppBaseController{
      * @Template()
      */
     public function showAction($id){
-        $document = $this->get('doctrine.odm.mongodb.document_manager')->getRepository('AppBundle:Post')->find($id);
+        $document = $this->getPostRepo()->find($id);
 
         if (!$document) {
             throw $this->createNotFoundException('Unable to find MnemonoBiz document.');
@@ -165,6 +195,29 @@ class PostsCRUDController extends AppBaseController{
             'form' => $editForm->createView(),
         );
 
+    }
+
+    /**
+     * Deletes a Post document.
+     *
+     * @Route("/{id}", name="posts_delete")
+     * @Method("DELETE")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+        if($form->isValid()){
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $document = $dm->getRepository('AppBundle:Post')->find($id);
+
+            if (!$document) {
+                throw $this->createNotFoundException('Unable to find Post document.');
+            }
+
+            $dm->remove($document);
+            $dm->flush();
+        }
     }
 
     /**
@@ -226,29 +279,6 @@ class PostsCRUDController extends AppBaseController{
     }
 
     /**
-     * Deletes a Post document.
-     *
-     * @Route("/{id}", name="posts_delete")
-     * @Method("DELETE")
-     */
-    public function deleteAction(Request $request, $id)
-    {
-        $form = $this->createDeleteForm($id);
-        $form->handleRequest($request);
-        if($form->isValid()){
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $document = $dm->getRepository('AppBundle:Post')->find($id);
-
-            if (!$document) {
-                throw $this->createNotFoundException('Unable to find Post document.');
-            }
-
-            $dm->remove($document);
-            $dm->flush();
-        }
-    }
-
-    /**
      * show a raw data of Post source.
      *
      * @Route("/{id}/sourceRaw", name="posts_source_raw")
@@ -281,6 +311,25 @@ class PostsCRUDController extends AppBaseController{
             return array("possibleLinks" => $possibleLinks, "rawData" => $rawData);
         }
         return array("possibleLinks" => $possibleLinks, "rawData" => null);
+    }
+
+    /**
+     * Creates a form to edit a Post document.
+     *
+     * @param Post $document The document
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createNewForm(Post $document)
+    {
+        $form = $this->createForm(new PostType(), $document, array(
+            'action' => $this->generateUrl('posts_create'),
+            'method' => 'POST',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Update'));
+
+        return $form;
     }
 
     /**

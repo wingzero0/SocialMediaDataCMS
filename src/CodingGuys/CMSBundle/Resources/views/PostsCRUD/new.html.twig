@@ -19,9 +19,11 @@
                     <a href="{{ path('posts_home') }}" class="btn btn-default">Back to the list</a>
                 {% endif %}
             </li>
+            {% if form.vars.value.id != "" %}
             <li>
                 <a class="btn btn-default" href="{{ path('posts_source_raw', {'id':form.vars.value.id}) }}" target="_blank">raw</a>
             </li>
+            {% endif %}
         </ul>
         {{ form_start(form) }}
         {{ form_errors(form) }}
