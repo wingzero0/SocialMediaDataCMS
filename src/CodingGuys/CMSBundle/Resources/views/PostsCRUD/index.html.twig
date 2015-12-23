@@ -65,6 +65,7 @@
                         <td>null</td>
                     {% endif %}
                     <td>
+                        <ul>
                             {% for tag in document.tags %}
                                 <li>{{ tag }}</li>
                             {% endfor %}
@@ -72,19 +73,17 @@
                     </td>
                     <td>{{ document.localScore }}</td>
                     <td>{{ document.adminScore }}</td>
-                    {% if document.importFromRef is not null %}
-                        <td>{{ document.importFrom }}<td>
-                    {% else %}
-                        <td>{{ document.importFrom }}<td>
-                    {% endif %}
+                    <td>{{ document.importFrom }}</td>
                     {% if document.meta is not null %}
-                        <ul>
-                            <li>Facebook ID: {{ document.meta.fbId }}</li>
-                            <li>Total Likes: {{ document.meta.fbTotalLikes }}</li>
-                            <li>Total Comments: {{ document.meta.fbTotalComments }}</li>
-                        </ul>
+                        <td>
+                            <ul>
+                                <li>Facebook ID: {{ document.meta.fbId }}</li>
+                                <li>Total Likes: {{ document.meta.fbTotalLikes }}</li>
+                                <li>Total Comments: {{ document.meta.fbTotalComments }}</li>
+                            </ul>
+                        </td>
                     {% else %}
-                        <td>null<td>
+                        <td>null</td>
                     {% endif %}
                     {% if document.lastModDate is not null %}
                         <td>{{ document.lastModDate.format('Y-m-d') }}</td>
