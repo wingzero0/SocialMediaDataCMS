@@ -26,6 +26,7 @@ if you use the generator
 ### create MnemonoBiz by FacebookPage
 created by single fans page
     app/console mnemono:sync:fbpagetobiz --action createFromFb --fbId xxxxx
+    app/console mnemono:sync:fbpagetobiz --action updateFromFb --fbId xxxxx
 created by batch
     app/console mnemono:sync:fbpagetobiz --action createFromFbCollection
     app/console mnemono:sync:fbpagetobiz --action updateFromFbCollection
@@ -50,5 +51,6 @@ By batch
     app/console mnemono:post:review
 
 ### background worker command
+    app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbPageService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbFeedService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostScoreService --no-interaction

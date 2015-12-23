@@ -24,7 +24,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
  *     service="SyncFbPageService"
  * )
  */
-class SyncFBPageService extends BaseService{
+class SyncFbPageService extends BaseService{
     /**
      * Job for create post form fbID
      *
@@ -42,7 +42,7 @@ class SyncFBPageService extends BaseService{
         try {
             $key_json = json_decode($job->workload(), true);
             $fbId = $key_json["fbId"];
-            $this->createBizByFbPage($fbId);
+            $this->createBizByFbId($fbId);
             return true;
         }catch (\Exception $e){
             echo $e->getMessage()."\n";
@@ -68,7 +68,7 @@ class SyncFBPageService extends BaseService{
         try {
             $key_json = json_decode($job->workload(), true);
             $fbId = $key_json["fbId"];
-            $this->updateBizByFbPage($fbId);
+            $this->updateBizByFbId($fbId);
             return true;
         }catch (\Exception $e){
             echo $e->getMessage()."\n";
@@ -77,7 +77,7 @@ class SyncFBPageService extends BaseService{
         }
     }
 
-    private function updateBizByFbPage($fbId){
+    private function updateBizByFbId($fbId){
         $page = $this->queryPageByFbId($fbId);
 
         $pageRaw = $this->queryPageRawByFbId($fbId);
@@ -86,7 +86,7 @@ class SyncFBPageService extends BaseService{
 
         if ($biz instanceof MnemonoBiz && $page instanceof FacebookPage){
             $dm = $this->getDM();
-            $biz = $this->updateBiz($biz, $page, $pageRaw);
+            $biz = $this->updateBizByRaw($biz, $page, $pageRaw);
             $dm->persist($biz);
             $dm->flush();
             $dm->clear();
@@ -95,7 +95,7 @@ class SyncFBPageService extends BaseService{
 
         return $biz;
     }
-    private function createBizByFbPage($fbId){
+    private function createBizByFbId($fbId){
         $page = $this->queryPageByFbId($fbId);
 
         $pageRaw = $this->queryPageRawByFbId($fbId);
@@ -124,7 +124,7 @@ class SyncFBPageService extends BaseService{
      */
     private function bizBuilder(FacebookPage $page, $pageRaw){
         $biz = new MnemonoBiz();
-        return $this->updateBiz($biz, $page, $pageRaw);
+        return $this->updateBizByRaw($biz, $page, $pageRaw);
     }
 
     /**
@@ -133,7 +133,7 @@ class SyncFBPageService extends BaseService{
      * @param $pageRaw
      * @return MnemonoBiz
      */
-    private function updateBiz(MnemonoBiz $biz, FacebookPage $page, $pageRaw){
+    private function updateBizByRaw(MnemonoBiz $biz, FacebookPage $page, $pageRaw){
         $websites = array();
         if (isset($pageRaw['link'])){
             $websites[] = $pageRaw['link'];

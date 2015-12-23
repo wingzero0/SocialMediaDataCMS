@@ -82,11 +82,11 @@ class SyncFbPageToBizCommand extends BaseCommand{
 
     private function createBizByFbId($fbId){
         $json = json_encode(array("fbId" => $fbId));
-        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbPageCreateJob, $json);
+        $this->getGearman()->doNormalJob(GearmanServiceName::$syncFbPageCreateJob, $json);
     }
 
     private function updateBizByFbId($fbId){
         $json = json_encode(array("fbId" => $fbId));
-        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbPageUpdateJob, $json);
+        $this->getGearman()->doNormalJob(GearmanServiceName::$syncFbPageUpdateJob, $json);
     }
 }
