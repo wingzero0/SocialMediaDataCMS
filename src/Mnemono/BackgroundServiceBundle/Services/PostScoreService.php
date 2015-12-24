@@ -36,12 +36,19 @@ class PostScoreService extends BaseService{
      * )
      */
     public function updateScore(\GearmanJob $job){
-        $key_json = json_decode($job->workload(), true);
-        $id = $key_json["id"];
-        $this->resetDM();
-        $post = $this->getPostRepo()->find($id);
-        $this->updatePostLocalScore($post);
-        $this->updatePostFinalScore($post);
+        try{
+            $key_json = json_decode($job->workload(), true);
+            $id = $key_json["id"];
+            $this->resetDM();
+            $post = $this->getPostRepo()->find($id);
+            $this->updatePostLocalScore($post);
+            $this->updatePostFinalScore($post);
+            return true;
+        }catch (\Exception $e){
+            echo $e->getMessage()."\n";
+            echo $e->getTraceAsString()."\n";
+            exit(-1);
+        }
     }
 
     private function updatePostFinalScore(Post $post){

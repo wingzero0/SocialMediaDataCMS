@@ -64,6 +64,20 @@ class PostRepository extends DocumentRepository
         return $qb;
     }
 
+    /**
+     * @param \DateTime $expireDate
+     * @param int $limit
+     * @param int $skip
+     * @return \Doctrine\MongoDB\Query\Builder
+     */
+    public function getQueryBuilderFindNonExpireWithBizNotExisit(\DateTime $expireDate = null, $limit = 100, $skip = 0){
+        $qb = $this->getQueryBuilderFindNonExpire($expireDate, $limit, $skip);
+        $qb->addOr($qb->expr()->field("mnemonoBiz")->exists(false))
+            ->addOr($qb->expr()->field("mnemonoBiz")->equals(null))
+            ;
+        return $qb;
+    }
+
 
     /**
      * @param \DateTime $expireDate
