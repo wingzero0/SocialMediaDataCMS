@@ -17,8 +17,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PostReviewCommand extends BaseCommand{
-    private $endDate;
-    private $startDate;
     private $allBiz;
     protected function configure(){
         $this->setName("mnemono:post:review")
