@@ -1,0 +1,129 @@
+{% extends "CodingGuysCMSBundle:PostsCRUD:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        th, li{
+            white-space: nowrap;
+        }
+        ul{
+            padding: 0;
+            list-style-type: none;
+        }
+        .mycontainer {
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        @media (min-width: 1200px) {
+            .mycontainer {
+                width: 1350px;
+            }
+        }
+    </style>
+    <div class="mycontainer">
+        <h1 class="page-header"><strong>Posts list</strong></h1>
+        <p><a href="{{ path('posts_create') }}" class="btn btn-default">Create Post</a></p>
+        <form class="navbar-form navbar-right form-inline" role="form" method="get" action="{{ path('posts_search')}}">
+            <div class="form-group">
+                <input name="query" type="text" placeholder="keyword" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Search</button>
+        </form>
+        <table class="records_list table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Publish Status</th>
+                <th>Content</th>
+                <th>Action</th>
+                <th>MnemonoBiz</th>
+                <th>Tags</th>
+                <th>Local Score</th>
+                <th>Admin Score</th>
+                <th>Import From</th>
+                <th>Meta</th>
+                <th>Last Modified date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for document in pagination %}
+                <tr>
+                    <td>{{ document.publishStatus }}</td>
+                    <td>{{ document.content }}</td>
+                    <td>
+                        <ul>
+                            <li>
+                                <a href="{{ path('posts_show', { 'id': document.id }) }}">show</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('posts_edit', { 'id': document.id }) }}">edit</a>
+                            </li>
+                        </ul>
+                    </td>
+                    {% if document.mnemonoBiz is not null %}
+                        <td><a href="{{ path('mnemonobiz_show', {'id': document.mnemonoBiz.id })}}">{{ document.mnemonoBiz.name }}</a></td>
+                    {% else %}
+                        <td>null</td>
+                    {% endif %}
+                    <td>
+                        <ul>
+                            {% for tag in document.tags %}
+                                <li>{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ document.localScore }}</td>
+                    <td>{{ document.adminScore }}</td>
+                    <td>{{ document.importFrom }}</td>
+                    {% if document.meta is not null %}
+                        <td>
+                            <ul>
+                                <li>Facebook ID: {{ document.meta.fbId }}</li>
+                                <li>Total Likes: {{ document.meta.fbTotalLikes }}</li>
+                                <li>Total Comments: {{ document.meta.fbTotalComments }}</li>
+                            </ul>
+                        </td>
+                    {% else %}
+                        <td>null</td>
+                    {% endif %}
+                    {% if document.lastModDate is not null %}
+                        <td>{{ document.lastModDate.format('Y-m-d') }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    <div>
+        <div class="text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    {#</div>#}
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('div.pagination span.current').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<li class="active"><a href="#">' + this.innerHTML + '</a></li>'));
+            });
+            var classArray = ['first', 'previous', 'page', 'next', 'last'];
+            jQuery.each(classArray, function (key, className) {
+                jQuery('div.pagination span.' + className).each(function (index) {
+                    jQuery(this).replaceWith(jQuery('<li>' + this.innerHTML + '</li>'));
+                });
+            })
+            jQuery('div.pagination').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<ul class="pagination">' + this.innerHTML + '</ul>'));
+            });
+
+        });
+    </script>
+{% endblock %}

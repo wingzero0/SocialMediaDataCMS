@@ -1,0 +1,13 @@
+services:
+    SyncFbPageService:
+        class:  Mnemono\BackgroundServiceBundle\Services\SyncFbPageService
+        arguments:  [ @service_container ]
+    SyncFbFeedService:
+        class:  Mnemono\BackgroundServiceBundle\Services\SyncFbFeedService
+        arguments:  [ @service_container ]
+    PostScoreService:
+        class:  Mnemono\BackgroundServiceBundle\Services\PostScoreService
+        arguments:  [ @service_container ]
+    PostReviewService:
+        class:  Mnemono\BackgroundServiceBundle\Services\PostReviewService
+        arguments:  [ @service_container ]

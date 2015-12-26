@@ -1,3 +1,18 @@
-app:
-    resource: @AppBundle/Controller/
+coding_guys_api:
+    resource: "@CodingGuysApiBundle/Controller"
     type:     annotation
+    prefix:   /api/
+
+coding_guys_cms:
+    resource: "@CodingGuysCMSBundle/Controller/"
+    type:     annotation
+    prefix:   /cms/
+
+fos_comment_api:
+    type: rest
+    resource: @FOSCommentBundle/Resources/config/routing.yml
+    prefix: /api
+    defaults: { _format: html }
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"

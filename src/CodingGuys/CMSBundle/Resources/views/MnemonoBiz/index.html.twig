@@ -1,0 +1,139 @@
+{% extends "CodingGuysCMSBundle:MnemonoBiz:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        th, li{
+            white-space: nowrap;
+        }
+        tr td:nth-of-type(11) div{
+            /*background-color: yellow;*/
+        }
+        ul{
+            padding: 0;
+            list-style-type: none;
+        }
+        .mycontainer {
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        @media (min-width: 1200px) {
+            .mycontainer {
+                width: 1350px;
+            }
+        }
+    </style>
+    <div class="container">
+        <h2 class="page-header"><strong>MnemonoBiz list</strong></h2>
+        <div class="navbar-header">
+            <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}"> Create MnemonoBiz </a>
+        </div>
+        <form class="navbar-form navbar-right" role="form" method="get" action="{{ path('mnemonobiz_search')}}">
+            <div class="form-group">
+                <input name="query" type="text" placeholder="keyword" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Search</button>
+        </form>
+        <table class="records_list table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+                <th>Short Description</th>
+                <th>Category</th>
+                <th>Tag</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Country</th>
+                <th>Phones</th>
+                <th>Faxes</th>
+                <th>Websites</th>
+                <th>Weighting</th>
+                <th>Import From</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for document in pagination %}
+                <tr>
+                    <td><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">{{ document.name }}</a></td>
+                    <td><ul>
+                        <li><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">show detail</a></li>
+                        <li><a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">edit</a></li>
+                    </ul></td>
+                    <td>{{ document.shortDesc }}</td>
+                    <td>{{ document.category }}</td>
+                    <td>
+                        <ul class="list">
+                            {% for tag in document.tags %}
+                                <li>{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    {% if document.location is not null %}
+                        <td>{{ document.location.address }}</td>
+                        <td>{{ document.location.city }}</td>
+                        <td>{{ document.location.country }}</td>
+                    {% else %}
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    {% endif %}
+                    <td>
+                        <ul class="list">
+                            {% for phone in document.phones %}
+                                <li>{{ phone }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list">
+                            {% for fax in document.faxes %}
+                                <li>{{ fax }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list">
+                            {% for website in document.websites %}
+                                <div><a href="{{ website }}" >link</a></div>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ document.weighting }}</td>
+                    <td>{{ document.importFrom }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+    {% block footer %}
+        <div class="container">
+            {{ parent() }}
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('div.pagination span.current').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<li class="active"><a href="#">' + this.innerHTML + '</a></li>'));
+            });
+            var classArray = ['first', 'previous', 'page', 'next', 'last'];
+            jQuery.each(classArray, function (key, className) {
+                jQuery('div.pagination span.' + className).each(function (index) {
+                    jQuery(this).replaceWith(jQuery('<li>' + this.innerHTML + '</li>'));
+                });
+            })
+            jQuery('div.pagination').each(function (index) {
+                jQuery(this).replaceWith(jQuery('<ul class="pagination">' + this.innerHTML + '</ul>'));
+            });
+
+        });
+    </script>
+{% endblock %}

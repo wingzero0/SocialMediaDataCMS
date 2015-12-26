@@ -1,0 +1,144 @@
+{% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <div>
+        <form action="{{ path('post_report_home') }}" method="get">
+            <label for="AppBundle_post_tag" class="required">Tag</label>
+            <input type="text" id="AppBundle_post_tag" name="tag" value="{{ app.request.get("tag") }}"/>
+            <label for="AppBundle_post_publishStatus" class="required">Publish status</label>
+            <select id="AppBundle_post_publishStatus" name="publishStatus">
+                <option value="">All</option>
+                {% for key, label in lovPublishStatus %}
+                    {% if key == app.request.get('publishStatus') %}
+                        <option value="{{ key }}" selected>{{ label }}</option>
+                    {% else %}
+                        <option value="{{ key }}">{{ label }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <label for="AppBundle_post_spotlight" class="required">Spotlight status</label>
+            <select id="AppBundle_post_spotlight" name="spotlight">
+                <option value="">All</option>
+                {% if 'Y' == app.request.get('spotlight') %}
+                    <option value="Y" selected>Y</option>
+                {% else %}
+                    <option value="Y">Y</option>
+                {% endif %}
+
+                {% if 'N' == app.request.get('spotlight') %}
+                    <option value="N" selected>N</option>
+                {% else %}
+                    <option value="N">N</option>
+                {% endif %}
+            </select>
+            <button type="submit" id="AppBundle_post_submit" name="submit" class="btn btn-default">filter</button>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Row Num</th>
+                <th>Rank Position</th>
+                <th>finalScore</th>
+                <th>content</th>
+                <th>tags</th>
+                <th>publish status</th>
+                <th>publish action</th>
+                <th>spotlight status</th>
+                <th>spotlight action</th>
+                <th>short link</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% set rowNum = (page - 1) * limit + 1 %}
+        {% for post in pagination %}
+            <tr>
+                <td>{{ rowNum }}</td>
+                <td>{{ post.rankPosition }}</td>
+                <td>{{ post.finalScore }}</td>
+                <td><a href="{{ path('posts_edit', {'id':post.id}) }}" target="_blank">-- {{ post.briefContent }}</a></td>
+                <td>
+                    {% for tag in post.tags %}
+                        {{ tag }},
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ post.publishStatus }}
+                </td>
+                <td>
+                    {% if post.publishStatus == "published" %}
+                    <a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">to review</a>
+                    {% else %}
+                    <a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="1" data-id="{{ post.id }}" href="#">to publish</a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not post.isSpotlight %}
+
+                    {% else %}
+                        Spotlight
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not post.isSpotlight %}
+                        <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':post.id }) }}" data-action="1" data-id="{{ post.id }}" href="#">enable</a>
+                    {% else %}
+                        <a class="spotlightTrigger" data-url="{{ path('posts_spotlight', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">disable</a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ post.originalLink }}" target="_blank">short link</a>
+                </td>
+            </tr>
+            {% set rowNum = rowNum + 1 %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/codingguyscms/js/paginatorCSS.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $(".spotlightTrigger").each(function(i, element){
+                $(element).click(function(e){
+                    e.preventDefault();
+                    var action = $(element).attr("data-action");
+                    var url = $(element).attr("data-url");
+                    $.ajax({
+                        "url": url,
+                        "method": "PUT",
+                        "data": { "set" : action },
+                        "success": function(data){
+                            window.location.reload();
+                        },
+                        "dataType": 'json',
+                    });
+                });
+            });
+            $(".publishTrigger").each(function(i, element){
+                $(element).click(function(e){
+                    e.preventDefault();
+                    var action = $(element).attr("data-action");
+                    var url = $(element).attr("data-url");
+                    $.ajax({
+                        "url": url,
+                        "method": "PUT",
+                        "data": { "set" : action },
+                        "success": function(data){
+                            window.location.reload();
+                        },
+                        "dataType": 'json',
+                    });
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
+
