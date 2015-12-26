@@ -12,14 +12,6 @@
     setfacl -R -m u:"$HTTPDUSER":rwX -m u:webmaster:rwX app/cache app/logs
     setfacl -dR -m u:"$HTTPDUSER":rwX -m u:webmaster:rwX app/cache app/logs
 
-### generate sample data
-if you have the CMSTestData.tgz (include collection: MnemonoBiz, FacebookPage)
-    tar zxvf CMSTestData.tgz
-    mongorestore CMSTestData
-
-if you use the generator
-    app/console doctrine:mongodb:fixtures:load
-
 ### create collection and index (remove the post embedded attribute first)
     app/console doctrine:mongodb:schema:create
 
