@@ -149,7 +149,10 @@ class Post extends BaseThread{
     }
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
-        $global = $this->getMnemonoBiz()->getGlobalScore();
+        $global = 0.0;
+        if ($this->getMnemonoBiz()){
+            $global = $this->getMnemonoBiz()->getGlobalScore();
+        }
         $local = $this->getLocalScore();
         $admin = $this->getAdminScore();
         $finalScore = $globalWeight * $global + $localWeight * $local + $adminWeight * $admin;

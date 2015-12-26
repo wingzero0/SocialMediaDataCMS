@@ -33,15 +33,19 @@
             </tr>
             <tr>
                 <th>Last Modified Date</th>
-                <td>{{ document.lastModDate }}</td>
+                <td>{{ document.lastModDate|date('Y-m-d H:i:s') }}</td>
             </tr>
             <tr>
                 <th>Local score</th>
                 <td>{{ document.localScore }}</td>
             </tr>
             <tr>
-                <th>Admin Human</th>
+                <th>Admin score</th>
                 <td>{{ document.adminScore }}</td>
+            </tr>
+            <tr>
+                <th>Final score</th>
+                <td>{{ document.finalScore }}</td>
             </tr>
             <tr>
                 <th>MnemonoBiz</th>
@@ -53,11 +57,7 @@
             </tr>
             <tr>
                 <th>Import From</th>
-                {% if document.importFromRef is not null %}
-                    <td>{{ document.importFrom }}</td>
-                {% else %}
-                    <td>{{ document.importFrom }}</td>
-                {% endif %}
+                <td>{{ document.importFrom }}</td>
             </tr>
             <tr>
                 <th>Meta</th>

@@ -40,6 +40,9 @@ class PostType extends AbstractType
                 'prototype' => true,
                 'required' => false
             ))
+            ->add('originalLink', 'text', array(
+                'required' => false
+            ))
             ->add('mnemonoCat', 'text', array(
                 'required' => false
             ))
@@ -57,6 +60,10 @@ class PostType extends AbstractType
                 'required' => false
             ))
             ->add('adminScore','number', array(
+                'required' => false
+            ))
+            ->add('finalScore','number', array(
+                'read_only' => true,
                 'required' => false
             ))
             ->add('importFrom', 'text', array(

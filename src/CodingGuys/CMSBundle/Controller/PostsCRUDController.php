@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\Post;
 use CodingGuys\CMSBundle\Form\PostType;
+use AppBundle\Document\MnemonoBiz;
 
 /**
  * @Route("/dashboard/posts")
@@ -33,11 +34,10 @@ class PostsCRUDController extends AppBaseController{
         $limit = 15;
         $page = intval($request->get('page', 1));
 
-        $dm = $this->get('doctrine.odm.mongodb.document_manager');
-        $qb = $dm->createQueryBuilder('AppBundle:Post');
-        $query = $qb->getQuery();
+        $query = $this->getPostRepo()->createQueryBuilder()
+            ->sort(array("id"=>-1))->getQuery();
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $this->getKnpPaginator();
         $pagination = $paginator->paginate(
             $query,
             $page,
@@ -108,6 +108,35 @@ class PostsCRUDController extends AppBaseController{
     }
 
     /**
+     * Create a Post manually
+     *
+     * @Route("/create", name="posts_create")
+     * @Method({"GET","POST"})
+     * @Template("CodingGuysCMSBundle:PostsCRUD:form.html.twig")
+     */
+    public function createAction(Request $request){
+        $document = new Post();
+        $newForm = $this->createNewForm($document);
+
+        $newForm->handleRequest($request);
+
+        if($newForm->isValid()){
+            $this->updatePostFinalScore($document);
+            $document->setLastModDate(new \DateTime());
+            $dm = $this->getDM();
+            $dm->persist($document);
+            $dm->flush();
+
+            return $this->redirect($this->generateUrl('posts_home'));
+        }
+
+        return array(
+            'header' => "Create Post",
+            'form' => $newForm->createView(),
+        );
+    }
+
+    /**
      * Finds and displays a Post document.
      *
      * @Route("/{id}", name="posts_show")
@@ -115,7 +144,7 @@ class PostsCRUDController extends AppBaseController{
      * @Template()
      */
     public function showAction($id){
-        $document = $this->get('doctrine.odm.mongodb.document_manager')->getRepository('AppBundle:Post')->find($id);
+        $document = $this->getPostRepo()->find($id);
 
         if (!$document) {
             throw $this->createNotFoundException('Unable to find MnemonoBiz document.');
@@ -135,7 +164,7 @@ class PostsCRUDController extends AppBaseController{
      *
      * @Route("/{id}/edit", name="posts_edit")
      * @Method({"GET","PUT"})
-     * @Template("CodingGuysCMSBundle:PostsCRUD:new.html.twig")
+     * @Template("CodingGuysCMSBundle:PostsCRUD:form.html.twig")
      */
     public function editAction(Request $request, $id){
         $document = $this->getPostRepo()->find($id);
@@ -151,7 +180,10 @@ class PostsCRUDController extends AppBaseController{
         $editForm->handleRequest($request);
         if($editForm->isValid()){
             $this->updatePostFinalScore($document);
-            $document->setMnemonoBiz($backupBiz);
+            if ($backupBiz instanceof MnemonoBiz){
+                $document->setMnemonoBiz($backupBiz);
+            }
+
             $document->setLastModDate(new \DateTime());
             $dm = $this->getDM();
             $dm->persist($document);
@@ -165,6 +197,31 @@ class PostsCRUDController extends AppBaseController{
             'form' => $editForm->createView(),
         );
 
+    }
+
+    /**
+     * Deletes a Post document.
+     *
+     * @Route("/{id}", name="posts_delete")
+     * @Method("DELETE")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+        if($form->isValid()){
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $document = $dm->getRepository('AppBundle:Post')->find($id);
+
+            if (!$document) {
+                throw $this->createNotFoundException('Unable to find Post document.');
+            }
+
+            $dm->remove($document);
+            $dm->flush();
+            return $this->redirect($this->generateUrl('posts_home'));
+        }
+        return new JsonResponse(array("ret" => "delete fail"));
     }
 
     /**
@@ -226,29 +283,6 @@ class PostsCRUDController extends AppBaseController{
     }
 
     /**
-     * Deletes a Post document.
-     *
-     * @Route("/{id}", name="posts_delete")
-     * @Method("DELETE")
-     */
-    public function deleteAction(Request $request, $id)
-    {
-        $form = $this->createDeleteForm($id);
-        $form->handleRequest($request);
-        if($form->isValid()){
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $document = $dm->getRepository('AppBundle:Post')->find($id);
-
-            if (!$document) {
-                throw $this->createNotFoundException('Unable to find Post document.');
-            }
-
-            $dm->remove($document);
-            $dm->flush();
-        }
-    }
-
-    /**
      * show a raw data of Post source.
      *
      * @Route("/{id}/sourceRaw", name="posts_source_raw")
@@ -290,6 +324,28 @@ class PostsCRUDController extends AppBaseController{
      *
      * @return \Symfony\Component\Form\Form The form
      */
+    private function createNewForm(Post $document)
+    {
+        $defaultExpireDate = new \DateTime();
+        $defaultExpireDate->add(new \DateInterval("P7D"));
+        $document->setExpireDate($defaultExpireDate);
+        $form = $this->createForm(new PostType(), $document, array(
+            'action' => $this->generateUrl('posts_create'),
+            'method' => 'POST',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Create'));
+
+        return $form;
+    }
+
+    /**
+     * Creates a form to edit a Post document.
+     *
+     * @param Post $document The document
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
     private function createEditForm(Post $document)
     {
         $form = $this->createForm(new PostType(), $document, array(
@@ -314,7 +370,7 @@ class PostsCRUDController extends AppBaseController{
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('posts_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Hard Delete'))
             ->getForm()
             ;
     }

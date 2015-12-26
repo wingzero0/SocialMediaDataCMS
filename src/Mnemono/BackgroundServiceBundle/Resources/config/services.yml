@@ -8,3 +8,6 @@ services:
     PostScoreService:
         class:  Mnemono\BackgroundServiceBundle\Services\PostScoreService
         arguments:  [ @service_container ]
+    PostReviewService:
+        class:  Mnemono\BackgroundServiceBundle\Services\PostReviewService
+        arguments:  [ @service_container ]

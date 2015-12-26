@@ -133,9 +133,7 @@ class SyncFbFeedService extends BaseService{
         $ref = $post->getImportFromRef();
         if ($ref instanceof FacebookFeed){
             $post->setContent($ref->getMessage());
-            $post->setOriginalLink($ref->getShortLink());
             $post->setMeta($this->fbMetaBuilder($ref));
-            //$post->setImageLinks($ref->getAttachmentImageURL());
             $this->persistPost($post);
         }
         return $post;
