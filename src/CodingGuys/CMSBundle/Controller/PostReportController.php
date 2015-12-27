@@ -68,6 +68,18 @@ class PostReportController extends AppBaseController{
         if (!empty($tag)){
             $qb->field('tags')->equals($tag);
         }
+        $rank = intval($request->get('rank', "-1"));
+        if ($rank >= 0){
+            $qb->field("rankPosition")->equals($rank);
+        }
+        $interval = intval($request->get("interval"));
+        $this->getLogger()->info("interval");
+        if (!empty($interval)){
+            $this->getLogger()->info($interval);
+            $nowDate = new \DateTime();
+            $createDate = $nowDate->sub(new \DateInterval("P". $interval ."D"));
+            $qb->field("createAt")->gte($createDate);
+        }
         return $qb;
     }
 }

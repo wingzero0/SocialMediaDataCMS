@@ -194,7 +194,9 @@ class SyncFbFeedService extends BaseService{
         $post->setImageLinks($feed->getAttachmentImageURL());
         $createDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getCreatedTime());
         $post->setCreateAt($createDate);
-        $post->setExpireDate($createDate->add(new \DateInterval("P7D")));
+        $expireDate = clone $createDate;
+        $expireDate->add(new \DateInterval("P7D"));
+        $post->setExpireDate($expireDate);
         $meta = $this->fbMetaBuilder($feed);
         $post->setMeta($meta);
         $biz = $this->getMnemenoBizRepo()->findOneByFbPage($feed->getFbPage());

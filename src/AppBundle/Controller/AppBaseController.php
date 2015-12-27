@@ -14,6 +14,7 @@ use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use Knp\Component\Pager\Paginator;
+use Symfony\Component\HttpKernel\Log\LoggerInterface;
 
 abstract class AppBaseController extends Controller{
     /**
@@ -27,6 +28,12 @@ abstract class AppBaseController extends Controller{
      */
     protected function getKnpPaginator(){
         return $this->get('knp_paginator');
+    }
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger(){
+        return $this->get('logger');
     }
     /**
      * @return WeightingRepository
