@@ -203,7 +203,8 @@ class SyncFbFeedService extends BaseService{
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
-            $post->setTags(array($biz->getCategory()));
+            $tags = array($biz->getCategory(), $biz->getLocation()->getCity());
+            $post->setTags($tags);
         }
         return $post;
     }

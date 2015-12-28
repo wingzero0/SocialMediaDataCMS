@@ -64,9 +64,17 @@ class PostReportController extends AppBaseController{
                 $qb->field('spotlight')->notEqual(true);
             }
         }
-        $tag = $request->get('tag');
-        if (!empty($tag)){
-            $qb->field('tags')->equals($tag);
+        $tagString = $request->get('tag');
+        if (!empty($tagString)){
+            $tags = preg_split('/,/', $tagString);
+            foreach($tags as $tag){
+                $tagTrim = trim($tag);
+                if (!empty($tagTrim)){
+                    $qb->addAnd(
+                        $qb->expr()->field('tags')->equals($tagTrim)
+                    );
+                }
+            }
         }
         $rank = intval($request->get('rank', "-1"));
         if ($rank >= 0){
