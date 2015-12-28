@@ -44,7 +44,7 @@ class PostReviewCommand extends BaseCommand{
             $bizId = (string) ($biz->getId());
             $this->allBiz[$bizId] = $biz;
         });
-        echo count($this->allBiz);
+        echo "running report on total number of biz: " . count($this->allBiz) . "\n";
         return $this->allBiz;
     }
     /**

@@ -64,9 +64,29 @@ class PostReportController extends AppBaseController{
                 $qb->field('spotlight')->notEqual(true);
             }
         }
-        $tag = $request->get('tag');
-        if (!empty($tag)){
-            $qb->field('tags')->equals($tag);
+        $tagString = $request->get('tag');
+        if (!empty($tagString)){
+            $tags = preg_split('/,/', $tagString);
+            foreach($tags as $tag){
+                $tagTrim = trim($tag);
+                if (!empty($tagTrim)){
+                    $qb->addAnd(
+                        $qb->expr()->field('tags')->equals($tagTrim)
+                    );
+                }
+            }
+        }
+        $rank = intval($request->get('rank', "-1"));
+        if ($rank >= 0){
+            $qb->field("rankPosition")->equals($rank);
+        }
+        $interval = intval($request->get("interval"));
+        $this->getLogger()->info("interval");
+        if (!empty($interval)){
+            $this->getLogger()->info($interval);
+            $nowDate = new \DateTime();
+            $createDate = $nowDate->sub(new \DateInterval("P". $interval ."D"));
+            $qb->field("createAt")->gte($createDate);
         }
         return $qb;
     }

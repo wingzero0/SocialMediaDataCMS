@@ -6,6 +6,10 @@
         <form action="{{ path('post_report_home') }}" method="get">
             <label for="AppBundle_post_tag" class="required">Tag</label>
             <input type="text" id="AppBundle_post_tag" name="tag" value="{{ app.request.get("tag") }}"/>
+            <label for="AppBundle_post_rank" class="required">Rank</label>
+            <input type="text" id="AppBundle_post_rank" name="rank" value="-1"/>
+            <label for="AppBundle_post_interval" class="required">Create in days</label>
+            <input type="text" id="AppBundle_post_interval" name="interval" value="{{ app.request.get("interval") }}"/>
             <label for="AppBundle_post_publishStatus" class="required">Publish status</label>
             <select id="AppBundle_post_publishStatus" name="publishStatus">
                 <option value="">All</option>
