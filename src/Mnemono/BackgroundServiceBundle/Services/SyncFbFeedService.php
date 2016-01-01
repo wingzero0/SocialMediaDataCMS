@@ -47,8 +47,7 @@ class SyncFbFeedService extends BaseService{
             $this->updateScore($post);
             return true;
         }catch (\Exception $e){
-            echo $e->getMessage()."\n";
-            echo $e->getTraceAsString()."\n";
+            $this->logExecption($e);
             exit(-1);
         }
     }
@@ -75,8 +74,7 @@ class SyncFbFeedService extends BaseService{
             $this->updateScore($post);
             return true;
         }catch (\Exception $e){
-            echo $e->getMessage()."\n";
-            echo $e->getTraceAsString()."\n";
+            $this->logExecption($e);
             exit(-1);
         }
     }
@@ -113,12 +111,12 @@ class SyncFbFeedService extends BaseService{
     private function updatePostByFbId($fbId){
         $feed = $this->queryFeedByFbId($fbId);
         if (!($feed instanceof FacebookFeed)){
-            echo "FacebookFeed of fbID " . $fbId . " not found\n";
+            $this->logError("FacebookFeed of fbID " . $fbId . " not found");
             return null;
         }
         $post = $this->queryPostByFeed($feed);
         if (!($post instanceof Post)){
-            echo "Post of FacebookFeed ID: " . $feed->getId() . " fbID " . $fbId . " not found\n";
+            $this->logError("Post of FacebookFeed ID: " . $feed->getId() . " fbID " . $fbId . " not found");
             return null;
         }
         return $this->updatePostByRef($post);
@@ -163,12 +161,12 @@ class SyncFbFeedService extends BaseService{
         $biz = $post->getMnemonoBiz();
         if (!$biz instanceof MnemonoBiz) {
             var_dump($post->getImportFromRef()->getId());
+            $biz->setLastPostUpdateAt($timing);
+            $dm->persist($biz);
+            $dm->persist($post);
+            $dm->flush();
+            $dm->clear();
         }
-        $biz->setLastPostUpdateAt($timing);
-        $dm->persist($biz);
-        $dm->persist($post);
-        $dm->flush();
-        $dm->clear();
     }
 
     /**

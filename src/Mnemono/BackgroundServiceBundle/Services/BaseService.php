@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
+use Psr\Log\LoggerInterface;
 
 abstract class BaseService {
     private $container;
@@ -60,6 +61,28 @@ abstract class BaseService {
     protected function getGearman(){
         return $this->getContainer()->get('gearman');
     }
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger(){
+        return $this->getContainer()->get('logger');
+    }
+
+    /**
+     * @param $msg
+     */
+    protected function logError($msg){
+        $dateObj = new \DateTime();
+        echo $dateObj->format(\DateTime::ISO8601) . ":" . $msg . "\n";
+        $this->getLogger()->error($msg);
+    }
+
+    protected function logExecption(\Exception $e){
+        $this->logError($e->getMessage());
+        $this->logError($e->getTraceAsString());
+    }
+
     /**
      * @param bool $reset
      * @return null|DocumentManager

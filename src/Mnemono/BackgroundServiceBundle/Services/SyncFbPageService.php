@@ -45,8 +45,7 @@ class SyncFbPageService extends BaseService{
             $this->createBizByFbId($fbId);
             return true;
         }catch (\Exception $e){
-            echo $e->getMessage()."\n";
-            echo $e->getTraceAsString()."\n";
+            $this->logExecption($e);
             exit(-1);
         }
     }
@@ -71,8 +70,7 @@ class SyncFbPageService extends BaseService{
             $this->updateBizByFbId($fbId);
             return true;
         }catch (\Exception $e){
-            echo $e->getMessage()."\n";
-            echo $e->getTraceAsString()."\n";
+            $this->logExecption($e);
             exit(-1);
         }
     }
@@ -110,7 +108,7 @@ class SyncFbPageService extends BaseService{
 
             $dm->clear();
         }else{
-            echo $fbId . ": biz is not null or Page is not FacebookPage\n";
+            $this->logError($fbId . ": biz is not null or Page is not FacebookPage");
         }
 
 
