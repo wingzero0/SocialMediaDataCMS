@@ -239,13 +239,41 @@ class PostsCRUDController extends AppBaseController{
 
         $setFlag = intval($request->get("set"));
 
-        $ret = array();
         if ($setFlag > 0){
             $document->setSpotlight(true);
             $ret = array("spotlight" => true);
         }else{
             $document->setSpotlight(false);
             $ret = array("spotlight" => false);
+        }
+
+        $this->getDM()->persist($document);
+        $this->getDM()->flush();
+
+        return new JsonResponse($ret);
+    }
+
+    /**
+     * set or unset a post as a homepage post
+     *
+     * @Route("/{id}/homepage", name="posts_set_homepage")
+     * @Method({"PUT"})
+     */
+    public function setHomepageAction(Request $request, $id){
+        $document = $this->getPostRepo()->find($id);
+
+        if (!$document instanceof Post) {
+            throw $this->createNotFoundException('Unable to find Post document.');
+        }
+
+        $setFlag = intval($request->get("set"));
+
+        if ($setFlag > 0){
+            $document->setShowAtHomepage(true);
+            $ret = array("homepage" => true);
+        }else{
+            $document->setShowAtHomepage(false);
+            $ret = array("homepage" => false);
         }
 
         $this->getDM()->persist($document);

@@ -121,10 +121,17 @@ class Post extends BaseThread{
     protected $updateAt;
 
     /**
+     * @deprecated
      * @MongoDB\Boolean
      * @MongoDB\Index
      */
     protected $spotlight;
+    /**
+     * @MongoDB\Boolean
+     * @MongoDB\Index
+     */
+    protected $showAtHomepage;
+
     /**
      * @MongoDB\Date
      * @MongoDB\Index
@@ -506,6 +513,7 @@ class Post extends BaseThread{
     }
 
     /**
+     * @deprecated
      * Get spotlight
      *
      * @return boolean $spotlight
@@ -516,6 +524,7 @@ class Post extends BaseThread{
     }
 
     /**
+     * @deprecated
      * Get spotlight
      *
      * @return boolean $spotlight
@@ -637,5 +646,35 @@ class Post extends BaseThread{
     public function getImageLinks()
     {
         return $this->imageLinks;
+    }
+
+    /**
+     * Set showAtHomepage
+     *
+     * @param boolean $showAtHomepage
+     * @return self
+     */
+    public function setShowAtHomepage($showAtHomepage)
+    {
+        $this->showAtHomepage = $showAtHomepage;
+        return $this;
+    }
+
+    /**
+     * Get showAtHomepage
+     *
+     * @return boolean $showAtHomepage
+     */
+    public function getShowAtHomepage()
+    {
+        if ($this->showAtHomepage == true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function isShowAtHomepage(){
+        return $this->getShowAtHomepage();
     }
 }

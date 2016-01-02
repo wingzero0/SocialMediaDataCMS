@@ -81,8 +81,8 @@ class PostType extends AbstractType
                 'attr' => array('rows' => '10'),
                 'required' => false,
             ))
-            ->add('spotlight', 'checkbox', array(
-                'label'    => 'Spotlight',
+            ->add('showAtHomepage', 'checkbox', array(
+                'label'    => 'Show at homepage',
                 'required' => false,
             ))
             ->add('softDelete', 'checkbox', array(
