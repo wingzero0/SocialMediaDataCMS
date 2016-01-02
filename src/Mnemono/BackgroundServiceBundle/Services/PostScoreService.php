@@ -45,8 +45,7 @@ class PostScoreService extends BaseService{
             $this->updatePostFinalScore($post);
             return true;
         }catch (\Exception $e){
-            echo $e->getMessage()."\n";
-            echo $e->getTraceAsString()."\n";
+            $this->logExecption($e);
             exit(-1);
         }
     }

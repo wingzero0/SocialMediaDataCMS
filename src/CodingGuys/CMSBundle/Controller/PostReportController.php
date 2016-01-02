@@ -64,6 +64,14 @@ class PostReportController extends AppBaseController{
                 $qb->field('spotlight')->notEqual(true);
             }
         }
+        $showAtHomepage = $request->get('showAtHomepage');
+        if (!empty($showAtHomepage)){
+            if ($showAtHomepage == 'Y'){
+                $qb->field('showAtHomepage')->equals(true);
+            }else{
+                $qb->field('showAtHomepage')->notEqual(true);
+            }
+        }
         $tagString = $request->get('tag');
         if (!empty($tagString)){
             $tags = preg_split('/,/', $tagString);
