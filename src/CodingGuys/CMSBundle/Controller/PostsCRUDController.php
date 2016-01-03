@@ -122,7 +122,9 @@ class PostsCRUDController extends AppBaseController{
 
         if($newForm->isValid()){
             $this->updatePostFinalScore($document);
-            $document->setLastModDate(new \DateTime());
+            $createTime = new \DateTime();
+            $document->setCreateAt($createTime);
+            $document->setUpdateAt($createTime);
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
@@ -184,7 +186,7 @@ class PostsCRUDController extends AppBaseController{
                 $document->setMnemonoBiz($backupBiz);
             }
 
-            $document->setLastModDate(new \DateTime());
+            $document->setUpdateAt(new \DateTime());
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
