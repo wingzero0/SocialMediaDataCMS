@@ -6,6 +6,8 @@ framework:
         resource: "%kernel.root_dir%/config/routing_dev.yml"
         strict_requirements: true
     profiler: { only_exceptions: false }
+    templating:
+            engines: ['twig']
 
 web_profiler:
     toolbar: true
@@ -35,3 +37,5 @@ doctrine_cache:
         gearman_cache:
             type: array
             namespace: doctrine_cache.ns.gearman
+
+nelmio_api_doc: ~

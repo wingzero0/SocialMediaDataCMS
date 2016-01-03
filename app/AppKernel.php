@@ -25,9 +25,11 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Mmoreram\GearmanBundle\GearmanBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new CodingGuys\CMSBundle\CodingGuysCMSBundle(),
             new CodingGuys\ApiBundle\CodingGuysApiBundle(),
             new Mnemono\BackgroundServiceBundle\MnemonoBackgroundServiceBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

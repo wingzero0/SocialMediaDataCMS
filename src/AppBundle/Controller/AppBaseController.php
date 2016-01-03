@@ -15,6 +15,7 @@ use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use JMS\Serializer\SerializerInterface;
 
 abstract class AppBaseController extends Controller{
     /**
@@ -34,6 +35,13 @@ abstract class AppBaseController extends Controller{
      */
     protected function getLogger(){
         return $this->get('logger');
+    }
+
+    /**
+     * @return SerializerInterface
+     */
+    protected function getJMSSerializer(){
+        return $this->get('jms_serializer');
     }
     /**
      * @return WeightingRepository

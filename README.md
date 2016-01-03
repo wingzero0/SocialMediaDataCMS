@@ -47,3 +47,7 @@ By batch
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbFeedService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostScoreService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostReviewService --no-interaction
+
+### oauth
+    app/console mnemono:oauth-server:client:create --redirect-uri=http://api.mnemono.com/ --grant-type=authorization_code --grant-type=password --grant-type=refresh_token --grant-type=token --grant-type=client_credentials
+    test url http://api.mnemono.com/oauth/v2/token?client_id=56889752dab392bc090041a7_4vqifn7du7i8og4gsg0kw4csc4k88okog400wsg40s4ggskcg0&client_secret=13mg9x3otg00w404k0ks4gsk8o4k4k40cso448s80okw4wccw4&grant_type=client_credentials

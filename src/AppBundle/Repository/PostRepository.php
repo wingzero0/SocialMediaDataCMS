@@ -96,6 +96,9 @@ class PostRepository extends DocumentRepository
         return $qb;
     }
 
+    /**
+     * @return Builder
+     */
     public function getPublicQueryBuilderSortWithRank(){
         $qb = $this->getQueryBuilderSortWithRank()
             ->field("publishStatus")->equals("published");

@@ -18,3 +18,7 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    token_url: http://api.mnemono.com/oauth/v2/token
+    oauth_client_id: 56889752dab392bc090041a7_4vqifn7du7i8og4gsg0kw4csc4k88okog400wsg40s4ggskcg0
+    oauth_client_secret: 13mg9x3otg00w404k0ks4gsk8o4k4k40cso448s80okw4wccw4

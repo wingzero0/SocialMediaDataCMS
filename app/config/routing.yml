@@ -1,18 +1,25 @@
-coding_guys_api:
-    resource: "@CodingGuysApiBundle/Controller"
-    type:     annotation
-    prefix:   /api/
+fos_comment_api:
+    type: rest
+    resource: @FOSCommentBundle/Resources/config/routing.yml
+    prefix: /api/comment
+    defaults: { _format: html }
+
+fos_oauth_server_token:
+    resource: "@FOSOAuthServerBundle/Resources/config/routing/token.xml"
+
+fos_oauth_server_authorize:
+    resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+    prefix: /cms/user
 
 coding_guys_cms:
     resource: "@CodingGuysCMSBundle/Controller/"
     type:     annotation
-    prefix:   /cms/
+    prefix:   /cms
 
-fos_comment_api:
-    type: rest
-    resource: @FOSCommentBundle/Resources/config/routing.yml
-    prefix: /api
-    defaults: { _format: html }
-
-fos_user:
-    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+coding_guys_api:
+    resource: "@CodingGuysApiBundle/Controller"
+    type:     annotation
+    prefix:   /api
