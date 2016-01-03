@@ -15,6 +15,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * @MongoDB\Document(collection="Post", repositoryClass="AppBundle\Repository\PostRepository")
@@ -30,11 +31,13 @@ use JMS\Serializer\Annotation\Since;
 class Post extends BaseThread{
     /**
      * @MongoDB\Id
+     * @Groups({"display"})
      */
     protected $id;
     /**
      * @MongoDB\Collection
      * @MongoDB\Index
+     * @Groups({"display"})
      */
     protected $tags;
     /**
@@ -42,10 +45,6 @@ class Post extends BaseThread{
      * @MongoDB\Index
      */
     protected $mnemonoCat;
-    /**
-     * @MongoDB\Date
-     */
-    protected $lastModDate;
     /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\MnemonoBiz")
      * @MongoDB\Index
@@ -68,10 +67,12 @@ class Post extends BaseThread{
     protected $importFromRef;
     /**
      * @MongoDB\String
+     * @Groups({"display"})
      */
     protected $originalLink;
     /**
      * @MongoDB\Collection
+     * @Groups({"display"})
      */
     protected $imageLinks;
     /**
@@ -91,6 +92,7 @@ class Post extends BaseThread{
     // passible value: draft(by use), review(by admin), published,
     /**
      * @MongoDB\String
+     * @Groups({"display"})
      */
     protected $content;
     /**
@@ -117,6 +119,7 @@ class Post extends BaseThread{
     /**
      * @MongoDB\Date
      * @MongoDB\Index
+     * @Groups({"display"})
      */
     protected $updateAt;
 
@@ -275,28 +278,6 @@ class Post extends BaseThread{
     public function getContent()
     {
         return $this->content;
-    }
-
-    /**
-     * Set lastModDate
-     *
-     * @param date $lastModDate
-     * @return self
-     */
-    public function setLastModDate($lastModDate)
-    {
-        $this->lastModDate = $lastModDate;
-        return $this;
-    }
-
-    /**
-     * Get lastModDate
-     *
-     * @return date $lastModDate
-     */
-    public function getLastModDate()
-    {
-        return $this->lastModDate;
     }
 
     /**
