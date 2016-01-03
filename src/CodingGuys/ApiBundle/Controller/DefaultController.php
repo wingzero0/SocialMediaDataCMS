@@ -29,7 +29,7 @@ class DefaultController extends AppBaseController
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
      *  }
      * )
-     * @Route("/", name="@apiHome")
+     * @Route("/", name="api_homepage_post")
      * @Method("GET")
      */
     public function indexAction(Request $request){
@@ -46,7 +46,7 @@ class DefaultController extends AppBaseController
 
     /**
      * @ApiDoc(
-     *  description="search feed with tags",
+     *  description="query all post, can be filter by tags",
      *  parameters={
      *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
@@ -54,7 +54,7 @@ class DefaultController extends AppBaseController
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
      *  }
      * )
-     * @Route("/tags", name="api_search_post_by_tag")
+     * @Route("/all", name="api_all_post")
      * @Method("GET")
      */
     public function searchTagsAction(Request $request){
