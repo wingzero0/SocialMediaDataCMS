@@ -25,6 +25,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Mmoreram\GearmanBundle\GearmanBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new CodingGuys\CMSBundle\CodingGuysCMSBundle(),
             new CodingGuys\ApiBundle\CodingGuysApiBundle(),
             new Mnemono\BackgroundServiceBundle\MnemonoBackgroundServiceBundle(),

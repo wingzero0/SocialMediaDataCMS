@@ -36,13 +36,29 @@ security:
             #anonymous: ~
             #http_basic:
             #    realm: "Secured Demo Area"
+
         main:
-            pattern: ^/
+            pattern: ^/cms
             form_login:
                 provider: fos_userbundle
                 csrf_provider: form.csrf_provider
+                check_path:     fos_user_security_check
             logout:       true
             anonymous:    true
+        oauth_token:
+            pattern:    ^/oauth/v2/token
+            security:   false
+
+        oauth_authorize:
+            pattern:    ^/oauth/v2/auth
+            anonymous: true
+            # Add your favorite authentication process here
+
+        api:
+            pattern:    ^/api
+            fos_oauth:  true
+            stateless:  true
+            anonymous:  false # can be omitted as its default value
 
     access_control:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
