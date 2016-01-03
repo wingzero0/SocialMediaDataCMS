@@ -24,35 +24,89 @@ class DefaultController extends AppBaseController
      * @ApiDoc(
      *  description="home page feed",
      *  parameters={
+     *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
+     *  }
+     * )
+     * @Route("/", name="@apiHome")
+     * @Method("GET")
+     */
+    public function indexAction(Request $request){
+        $qb = $this->createQueryBuilder($request);
+        $qb->field('showAtHomepage')->equals(true);
+        $posts = $qb->getQuery()->execute();
+        $ret = array();
+        foreach($posts as $post){
+            $ret[] = $post;
+        }
+        $serialize = $this->serialize($ret, "display");
+        return new Response($serialize);
+    }
+
+    /**
+     * @ApiDoc(
+     *  description="search feed with tags",
+     *  parameters={
      *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
      *  }
      * )
-     * @Route("/home/", name="@apiHome")
+     * @Route("/tags", name="api_search_post_by_tag")
      * @Method("GET")
      */
-    public function indexAction(Request $request){
+    public function searchTagsAction(Request $request){
+        $qb = $this->createQueryBuilder($request);
+        $posts = $qb->getQuery()->execute();
+        $ret = array();
+        foreach($posts as $post){
+            $ret[] = $post;
+        }
+        $serialize = $this->serialize($ret, "display");
+        return new Response($serialize);
+    }
+
+    /**
+     * @param array $data
+     * @param string|null $groupName
+     * @return string
+     */
+    private function serialize($data, $groupName = null){
+        if ($groupName){
+            $serialize = $this->getJMSSerializer()->serialize(
+                array('data' => $data),
+                'json',
+                SerializationContext::create()->setGroups(array($groupName))
+            );
+        }else{
+            $serialize = $this->getJMSSerializer()->serialize(
+                array('data' => $data),
+                'json'
+            );
+        }
+
+        return $serialize;
+    }
+
+    /**
+     * @param Request $request
+     * @return Builder
+     */
+    private function createQueryBuilder(Request $request){
         $qb = $this->getPostRepo()->getPublicQueryBuilderSortWithRank();
         $qb = $this->compileFilter($request, $qb);
         $limit = intval($request->get("limit"));
         if ($limit <= 0){
             $limit = 25;
         }
-        $posts = $qb
-            ->limit($limit)
-            ->getQuery()->execute();
-        $ret = array();
-        foreach($posts as $post){
-            $ret[] = $post;
+        $skip = intval($request->get("skip"));
+        if ($skip <= 0){
+            $skip = 0;
         }
-        $serialize = $this->getJMSSerializer()->serialize(
-            array('data' => $ret),
-            'json',
-            SerializationContext::create()->setGroups(array('display'))
-        );
-        return new Response($serialize);
+        $qb->limit($limit)->skip($skip);
+        return $qb;
     }
 
     /**
@@ -72,12 +126,10 @@ class DefaultController extends AppBaseController
                     );
                 }
             }
-        }else{
-            $qb->field('showAtHomepage')->equals(true);
         }
 
-        $interval = intval($request->get("interval"));
-        $this->getLogger()->info("interval");
+        $interval = intval($request->get("days"));
+        $this->getLogger()->info("days");
         if (!empty($interval)){
             $this->getLogger()->info($interval);
             $nowDate = new \DateTime();
