@@ -22,7 +22,7 @@ class RefreshToken extends BaseRefreshToken
      */
     protected $id;
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Document\OAuth\Client")
+     * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\OAuth\Client")
      */
     protected $client;
 

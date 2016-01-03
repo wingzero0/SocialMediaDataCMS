@@ -19,7 +19,7 @@ class AccessToken extends BaseAccessToken
      */
     protected $id;
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Document\OAuth\Client")
+     * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\OAuth\Client")
      */
     protected $client;
 

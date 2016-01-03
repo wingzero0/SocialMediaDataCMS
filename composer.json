@@ -24,7 +24,7 @@
     "friendsofsymfony/user-bundle": "~2.0@dev",
     "friendsofsymfony/comment-bundle": "^2.0",
     "friendsofsymfony/oauth-server-bundle": "@stable",
-    "nelmio/api-doc-bundle": "2.8.*@dev",
+    "nelmio/api-doc-bundle": "^2.11",
     "knplabs/knp-paginator-bundle": "~2.4",
     "mmoreram/gearman-bundle": "@stable"
   },

@@ -55,7 +55,7 @@ security:
             # Add your favorite authentication process here
 
         api:
-            pattern:    ^/api
+            pattern:    ^/api/mobile/
             fos_oauth:  true
             stateless:  true
             anonymous:  false # can be omitted as its default value
@@ -64,5 +64,5 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/mobile/, role: IS_AUTHENTICATED_ANONYMOUSLY }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
