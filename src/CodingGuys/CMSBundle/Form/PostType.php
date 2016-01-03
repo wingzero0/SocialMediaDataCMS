@@ -46,7 +46,7 @@ class PostType extends AbstractType
             ->add('mnemonoCat', 'text', array(
                 'required' => false
             ))
-            ->add('lastModDate','date', array(
+            ->add('updateAt','date', array(
                 'read_only' => true,
                 'required' => false,
                 'widget' => 'single_text',

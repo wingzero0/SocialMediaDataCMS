@@ -159,13 +159,15 @@ class SyncFbFeedService extends BaseService{
         $timing = new \DateTime();
         $post->setUpdateAt($timing);
         $biz = $post->getMnemonoBiz();
-        if (!$biz instanceof MnemonoBiz) {
-            var_dump($post->getImportFromRef()->getId());
+        if ($biz instanceof MnemonoBiz) {
             $biz->setLastPostUpdateAt($timing);
             $dm->persist($biz);
             $dm->persist($post);
             $dm->flush();
             $dm->clear();
+        }else{
+            $msg = sprintf("post %d has no biz", $post->getImportFromRef()->getId());
+            $this->logError($msg);
         }
     }
 

@@ -86,8 +86,8 @@
                     {% else %}
                         <td>null</td>
                     {% endif %}
-                    {% if document.lastModDate is not null %}
-                        <td>{{ document.lastModDate.format('Y-m-d') }}</td>
+                    {% if document.updateAt is not null %}
+                        <td>{{ document.updateAt.format('Y-m-d') }}</td>
                     {% else %}
                         <td></td>
                     {% endif %}
