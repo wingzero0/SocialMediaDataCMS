@@ -50,6 +50,18 @@ class FacebookFeed {
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookPage")
      */
     protected $fbPage;
+    /**
+     * @MongoDB\String
+     */
+    protected $link;
+    /**
+     * @MongoDB\Field(type="string", name="status_type")
+     */
+    protected $statusType;
+    /**
+     * @MongoDB\String
+     */
+    protected $story;
 
     /**
      * Get id
@@ -85,6 +97,30 @@ class FacebookFeed {
 
     public function getShortLink(){
         return "https://www.facebook.com/" . $this->getFbId();
+    }
+
+    public function getGuessLink(){
+        if ($this->getStatusType() == "added_video"){
+            $this->getLink();
+        }
+        $story = $this->getStory();
+        if (!$story){
+            return $this->getShortLink();
+        }
+
+        $pattern = "/new photos to the album:/";
+        $ret = preg_match($pattern, $story);
+        if ($ret > 0){
+            return $this->getLink();
+        }
+
+        $pattern = "/cover photo./";
+        $ret = preg_match($pattern, $story);
+        if ($ret > 0){
+            return $this->getLink();
+        }
+
+        return $this->getShortLink();
     }
 
     /**
@@ -308,5 +344,71 @@ class FacebookFeed {
             return $media["image"]["src"];
         }
         return null;
+    }
+
+    /**
+     * Set link
+     *
+     * @param string $link
+     * @return self
+     */
+    public function setLink($link)
+    {
+        $this->link = $link;
+        return $this;
+    }
+
+    /**
+     * Get link
+     *
+     * @return string $link
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
+     * Set statusType
+     *
+     * @param string $statusType
+     * @return self
+     */
+    public function setStatusType($statusType)
+    {
+        $this->statusType = $statusType;
+        return $this;
+    }
+
+    /**
+     * Get statusType
+     *
+     * @return string $statusType
+     */
+    public function getStatusType()
+    {
+        return $this->statusType;
+    }
+
+    /**
+     * Set story
+     *
+     * @param string $story
+     * @return self
+     */
+    public function setStory($story)
+    {
+        $this->story = $story;
+        return $this;
+    }
+
+    /**
+     * Get story
+     *
+     * @return string $story
+     */
+    public function getStory()
+    {
+        return $this->story;
     }
 }
