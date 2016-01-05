@@ -10,6 +10,8 @@
             <input type="text" id="AppBundle_post_rank" name="rank" value="-1"/>
             <label for="AppBundle_post_interval" class="required">Create in days</label>
             <input type="text" id="AppBundle_post_interval" name="interval" value="{{ app.request.get("interval") }}"/>
+            <label for="AppBundle_post_search" class="required">Search</label>
+            <input type="text" id="AppBundle_post_search" name="search" value="{{ app.request.get("search") }}"/>
             <label for="AppBundle_post_publishStatus" class="required">Publish status</label>
             <select id="AppBundle_post_publishStatus" name="publishStatus">
                 <option value="">All</option>

@@ -190,7 +190,7 @@ class SyncFbFeedService extends BaseService{
         $post->setImportFromRef($feed);
         $post->setContent($feed->getMessage());
         $post->setPublishStatus("review");
-        $post->setOriginalLink($feed->getShortLink());
+        $post->setOriginalLink($feed->getGuessLink());
         $post->setImageLinks($feed->getAttachmentImageURL());
         $createDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getCreatedTime());
         $post->setCreateAt($createDate);
