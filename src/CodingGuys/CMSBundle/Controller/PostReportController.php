@@ -96,6 +96,26 @@ class PostReportController extends AppBaseController{
             $createDate = $nowDate->sub(new \DateInterval("P". $interval ."D"));
             $qb->field("createAt")->gte($createDate);
         }
+
+        $searchField = $request->get('search');
+        if (!empty($searchField)){
+            $regexArray = $this->getKeywordRegex($searchField);
+            $qb->field('content')->all($regexArray);
+        }
         return $qb;
+    }
+
+    /**
+     * @param string $searchField
+     * @return array
+     */
+    private function getKeywordRegex($searchField){
+        $keywords = explode(',', $searchField);
+        $regexArray = array();
+        foreach($keywords as $keyword){
+            $keyword = '/' . $keyword . '/i';
+            $regexArray[] = new \MongoRegex($keyword);
+        }
+        return $regexArray;
     }
 }
