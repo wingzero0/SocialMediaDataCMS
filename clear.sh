@@ -1,2 +1,3 @@
 #!/bin/bash
-app/console cache:clear
+rm -rf app/cache/prod/*
+rm -rf app/cache/dev/*
