@@ -27,7 +27,7 @@ class ManagedTagType extends AbstractType{
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => DocumentPath::$managedTagDocumentPath,
+            'data_class' => DocumentPath::$managedTagFolderPath,
         ));
     }
 
