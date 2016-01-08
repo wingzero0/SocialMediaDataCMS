@@ -19,7 +19,10 @@ class ManagedTagType extends AbstractType{
      */
     public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-            ->add('name');
+            ->add('key')
+            ->add('nameChi')
+            ->add('nameEng')
+        ;
     }
     /**
      * @param OptionsResolver $resolver

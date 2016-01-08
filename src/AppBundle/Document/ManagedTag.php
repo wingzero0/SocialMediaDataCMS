@@ -27,7 +27,22 @@ class ManagedTag {
      * @MongoDB\String
      * @MongoDB\Index
      */
-    protected $name;
+    protected $key;
+    /**
+     * @MongoDB\String
+     * @MongoDB\Index
+     */
+    protected $nameChi;
+    /**
+     * @MongoDB\String
+     * @MongoDB\Index
+     */
+    protected $nameEng;
+    /**
+     * @MongoDB\Collection
+     * @MongoDB\Index
+     */
+    protected $extendTags;
 
     /**
      * Get id
@@ -40,24 +55,68 @@ class ManagedTag {
     }
 
     /**
-     * Set name
+     * Set key
      *
-     * @param string $name
+     * @param string $key
      * @return self
      */
-    public function setName($name)
+    public function setKey($key)
     {
-        $this->name = $name;
+        $this->key = $key;
         return $this;
     }
 
     /**
-     * Get name
+     * Get key
      *
-     * @return string $name
+     * @return string $key
      */
-    public function getName()
+    public function getKey()
     {
-        return $this->name;
+        return $this->key;
+    }
+
+    /**
+     * Set nameChi
+     *
+     * @param string $nameChi
+     * @return self
+     */
+    public function setNameChi($nameChi)
+    {
+        $this->nameChi = $nameChi;
+        return $this;
+    }
+
+    /**
+     * Get nameChi
+     *
+     * @return string $nameChi
+     */
+    public function getNameChi()
+    {
+        return $this->nameChi;
+    }
+
+    /**
+     * Set nameEng
+     *
+     * @param string $nameEng
+     * @return self
+     */
+    public function setNameEng($nameEng)
+    {
+        $this->nameEng = $nameEng;
+        return $this;
+    }
+
+    /**
+     * Get nameEng
+     *
+     * @return string $nameEng
+     */
+    public function getNameEng()
+    {
+        return $this->nameEng;
     }
 }
