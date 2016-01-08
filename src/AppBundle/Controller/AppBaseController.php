@@ -13,6 +13,7 @@ use AppBundle\Utility\DocumentPath;
 use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use AppBundle\Repository\ManagedTagRepository;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use JMS\Serializer\SerializerInterface;
@@ -74,5 +75,12 @@ abstract class AppBaseController extends Controller{
             return 1.0;
         }
         return $weighting->getValue();
+    }
+
+    /**
+     * @return ManagedTagRepository
+     */
+    protected function getManagedTagRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$managedTagDocumentPath);
     }
 }
