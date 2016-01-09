@@ -27,8 +27,8 @@ class DefaultController extends AppBaseController
      *  description="home page feed",
      *  parameters={
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
-     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts"},
-     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
      *  }
      * )
      * @Route("/posts/hot", name="api_homepage_post")
@@ -52,8 +52,8 @@ class DefaultController extends AppBaseController
      *  parameters={
      *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
-     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts"},
-     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
      *  }
      * )
      * @Route("/posts", name="api_all_post")
@@ -73,8 +73,8 @@ class DefaultController extends AppBaseController
     /**
      * @ApiDoc(
      *  description="query a post by id",
-     *  parameters={
-     *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
+     *  requirements={
+     *      { "name"="id", "dataType"="string", "requirement"="mongo id in string", "description"="post id"}
      *  }
      * )
      * @Route("/posts/{id}", name="api_specific_post")
@@ -93,8 +93,8 @@ class DefaultController extends AppBaseController
      * @ApiDoc(
      *  description="query all managed tag, with total number of tag's post",
      *  parameters={
-     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x tags"},
-     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x tags"},
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x tags, default is 25"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x tags, default is 0"},
      *  }
      * )
      * @Route("/tags", name="api_managedTag")
