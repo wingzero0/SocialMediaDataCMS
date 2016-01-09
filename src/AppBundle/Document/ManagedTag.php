@@ -13,6 +13,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * @MongoDB\Document(collection="ManagedTag", repositoryClass="AppBundle\Repository\ManagedTagRepository"))
@@ -26,16 +27,19 @@ class ManagedTag {
     /**
      * @MongoDB\String
      * @MongoDB\Index
+     * @Groups({"display"})
      */
     protected $key;
     /**
      * @MongoDB\String
      * @MongoDB\Index
+     * @Groups({"display"})
      */
     protected $nameChi;
     /**
      * @MongoDB\String
      * @MongoDB\Index
+     * @Groups({"display"})
      */
     protected $nameEng;
     /**

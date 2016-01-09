@@ -47,7 +47,10 @@ class PostRepository extends DocumentRepository
         $qb = $this->createQueryBuilder()
             ->field("expireDate")->gte($expireDate)
             ->field("softDelete")->notEqual(true)
-            ->skip($skip)->limit($limit);
+            ->skip($skip);
+        if ($limit >= 0){
+            $qb->limit($limit);
+        }
         return $qb;
     }
 
@@ -103,5 +106,16 @@ class PostRepository extends DocumentRepository
         $qb = $this->getQueryBuilderSortWithRank()
             ->field("publishStatus")->equals("published");
         return $qb;
+    }
+
+    /**
+     * @param array $tags array of key (in string)
+     * @return int
+     */
+    public function queryCountOfTagedPost($tags){
+        $qb = $this->getQueryBuilderFindNonExpire(null,-1,0);
+        $qb->field('tags')->in($tags);
+        $count = $qb->count()->getQuery()->execute();
+        return $count;
     }
 }
