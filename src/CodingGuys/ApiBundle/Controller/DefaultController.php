@@ -3,6 +3,8 @@
 namespace CodingGuys\ApiBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
+use AppBundle\Document\ManagedTag;
+use AppBundle\Document\Post;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -29,7 +31,7 @@ class DefaultController extends AppBaseController
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
      *  }
      * )
-     * @Route("/", name="api_homepage_post")
+     * @Route("/posts/hot", name="api_homepage_post")
      * @Method("GET")
      */
     public function indexAction(Request $request){
@@ -54,10 +56,10 @@ class DefaultController extends AppBaseController
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
      *  }
      * )
-     * @Route("/all", name="api_all_post")
+     * @Route("/posts", name="api_all_post")
      * @Method("GET")
      */
-    public function searchTagsAction(Request $request){
+    public function getPostsAction(Request $request){
         $qb = $this->createQueryBuilder($request);
         $posts = $qb->getQuery()->execute();
         $ret = array();
@@ -66,6 +68,64 @@ class DefaultController extends AppBaseController
         }
         $serialize = $this->serialize($ret, "display");
         return new Response($serialize);
+    }
+
+    /**
+     * @ApiDoc(
+     *  description="query a post by id",
+     *  parameters={
+     *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
+     *  }
+     * )
+     * @Route("/posts/{id}", name="api_specific_post")
+     * @Method("GET")
+     */
+    public function getPostAction(Request $request,$id){
+        $post = $this->getPostRepo()->find($id);
+        if (!($post instanceof Post)){
+            throw $this->createNotFoundException("Unable to find Post document.");
+        }
+        $serialize = $this->serialize($post, "display");
+        return new Response($serialize);
+    }
+
+    /**
+     * @ApiDoc(
+     *  description="query all managed tag, with total number of tag's post",
+     *  parameters={
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x tags"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x tags"},
+     *  }
+     * )
+     * @Route("/tags", name="api_managedTag")
+     * @Method("GET")
+     */
+    public function getManagedTagsAction(Request $request){
+        $limit = intval($request->get("limit"));
+        if ($limit <= 0){
+            $limit = 25;
+        }
+        $skip = intval($request->get("skip"));
+        if ($skip <= 0){
+            $skip = 0;
+        }
+        return new Response($this->createMangedTagsQueryBuilder($limit, $skip));
+    }
+
+    private function createMangedTagsQueryBuilder($limit, $skip){
+        $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
+        $qb->limit($limit)->skip($skip);
+        $managedTags = $qb->getQuery()->execute();
+
+        $data = array();
+
+        foreach($managedTags as $managedTag){
+            if ($managedTag instanceof ManagedTag){
+                $count = $this->getPostRepo()->queryCountOfTagedPost(array($managedTag->getKey()));
+                $data[] = array("tag" => $managedTag, "count" => $count);
+            }
+        }
+        return $this->serialize($data, "display");
     }
 
     /**
