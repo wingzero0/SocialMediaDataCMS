@@ -42,8 +42,13 @@ security:
             form_login:
                 provider: fos_userbundle
                 csrf_provider: form.csrf_provider
-                check_path:     fos_user_security_check
-            logout:       true
+                login_path: @loginPage
+                check_path: fos_user_security_check
+                default_target_path:   @BackendHome
+                target_path_parameter: _target_path
+            logout:
+                path:   fos_user_security_logout
+                target: @loginPage
             anonymous:    true
         oauth_token:
             pattern:    ^/oauth/v2/token
@@ -55,14 +60,15 @@ security:
             # Add your favorite authentication process here
 
         api:
-            pattern:    ^/api/mobile/
+            pattern:    ^/api
             fos_oauth:  true
             stateless:  true
-            anonymous:  false # can be omitted as its default value
+            anonymous:  true # can be omitted as its default value
 
     access_control:
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/mobile/, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/cms/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/cms/user/register/confirmed, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/cms/user/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/cms/, role: ROLE_ADMIN }
+        - { path: ^/api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/account, role: IS_AUTHENTICATED_ANONYMOUSLY }

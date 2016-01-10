@@ -1,0 +1,9 @@
+{% extends "CodingGuysCMSBundle:ManagedTag:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <h3>Are you sure to delete tag </h3>
+    <p><b>{{ document.key }} ({{ document.nameChi }}, {{ document.nameEng }})</b> ?</p>
+    <div>{{ form(deleteForm) }}</div>
+</div>
+{% endblock %}

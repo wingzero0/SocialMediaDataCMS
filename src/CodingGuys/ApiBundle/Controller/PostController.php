@@ -1,8 +1,15 @@
 <?php
+/**
+ * User: kit
+ * Date: 10/01/16
+ * Time: 9:44 PM
+ */
 
 namespace CodingGuys\ApiBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
+use AppBundle\Document\ManagedTag;
+use AppBundle\Document\Post;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -16,20 +23,19 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 /**
  * Api Login controller.
  *
- * @Route("/mobile")
+ * @Route("/posts")
  */
-class DefaultController extends AppBaseController
-{
+class PostController extends AppBaseController{
     /**
      * @ApiDoc(
      *  description="home page feed",
      *  parameters={
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
-     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts"},
-     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
      *  }
      * )
-     * @Route("/", name="api_homepage_post")
+     * @Route("/hot", name="api_homepage_post")
      * @Method("GET")
      */
     public function indexAction(Request $request){
@@ -50,14 +56,14 @@ class DefaultController extends AppBaseController
      *  parameters={
      *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
-     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts"},
-     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts"},
+     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
+     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
      *  }
      * )
-     * @Route("/all", name="api_all_post")
+     * @Route("/", name="api_all_post")
      * @Method("GET")
      */
-    public function searchTagsAction(Request $request){
+    public function getPostsAction(Request $request){
         $qb = $this->createQueryBuilder($request);
         $posts = $qb->getQuery()->execute();
         $ret = array();
@@ -69,25 +75,22 @@ class DefaultController extends AppBaseController
     }
 
     /**
-     * @param array $data
-     * @param string|null $groupName
-     * @return string
+     * @ApiDoc(
+     *  description="query a post by id",
+     *  requirements={
+     *      { "name"="id", "dataType"="string", "requirement"="mongo id in string", "description"="post id"}
+     *  }
+     * )
+     * @Route("/{id}", name="api_specific_post")
+     * @Method("GET")
      */
-    private function serialize($data, $groupName = null){
-        if ($groupName){
-            $serialize = $this->getJMSSerializer()->serialize(
-                array('data' => $data),
-                'json',
-                SerializationContext::create()->setGroups(array($groupName))
-            );
-        }else{
-            $serialize = $this->getJMSSerializer()->serialize(
-                array('data' => $data),
-                'json'
-            );
+    public function getPostAction(Request $request,$id){
+        $post = $this->getPostRepo()->find($id);
+        if (!($post instanceof Post)){
+            throw $this->createNotFoundException("Unable to find Post document.");
         }
-
-        return $serialize;
+        $serialize = $this->serialize($post, "display");
+        return new Response($serialize);
     }
 
     /**
