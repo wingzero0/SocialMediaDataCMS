@@ -2,7 +2,7 @@
 
 
 {% block header %}
-    {% if error %}
+    {% if error is defined %}
         {{ error|trans({}, 'FOSUserBundle') }}
     {% endif %}
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -15,7 +15,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">School App</a>
+                <a class="navbar-brand" href="#">Mnemono</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <form class="navbar-form navbar-right" role="form" method="post"
