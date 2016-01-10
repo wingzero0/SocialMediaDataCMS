@@ -1,4 +1,9 @@
 <?php
+/**
+ * User: kit
+ * Date: 10/01/16
+ * Time: 9:44 PM
+ */
 
 namespace CodingGuys\ApiBundle\Controller;
 
@@ -18,10 +23,9 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 /**
  * Api Login controller.
  *
- * @Route("/mobile")
+ * @Route("/posts")
  */
-class DefaultController extends AppBaseController
-{
+class PostController extends AppBaseController{
     /**
      * @ApiDoc(
      *  description="home page feed",
@@ -31,7 +35,7 @@ class DefaultController extends AppBaseController
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
      *  }
      * )
-     * @Route("/posts/hot", name="api_homepage_post")
+     * @Route("/hot", name="api_homepage_post")
      * @Method("GET")
      */
     public function indexAction(Request $request){
@@ -56,7 +60,7 @@ class DefaultController extends AppBaseController
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
      *  }
      * )
-     * @Route("/posts", name="api_all_post")
+     * @Route("/", name="api_all_post")
      * @Method("GET")
      */
     public function getPostsAction(Request $request){
@@ -77,7 +81,7 @@ class DefaultController extends AppBaseController
      *      { "name"="id", "dataType"="string", "requirement"="mongo id in string", "description"="post id"}
      *  }
      * )
-     * @Route("/posts/{id}", name="api_specific_post")
+     * @Route("/{id}", name="api_specific_post")
      * @Method("GET")
      */
     public function getPostAction(Request $request,$id){
@@ -87,67 +91,6 @@ class DefaultController extends AppBaseController
         }
         $serialize = $this->serialize($post, "display");
         return new Response($serialize);
-    }
-
-    /**
-     * @ApiDoc(
-     *  description="query all managed tag, with total number of tag's post",
-     *  parameters={
-     *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x tags, default is 25"},
-     *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x tags, default is 0"},
-     *  }
-     * )
-     * @Route("/tags", name="api_managedTag")
-     * @Method("GET")
-     */
-    public function getManagedTagsAction(Request $request){
-        $limit = intval($request->get("limit"));
-        if ($limit <= 0){
-            $limit = 25;
-        }
-        $skip = intval($request->get("skip"));
-        if ($skip <= 0){
-            $skip = 0;
-        }
-        return new Response($this->createMangedTagsQueryBuilder($limit, $skip));
-    }
-
-    private function createMangedTagsQueryBuilder($limit, $skip){
-        $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
-        $qb->limit($limit)->skip($skip);
-        $managedTags = $qb->getQuery()->execute();
-
-        $data = array();
-
-        foreach($managedTags as $managedTag){
-            if ($managedTag instanceof ManagedTag){
-                $count = $this->getPostRepo()->queryCountOfTagedPost(array($managedTag->getKey()));
-                $data[] = array("tag" => $managedTag, "count" => $count);
-            }
-        }
-        return $this->serialize($data, "display");
-    }
-
-    /**
-     * @param array $data
-     * @param string|null $groupName
-     * @return string
-     */
-    private function serialize($data, $groupName = null){
-        if ($groupName){
-            $serialize = $this->getJMSSerializer()->serialize(
-                array('data' => $data),
-                'json',
-                SerializationContext::create()->setGroups(array($groupName))
-            );
-        }else{
-            $serialize = $this->getJMSSerializer()->serialize(
-                array('data' => $data),
-                'json'
-            );
-        }
-
-        return $serialize;
     }
 
     /**

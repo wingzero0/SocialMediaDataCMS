@@ -7,6 +7,7 @@
 
 namespace AppBundle\Controller;
 
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use AppBundle\Utility\DocumentPath;
@@ -82,5 +83,27 @@ abstract class AppBaseController extends Controller{
      */
     protected function getManagedTagRepo(){
         return $this->getDM()->getRepository(DocumentPath::$managedTagDocumentPath);
+    }
+
+    /**
+     * @param array $data
+     * @param string|null $groupName
+     * @return string
+     */
+    protected function serialize($data, $groupName = null){
+        if ($groupName){
+            $serialize = $this->getJMSSerializer()->serialize(
+                array('data' => $data),
+                'json',
+                SerializationContext::create()->setGroups(array($groupName))
+            );
+        }else{
+            $serialize = $this->getJMSSerializer()->serialize(
+                array('data' => $data),
+                'json'
+            );
+        }
+
+        return $serialize;
     }
 }
