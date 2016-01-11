@@ -64,7 +64,9 @@ class MnemonoBizType extends AbstractType
             ->add('weighting','number',array(
                 'required' => false
             ))
-            ->add('importFrom')
+            ->add('importFrom', 'text', array(
+                'read_only' => true
+            ))
         ;
 
     }
