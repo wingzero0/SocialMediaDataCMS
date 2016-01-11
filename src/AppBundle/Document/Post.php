@@ -16,6 +16,8 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * @MongoDB\Document(collection="Post", repositoryClass="AppBundle\Repository\PostRepository")
@@ -156,6 +158,19 @@ class Post extends BaseThread{
     public function __constract(){
         $this->setTags(new ArrayCollection());
         $this->setImageLinks(new ArrayCollection());
+    }
+    /**
+     * @VirtualProperty
+     * @SerializedName("bizName")
+     * @Groups({"display"})
+     * @return string
+     */
+    public function getBizName(){
+        $biz = $this->getMnemonoBiz();
+        if (!($biz instanceof MnemonoBiz)){
+            return "Mnemono";
+        }
+        return $biz->getName();
     }
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
