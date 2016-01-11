@@ -101,11 +101,11 @@
             {{ form_errors(form.weighting) }}
             {{ form_widget(form.weighting, {'attr': {'class': 'form-control'} }) }}
         </div>
-        {#<div class="form-group">
+        <div class="form-group">
             {{ form_label(form.importFrom) }}
             {{ form_errors(form.importFrom) }}
             {{ form_widget(form.importFrom, {'attr': {'class': 'form-control'} }) }}
-        </div>#}
+        </div>
         {% do form.tags.setRendered %}
         {% do form.phones.setRendered %}
         {% do form.faxes.setRendered %}

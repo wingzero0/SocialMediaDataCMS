@@ -83,7 +83,7 @@ class SyncFbFeedService extends BaseService{
      * @param Post $post
      */
     private function updateScore($post){
-        if ($post instanceof Post){
+        if ($post instanceof Post && $post->getId() != null){
             $json = json_encode(array("id" => $post->getId()));
             $this->getGearman()->doBackgroundJob(GearmanServiceName::$postScoreUpdateJob, $json);
         }
@@ -205,6 +205,9 @@ class SyncFbFeedService extends BaseService{
             $post->setMnemonoBiz($biz);
             $tags = array($biz->getCategory(), $biz->getLocation()->getCity());
             $post->setTags($tags);
+        }else{
+            $msg = sprintf("biz not found: feed fbID :%s, page fbID: %s", $feed->getFbId() ,$fbPage->getFbId());
+            $this->logError($msg);
         }
         return $post;
     }
