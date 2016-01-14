@@ -28,7 +28,7 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 class PostController extends AppBaseController{
     /**
      * @ApiDoc(
-     *  description="home page feed",
+     *  description="home page feed, the output field 'bizName' is deprecated, will be removed on 0.8.0",
      *  parameters={
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
@@ -52,7 +52,7 @@ class PostController extends AppBaseController{
 
     /**
      * @ApiDoc(
-     *  description="query all post, can be filter by tags",
+     *  description="query all post, can be filter by tags, the output field 'bizName' is deprecated, will be removed on 0.8.0",
      *  parameters={
      *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
@@ -76,7 +76,7 @@ class PostController extends AppBaseController{
 
     /**
      * @ApiDoc(
-     *  description="query a post by id",
+     *  description="query a post by id, the output field 'bizName' is deprecated, will be removed on 0.8.0",
      *  requirements={
      *      { "name"="id", "dataType"="string", "requirement"="mongo id in string", "description"="post id"}
      *  }
