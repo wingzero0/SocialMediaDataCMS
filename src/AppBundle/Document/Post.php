@@ -167,6 +167,7 @@ class Post extends BaseThread{
      * @SerializedName("bizName")
      * @Groups({"display"})
      * @return string
+     * @deprecated
      */
     public function getBizName(){
         $biz = $this->getMnemonoBiz();

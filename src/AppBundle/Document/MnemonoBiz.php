@@ -118,19 +118,19 @@ class MnemonoBiz{
 
     /**
      * @VirtualProperty
-     * @SerializedName("profilePicLink")
+     * @SerializedName("profile_pic_link")
      * @Groups({"display"})
-     * @return string
+     * @return string|null
      */
     public function getProfilePicLink(){
         $discriminator = $this->getImportFrom();
         if ($discriminator == "facebookPage"){
             $fbPage = $this->getImportFromRef();
             if ($fbPage instanceof FacebookPage){
-                return "http://graph.facebook.com/" . $fbPage->getFbId() . "/picture";
+                return "http://graph.facebook.com/" . $fbPage->getFbId() . "/picture?type=large";
             }
         }
-        return "";
+        return null;
     }
 
     /**
