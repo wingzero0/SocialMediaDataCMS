@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Document;
 
+use AppBundle\Document\Facebook\FacebookPage;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use AppBundle\Document\Location;
 use AppBundle\Document\User;
@@ -8,6 +9,10 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Accessor;
 
 /**
  * @MongoDB\Document(collection="MnemonoBiz", repositoryClass="AppBundle\Repository\MnemonoBizRepository"))
@@ -19,10 +24,12 @@ use JMS\Serializer\Annotation\Since;
 class MnemonoBiz{
     /**
      * @MongoDB\Id
+     * @Groups({"display"})
      */
     protected $id;
     /**
      * @MongoDB\String
+     * @Groups({"display"})
      */
     protected $name;
     /**
@@ -107,6 +114,23 @@ class MnemonoBiz{
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("profile_pic_link")
+     * @Groups({"display"})
+     * @return string|null
+     */
+    public function getProfilePicLink(){
+        $discriminator = $this->getImportFrom();
+        if ($discriminator == "facebookPage"){
+            $fbPage = $this->getImportFromRef();
+            if ($fbPage instanceof FacebookPage){
+                return "http://graph.facebook.com/" . $fbPage->getFbId() . "/picture?type=large";
+            }
+        }
+        return null;
     }
 
     /**
