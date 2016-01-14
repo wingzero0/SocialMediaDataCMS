@@ -18,6 +18,7 @@ use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Accessor;
 
 /**
  * @MongoDB\Document(collection="Post", repositoryClass="AppBundle\Repository\PostRepository")
@@ -50,6 +51,8 @@ class Post extends BaseThread{
     /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\MnemonoBiz")
      * @MongoDB\Index
+     * @Accessor(getter="getWrappedMnemonoBiz",setter="setMnemonoBiz")
+     * @Groups({"display"})
      */
     protected $mnemonoBiz;
     /**
@@ -164,6 +167,7 @@ class Post extends BaseThread{
      * @SerializedName("bizName")
      * @Groups({"display"})
      * @return string
+     * @deprecated
      */
     public function getBizName(){
         $biz = $this->getMnemonoBiz();
@@ -271,6 +275,15 @@ class Post extends BaseThread{
     public function getMnemonoBiz()
     {
         return $this->mnemonoBiz;
+    }
+
+    public function getWrappedMnemonoBiz(){
+        $biz = $this->getMnemonoBiz();
+        if (!($biz instanceof MnemonoBiz)){
+            $biz = new MnemonoBiz();
+            $biz->setName("Mnemono");
+        }
+        return $biz;
     }
 
     /**
