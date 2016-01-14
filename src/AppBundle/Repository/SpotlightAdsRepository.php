@@ -1,16 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: kitlei
- * Date: 8/1/2016
- * Time: 13:48
+ * User: kit
+ * Date: 14/01/16
+ * Time: 10:16 PM
  */
 
 namespace AppBundle\Repository;
+
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
-class ManagedTagRepository extends DocumentRepository{
+class SpotlightAdsRepository extends DocumentRepository{
     /**
      * @return Builder
      */
