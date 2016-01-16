@@ -15,6 +15,7 @@ use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Repository\ManagedTagRepository;
+use AppBundle\Repository\SpotlightAdsRepository;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use JMS\Serializer\SerializerInterface;
@@ -83,6 +84,13 @@ abstract class AppBaseController extends Controller{
      */
     protected function getManagedTagRepo(){
         return $this->getDM()->getRepository(DocumentPath::$managedTagDocumentPath);
+    }
+
+    /**
+     * @return SpotlightAdsRepository
+     */
+    protected function getSpotlightAdsRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$spotlightAdsDocumentPath);
     }
 
     /**

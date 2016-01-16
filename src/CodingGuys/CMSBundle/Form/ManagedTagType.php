@@ -22,6 +22,7 @@ class ManagedTagType extends AbstractType{
             ->add('key')
             ->add('nameChi')
             ->add('nameEng')
+            ->add('imageLink')
         ;
     }
     /**

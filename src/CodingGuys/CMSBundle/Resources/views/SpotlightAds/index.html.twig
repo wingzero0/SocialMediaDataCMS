@@ -1,0 +1,43 @@
+{% extends "CodingGuysCMSBundle:SpotlightAds:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        th, li{
+            white-space: nowrap;
+        }
+        ul{
+            padding: 0;
+            list-style-type: none;
+        }
+    </style>
+    <div class="container">
+        <h1 class="page-header"><strong>Ads</strong></h1>
+        <div class="navbar-header">
+            <a class="btn btn-primary btn-large" href="{{ path('spotlightAds_create') }}"> Create Ads </a>
+        </div>
+        <table class="records_list table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Display Seq</th>
+                <th>ImageLink</th>
+                <th>LandingPage</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for document in pagination %}
+                    <tr>
+                        <td><a href="{{ path('spotlightAds_edit', {id:document.id}) }}">{{ document.description }}</a></td>
+                        <td>{{ document.displaySeq }}</td>
+                        <td>{{ document.imageLink }}</td>
+                        <td>{{ document.landingPage }}</td>
+                        <td><a href="{{ path('spotlightAds_delete', {id:document.id}) }}">delete</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+{% endblock %}

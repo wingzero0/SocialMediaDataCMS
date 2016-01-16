@@ -47,6 +47,11 @@ class ManagedTag {
      * @MongoDB\Index
      */
     protected $extendTags;
+    /**
+     * @MongoDB\String
+     * @Groups({"display"})
+     */
+    protected $imageLink;
 
     /**
      * Get id
@@ -122,5 +127,49 @@ class ManagedTag {
     public function getNameEng()
     {
         return $this->nameEng;
+    }
+
+    /**
+     * Set extendTags
+     *
+     * @param collection $extendTags
+     * @return self
+     */
+    public function setExtendTags($extendTags)
+    {
+        $this->extendTags = $extendTags;
+        return $this;
+    }
+
+    /**
+     * Get extendTags
+     *
+     * @return collection $extendTags
+     */
+    public function getExtendTags()
+    {
+        return $this->extendTags;
+    }
+
+    /**
+     * Set imageLink
+     *
+     * @param string $imageLink
+     * @return self
+     */
+    public function setImageLink($imageLink)
+    {
+        $this->imageLink = $imageLink;
+        return $this;
+    }
+
+    /**
+     * Get imageLink
+     *
+     * @return string $imageLink
+     */
+    public function getImageLink()
+    {
+        return $this->imageLink;
     }
 }
