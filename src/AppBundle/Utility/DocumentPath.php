@@ -21,4 +21,6 @@ class DocumentPath {
     public static $locationDocumentPath = "AppBundle:Location";
     public static $locationFolderPath = "AppBundle\\Document\\Location";
     public static $postForReviewDocumentPath = "AppBundle:PostForReview";
+    public static $spotlightAdsDocumentPath = "AppBundle:SpotlightAds";
+    public static $spotlightAdsFolderPath = "AppBundle\\Document\\SpotlightAds";
 }

@@ -38,7 +38,7 @@ class PostRepository extends DocumentRepository
      * @param \DateTime $expireDate
      * @param int $limit
      * @param int $skip
-     * @return \Doctrine\MongoDB\Query\Builder
+     * @return Builder
      */
     public function getQueryBuilderFindNonExpire(\DateTime $expireDate = null, $limit = 100, $skip = 0){
         if ($expireDate == null){
@@ -59,7 +59,7 @@ class PostRepository extends DocumentRepository
      * @param \DateTime $expireDate
      * @param int $limit
      * @param int $skip
-     * @return \Doctrine\MongoDB\Query\Builder
+     * @return Builder
      */
     public function getQueryBuilderFindNonExpireByBiz(MnemonoBiz $biz, \DateTime $expireDate = null, $limit = 100, $skip = 0){
         $qb = $this->getQueryBuilderFindNonExpire($expireDate, $limit, $skip)
@@ -71,7 +71,7 @@ class PostRepository extends DocumentRepository
      * @param \DateTime $expireDate
      * @param int $limit
      * @param int $skip
-     * @return \Doctrine\MongoDB\Query\Builder
+     * @return Builder
      */
     public function getQueryBuilderFindNonExpireWithBizNotExisit(\DateTime $expireDate = null, $limit = 100, $skip = 0){
         $qb = $this->getQueryBuilderFindNonExpire($expireDate, $limit, $skip);

@@ -12,6 +12,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * @MongoDB\EmbeddedDocument
@@ -24,10 +25,12 @@ class FacebookMeta {
     protected $fbId;
     /**
      * @MongoDB\Int
+     * @Groups({"display"})
      */
     protected $fbTotalLikes;
     /**
      * @MongoDB\Int
+     * @Groups({"display"})
      */
     protected $fbTotalComments;
 

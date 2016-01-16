@@ -16,11 +16,11 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
 /**
- * Api Login controller.
+ * Api ManagedTag controller.
  *
  * @Route("/tags")
  */
-class TagController extends AppBaseController{
+class ManagedTagController extends AppBaseController{
 
     /**
      * @ApiDoc(
