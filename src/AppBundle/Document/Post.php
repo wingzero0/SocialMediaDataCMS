@@ -88,6 +88,7 @@ class Post extends BaseThread{
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
+     * @Groups({"display"})
      */
     protected $meta;
     /**
