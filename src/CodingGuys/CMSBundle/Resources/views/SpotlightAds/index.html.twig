@@ -29,7 +29,7 @@
                     <tr>
                         <td><a href="{{ path('spotlightAds_edit', {id:document.id}) }}">{{ document.description }}</a></td>
                         <td>{{ document.displaySeq }}</td>
-                        <td>{{ document.imageLink }}</td>
+                        <td><img src="{{ document.imageLink }}" style="max-width: 100px;"></td>
                         <td>{{ document.landingPage }}</td>
                         <td><a href="{{ path('spotlightAds_delete', {id:document.id}) }}">delete</a></td>
                     </tr>

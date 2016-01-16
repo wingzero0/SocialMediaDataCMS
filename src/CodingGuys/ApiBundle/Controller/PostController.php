@@ -21,7 +21,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
 /**
- * Api Login controller.
+ * Api Post controller.
  *
  * @Route("/posts")
  */
