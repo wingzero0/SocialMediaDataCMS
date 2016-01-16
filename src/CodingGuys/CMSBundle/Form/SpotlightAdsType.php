@@ -29,6 +29,9 @@ class SpotlightAdsType extends AbstractType{
             ->add('imageLink', 'text', array(
                 'required' => false
             ))
+            ->add('landingPage', 'text', array(
+                'required' => false
+            ))
         ;
     }
     /**

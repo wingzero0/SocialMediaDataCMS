@@ -154,6 +154,10 @@ class ManagedTagController extends AppBaseController{
         return $form;
     }
 
+    /**
+     * @param $id
+     * @return \Symfony\Component\Form\Form
+     */
     private function createDeleteForm($id){
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('managedTag_delete', array('id' => $id)))

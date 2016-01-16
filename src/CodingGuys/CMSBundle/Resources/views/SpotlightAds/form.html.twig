@@ -19,6 +19,11 @@
             {{ form_errors(form.imageLink) }}
             {{ form_widget(form.imageLink, {'attr': {'class': 'form-control'} }) }}
         </div>
+        <div class="form-group">
+            {{ form_label(form.landingPage) }}
+            {{ form_errors(form.landingPage) }}
+            {{ form_widget(form.landingPage, {'attr': {'class': 'form-control'} }) }}
+        </div>
         {{ form_end(form) }}
 
         <ul class="record_actions list list-inline">

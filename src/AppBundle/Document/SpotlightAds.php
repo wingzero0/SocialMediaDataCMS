@@ -30,12 +30,11 @@ class SpotlightAds {
     protected $id;
     /**
      * @MongoDB\String
-     * @MongoDB\Index
      * @Groups({"display"})
      */
     protected $description;
     /**
-     * @MongoDB\String
+     * @MongoDB\Int
      * @MongoDB\Index
      * @Groups({"display"})
      */

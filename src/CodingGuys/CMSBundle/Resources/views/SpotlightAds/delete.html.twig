@@ -1,0 +1,9 @@
+{% extends "CodingGuysCMSBundle:SpotlightAds:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <h3>Are you sure to delete tag </h3>
+    <p><b>{{ document.description }}</b> ?</p>
+    <div>{{ form(deleteForm) }}</div>
+</div>
+{% endblock %}

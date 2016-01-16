@@ -19,14 +19,19 @@
             <thead>
             <tr>
                 <th>Description</th>
+                <th>Display Seq</th>
                 <th>ImageLink</th>
+                <th>LandingPage</th>
             </tr>
             </thead>
             <tbody>
                 {% for document in pagination %}
                     <tr>
-                        <td>{{ document.description }}</td>
+                        <td><a href="{{ path('spotlightAds_edit', {id:document.id}) }}">{{ document.description }}</a></td>
+                        <td>{{ document.displaySeq }}</td>
                         <td>{{ document.imageLink }}</td>
+                        <td>{{ document.landingPage }}</td>
+                        <td><a href="{{ path('spotlightAds_delete', {id:document.id}) }}">delete</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

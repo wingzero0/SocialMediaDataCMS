@@ -36,7 +36,7 @@ class SpotlightAdsController extends AppBaseController {
         );
     }
     /**
-     * Create a ManagedTag
+     * Create a SpotlightAds
      *
      * @Route("/create", name="spotlightAds_create")
      * @Method({"GET","POST"})
@@ -62,9 +62,39 @@ class SpotlightAdsController extends AppBaseController {
         );
     }
 
+    /**
+     * Edit a SpotlightAds
+     *
+     * @Route("/{id}/edit", name="spotlightAds_edit")
+     * @Method({"GET","PUT"})
+     * @Template("CodingGuysCMSBundle:SpotlightAds:form.html.twig")
+     */
+    public function editAction(Request $request, $id){
+        $document = $this->getSpotlightAdsRepo()->find($id);
+        if ( !($document instanceof SpotlightAds)){
+            throw $this->createNotFoundException('Unable to find SpotlightAds document.');
+        }
+        $editForm = $this->createEditForm($document);
+
+        $editForm->handleRequest($request);
+
+        if($editForm->isValid()){
+            $dm = $this->getDM();
+            $dm->persist($document);
+            $dm->flush();
+
+            return $this->redirect($this->generateUrl('spotlightAds_home'));
+        }
+
+        return array(
+            'header' => "Create Tag",
+            'form' => $editForm->createView(),
+        );
+    }
+
 
     /**
-     * Creates a form to generate a ManagedTag document.
+     * Creates a form to generate a SpotlightAds document.
      *
      * @param SpotlightAds $document The document
      *
@@ -80,5 +110,63 @@ class SpotlightAdsController extends AppBaseController {
         $form->add('submit', 'submit', array('label' => 'Create'));
 
         return $form;
+    }
+
+    /**
+     * Deletes a SpotlightAds document.
+     *
+     * @Route("/{id}", name="spotlightAds_delete")
+     * @Method({"GET","DELETE"})
+     * @Template("CodingGuysCMSBundle:SpotlightAds:delete.html.twig")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $document = $this->getSpotlightAdsRepo()->find($id);
+
+        if (!$document) {
+            throw $this->createNotFoundException('Unable to find SpotlightAds document.');
+        }
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+        if($form->isValid()){
+
+            $dm = $this->getDM();
+            $dm->remove($document);
+            $dm->flush();
+
+            return $this->redirect($this->generateUrl('spotlightAds_home'));
+        }
+        return array("deleteForm" => $form->createView(), "document" => $document);
+    }
+
+    /**
+     * Creates a form to edit a SpotlightAds document.
+     *
+     * @param SpotlightAds $document The document
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createEditForm(SpotlightAds $document){
+        $form = $this->createForm(new SpotlightAdsType(), $document, array(
+            'action' => $this->generateUrl('spotlightAds_edit', array('id' => $document->getId())),
+            'method' => 'PUT',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Update'));
+
+        return $form;
+    }
+
+    /**
+     * @param $id
+     * @return \Symfony\Component\Form\Form
+     */
+    private function createDeleteForm($id){
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('spotlightAds_delete', array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Hard Delete'))
+            ->getForm()
+            ;
     }
 }
