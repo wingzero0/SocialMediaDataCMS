@@ -1,6 +1,9 @@
 {% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
 
 {% block mainContent %}
+    <style>
+        input {width:200px;}
+    </style>
 <div class="container">
     <div>
         <form action="{{ path('post_report_home') }}" method="get">
@@ -8,10 +11,9 @@
             <input type="text" id="AppBundle_post_tag" name="tag" value="{{ app.request.get("tag") }}"/>
             <label for="AppBundle_post_rank" class="required">Rank</label>
             <input type="text" id="AppBundle_post_rank" name="rank" value="-1"/>
-            <label for="AppBundle_post_interval" class="required">Create in days</label>
-            <input type="text" id="AppBundle_post_interval" name="interval" value="{{ app.request.get("interval") }}"/>
             <label for="AppBundle_post_search" class="required">Search</label>
             <input type="text" id="AppBundle_post_search" name="search" value="{{ app.request.get("search") }}"/>
+            <br/>
             <label for="AppBundle_post_publishStatus" class="required">Publish status</label>
             <select id="AppBundle_post_publishStatus" name="publishStatus">
                 <option value="">All</option>
@@ -38,6 +40,11 @@
                     <option value="N">N</option>
                 {% endif %}
             </select>
+            <br/>
+            <label for="AppBundle_post_startDate" class="required">Start Date</label>
+            <input type="text" id="AppBundle_post_startDate" name="startDate" value="{{ app.request.get("startDate") }}" placeholder="{{ startDatePlaceHolder }}"/>
+            <label for="AppBundle_post_endDate" class="required">End Date</label>
+            <input type="text" id="AppBundle_post_endDate" name="endDate" value="{{ app.request.get("endDate") }}" placeholder="{{ endDatePlaceHolder }}"/>
             <button type="submit" id="AppBundle_post_submit" name="submit" class="btn btn-default">filter</button>
         </form>
     </div>
@@ -47,12 +54,12 @@
                 <th>Row Num</th>
                 <th>Rank Position</th>
                 <th>finalScore</th>
+                <th>create date</th>
                 <th>meta</th>
                 <th>content</th>
                 <th>tags</th>
                 <th>publish status</th>
                 <th>publish action</th>
-                <th>shown at homepage</th>
                 <th>homepage action</th>
                 <th>shortlink</th>
             </tr>
@@ -64,6 +71,7 @@
                 <td>{{ rowNum }}</td>
                 <td>{{ post.rankPosition }}</td>
                 <td>{{ post.finalScore }}</td>
+                <td>{{ post.createAt|date('Y-m-d\\TH:i:sP') }}</td>
                 <td>
                     <ul>
                         {% if post.mnemonoBiz is not null %}
@@ -89,13 +97,6 @@
                     <a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">to review</a>
                     {% else %}
                     <a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="1" data-id="{{ post.id }}" href="#">to publish</a>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if not post.isShowAtHomepage %}
-
-                    {% else %}
-                        Shown
                     {% endif %}
                 </td>
                 <td>
