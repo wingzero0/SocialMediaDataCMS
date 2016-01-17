@@ -38,11 +38,16 @@ class PostReportController extends AppBaseController{
             $limit
         );
 
+        $endDatePlaceHolder = new \DateTime();
+        $startDatePlaceHolder = $endDatePlaceHolder->sub(new \DateInterval("P7D"));
+
         return array(
             'pagination' => $pagination,
             'page' => $page,
             'limit' => $limit,
             'lovPublishStatus' => Post::listOfPublishStatus(),
+            'startDatePlaceHolder' => $startDatePlaceHolder->format(\DateTime::ISO8601),
+            'endDatePlaceHolder' => $endDatePlaceHolder->format(\DateTime::ISO8601),
         );
     }
 
@@ -88,14 +93,8 @@ class PostReportController extends AppBaseController{
         if ($rank >= 0){
             $qb->field("rankPosition")->equals($rank);
         }
-        $interval = intval($request->get("interval"));
-        $this->getLogger()->info("interval");
-        if (!empty($interval)){
-            $this->getLogger()->info($interval);
-            $nowDate = new \DateTime();
-            $createDate = $nowDate->sub(new \DateInterval("P". $interval ."D"));
-            $qb->field("createAt")->gte($createDate);
-        }
+
+        $qb = $this->parseStartEndDate($qb, $request);
 
         $searchField = $request->get('search');
         if (!empty($searchField)){
@@ -117,5 +116,33 @@ class PostReportController extends AppBaseController{
             $regexArray[] = new \MongoRegex($keyword);
         }
         return $regexArray;
+    }
+
+    private function parseStartEndDate(Builder $qb, Request $request){
+        $startDateStr = $request->get("startDate");
+        $this->getLogger()->info("startDate");
+
+        if (!empty($startDateStr)){
+            $this->getLogger()->info($startDateStr);
+            $startDate = \DateTime::createFromFormat(\DateTime::ISO8601, $startDateStr);
+            if ($startDate instanceof \DateTime){
+                $qb->addAnd(
+                    $qb->expr()->field("createAt")->gte($startDate)
+                );
+            }
+        }
+
+        $endDateStr = $request->get("endDate");
+        $this->getLogger()->info("endDate");
+        if (!empty($endDateStr)){
+            $this->getLogger()->info($endDateStr);
+            $endDate = \DateTime::createFromFormat(\DateTime::ISO8601, $endDateStr);
+            if ($endDate instanceof \DateTime){
+                $qb->addAnd(
+                    $qb->expr()->field("createAt")->lte($endDate)
+                );
+            }
+        }
+        return $qb;
     }
 }
