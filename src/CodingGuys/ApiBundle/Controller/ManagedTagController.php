@@ -21,13 +21,13 @@ use Doctrine\ODM\MongoDB\Query\Builder;
  * @Route("/tags")
  */
 class ManagedTagController extends AppBaseController{
-
     /**
      * @ApiDoc(
      *  description="query all managed tag, with total number of tag's post",
      *  parameters={
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x tags, default is 25"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x tags, default is 0"},
+     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code"},
      *  }
      * )
      * @Route("/", name="api_managedTag")
@@ -42,10 +42,11 @@ class ManagedTagController extends AppBaseController{
         if ($skip <= 0){
             $skip = 0;
         }
-        return new Response($this->createMangedTagsQueryBuilder($limit, $skip));
+        $areaCode = $request->get('areaCode');
+        return new Response($this->createMangedTagsQueryBuilder($limit, $skip, $areaCode));
     }
 
-    private function createMangedTagsQueryBuilder($limit, $skip){
+    private function createMangedTagsQueryBuilder($limit, $skip, $areaCode){
         $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
         $qb->limit($limit)->skip($skip);
         $managedTags = $qb->getQuery()->execute();
@@ -54,7 +55,8 @@ class ManagedTagController extends AppBaseController{
 
         foreach($managedTags as $managedTag){
             if ($managedTag instanceof ManagedTag){
-                $count = $this->getPostRepo()->queryCountOfTagedPost(array($managedTag->getKey()));
+                $tags = array($managedTag->getKey());
+                $count = $this->getPostRepo()->queryCountOfTagedPost($tags, $areaCode);
                 $data[] = array("tag" => $managedTag, "count" => $count);
             }
         }

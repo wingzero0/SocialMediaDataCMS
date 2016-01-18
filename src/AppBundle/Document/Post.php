@@ -163,20 +163,6 @@ class Post extends BaseThread{
         $this->setTags(new ArrayCollection());
         $this->setImageLinks(new ArrayCollection());
     }
-    /**
-     * @VirtualProperty
-     * @SerializedName("bizName")
-     * @Groups({"display"})
-     * @return string
-     * @deprecated
-     */
-    public function getBizName(){
-        $biz = $this->getMnemonoBiz();
-        if (!($biz instanceof MnemonoBiz)){
-            return "Mnemono";
-        }
-        return $biz->getName();
-    }
 
     public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
         $global = 0.0;

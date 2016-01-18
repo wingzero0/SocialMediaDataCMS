@@ -110,11 +110,20 @@ class PostRepository extends DocumentRepository
 
     /**
      * @param array $tags array of key (in string)
+     * @param string $areaCode
      * @return int
      */
-    public function queryCountOfTagedPost($tags){
+    public function queryCountOfTagedPost($tags, $areaCode){
         $qb = $this->getQueryBuilderFindNonExpire(null,-1,0);
-        $qb->field('tags')->in($tags);
+        $qb->addAnd(
+            $qb->expr()->field('tags')->in($tags)
+        );
+        if (!empty($areaCode)){
+            $qb->addAnd(
+                $qb->expr()->field('tags')->in(array($areaCode))
+            );
+        }
+
         $count = $qb->count()->getQuery()->execute();
         return $count;
     }

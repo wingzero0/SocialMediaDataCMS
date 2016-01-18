@@ -22,12 +22,23 @@ class UtilityController extends AppBaseController{
      * @ApiDoc(
      *  description="query last update time",
      * )
-     * @Route("/lastUpdateTime", name="api_lastUpdateTime")
+     * @Route("/lastUpdateTime", name="api_last_update_time")
      * @Method("GET")
      */
     public function getLastUpdateTimeAction(Request $request){
         $ret = $this->getLogRecordRepo()->findLastPostReportLogRecord();
         $serialize = $this->serialize($ret->getLogTime()->format(\DateTime::ISO8601), "display");
         return new Response($serialize);
+    }
+    /**
+     * @ApiDoc(
+     *  description="query supported area code",
+     * )
+     * @Route("/areaCode", name="api_area_code")
+     * @Method("GET")
+     */
+    public function getAreaCodeAction(Request $request){
+        $ret = array('hk', 'mo');
+        return new Response($this->serialize($ret, "display"));
     }
 }
