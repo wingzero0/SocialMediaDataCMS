@@ -8,6 +8,7 @@
 namespace Mnemono\BackgroundServiceBundle\Services;
 
 use AppBundle\Document\Post;
+use AppBundle\Document\Utility\LogRecord;
 use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use AppBundle\Document\MnemonoBiz;
 use Mmoreram\GearmanBundle\Driver\Gearman;
@@ -38,23 +39,23 @@ class PostReviewService extends BaseService{
      * )
      */
     public function rankPost(\GearmanJob $job){
-        try{
+        try {
             $key_json = json_decode($job->workload(), true);
             $this->resetDM();
             $this->resetDateRange();
             $biz = $this->getMnemenoBizRepo()->find($key_json["id"]);
-            if (!$biz instanceof MnemonoBiz){
+            if (!$biz instanceof MnemonoBiz) {
                 $biz = null;
             }
             $updatedPosts = $this->getPostQueryBuilder($biz, 0, 0)->getQuery()->execute();
 
             $i = 1;
             $dm = $this->getDM();
-            foreach($updatedPosts as $post){
-                if ($post instanceof Post){
-                    if ($biz == null){
+            foreach ($updatedPosts as $post) {
+                if ($post instanceof Post) {
+                    if ($biz == null) {
                         $post->setRankPosition(1);
-                    }else{
+                    } else {
                         $post->setRankPosition($i);
                     }
                     $post->setPublishStatus("published");
@@ -62,14 +63,21 @@ class PostReviewService extends BaseService{
                     $i++;
                 }
             }
+            $this->writeLogRecord();
             $dm->flush();
             return true;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->logExecption($e);
             exit(-1);
         }
     }
 
+    private function writeLogRecord(){
+        $logRecord = new LogRecord();
+        $logRecord->setCategory("postReview");
+        $logRecord->setLogTime(new \DateTime());
+        $this->getDM()->persist($logRecord);
+    }
 
     /**
      * @param MnemonoBiz $biz

@@ -28,11 +28,12 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 class PostController extends AppBaseController{
     /**
      * @ApiDoc(
-     *  description="home page feed, the output field 'bizName' is deprecated, will be removed on 0.8.0",
+     *  description="home page feed",
      *  parameters={
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
+     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code"},
      *  }
      * )
      * @Route("/hot", name="api_homepage_post")
@@ -52,12 +53,13 @@ class PostController extends AppBaseController{
 
     /**
      * @ApiDoc(
-     *  description="query all post, can be filter by tags, the output field 'bizName' is deprecated, will be removed on 0.8.0",
+     *  description="query all post, can be filter by tags; will separate area code from tag in 0.11.0",
      *  parameters={
      *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
+     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code"},
      *  }
      * )
      * @Route("/", name="api_all_post")
@@ -129,6 +131,14 @@ class PostController extends AppBaseController{
                     );
                 }
             }
+        }
+
+        $areaCode = $request->get('areaCode');
+        $trimAreaCode = trim($areaCode);
+        if (!empty($trimAreaCode)){
+            $qb->addAnd(
+                $qb->expr()->field('tags')->equals($trimAreaCode)
+            );
         }
 
         $interval = intval($request->get("days"));

@@ -7,6 +7,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Repository\Utility\LogRecordRepository;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -91,6 +92,13 @@ abstract class AppBaseController extends Controller{
      */
     protected function getSpotlightAdsRepo(){
         return $this->getDM()->getRepository(DocumentPath::$spotlightAdsDocumentPath);
+    }
+
+    /**
+     * @return LogRecordRepository
+     */
+    protected function getLogRecordRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$logRecordDocumentPath);
     }
 
     /**

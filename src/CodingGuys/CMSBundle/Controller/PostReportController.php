@@ -8,6 +8,7 @@
 namespace CodingGuys\CMSBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
+use AppBundle\Document\Utility\LogRecord;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -48,7 +49,21 @@ class PostReportController extends AppBaseController{
             'lovPublishStatus' => Post::listOfPublishStatus(),
             'startDatePlaceHolder' => $startDatePlaceHolder->format(\DateTime::ISO8601),
             'endDatePlaceHolder' => $endDatePlaceHolder->format(\DateTime::ISO8601),
+            'lastUpdateTime' => $this->getLastUpdateTime(),
         );
+    }
+
+
+    /**
+     * @return String
+     */
+    private function getLastUpdateTime(){
+        $logRecord = $this->getLogRecordRepo()->findLastPostReportLogRecord();
+        if ($logRecord instanceof LogRecord){
+            return $logRecord->getLogTime()->format(\DateTime::ISO8601);
+        }else{
+            return "No record";
+        }
     }
 
     /**
