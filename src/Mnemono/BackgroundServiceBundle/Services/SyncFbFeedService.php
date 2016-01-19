@@ -158,6 +158,7 @@ class SyncFbFeedService extends BaseService{
     private function persistPost(Post $post){
         $dm = $this->getDM();
         $biz = $post->getMnemonoBiz();
+        $timing = new \DateTime();
         if ($biz instanceof MnemonoBiz) {
             $biz->setLastPostUpdateAt($timing);
             $dm->persist($biz);
