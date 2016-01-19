@@ -131,6 +131,8 @@ class SyncFbFeedService extends BaseService{
         $ref = $post->getImportFromRef();
         if ($ref instanceof FacebookFeed){
             $post->setContent($ref->getMessage());
+            $updatedTime = \DateTime::createFromFormat(\DateTime::ISO8601, $ref->getUpdatedTime());
+            $post->setUpdateAt($updatedTime);
             $post->setMeta($this->fbMetaBuilder($ref));
             $this->persistPost($post);
         }
@@ -155,10 +157,8 @@ class SyncFbFeedService extends BaseService{
 
     private function persistPost(Post $post){
         $dm = $this->getDM();
-        // TODO set the fb original create at;
-        $timing = new \DateTime();
-        $post->setUpdateAt($timing);
         $biz = $post->getMnemonoBiz();
+        $timing = new \DateTime();
         if ($biz instanceof MnemonoBiz) {
             $biz->setLastPostUpdateAt($timing);
             $dm->persist($biz);
@@ -194,6 +194,8 @@ class SyncFbFeedService extends BaseService{
         $post->setImageLinks($feed->getAttachmentImageURL());
         $createDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getCreatedTime());
         $post->setCreateAt($createDate);
+        $updateDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getUpdatedTime());
+        $post->setUpdateAt($updateDate);
         $expireDate = clone $createDate;
         $expireDate->add(new \DateInterval("P7D"));
         $post->setExpireDate($expireDate);
