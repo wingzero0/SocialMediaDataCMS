@@ -47,6 +47,10 @@ class FacebookFeed {
      */
     protected $createdTime;
     /**
+     * @MongoDB\Field(type="string", name="updated_time")
+     */
+    protected $updatedTime;
+    /**
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookPage")
      */
     protected $fbPage;
@@ -410,5 +414,27 @@ class FacebookFeed {
     public function getStory()
     {
         return $this->story;
+    }
+
+    /**
+     * Set updatedTime
+     *
+     * @param string $updatedTime
+     * @return self
+     */
+    public function setUpdatedTime($updatedTime)
+    {
+        $this->updatedTime = $updatedTime;
+        return $this;
+    }
+
+    /**
+     * Get updatedTime
+     *
+     * @return string $updatedTime
+     */
+    public function getUpdatedTime()
+    {
+        return $this->updatedTime;
     }
 }
