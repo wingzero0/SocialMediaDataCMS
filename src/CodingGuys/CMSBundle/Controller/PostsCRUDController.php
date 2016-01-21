@@ -186,7 +186,6 @@ class PostsCRUDController extends AppBaseController{
                 $document->setMnemonoBiz($backupBiz);
             }
 
-            $document->setUpdateAt(new \DateTime());
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
