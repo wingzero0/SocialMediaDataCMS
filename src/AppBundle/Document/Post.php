@@ -120,6 +120,7 @@ class Post extends BaseThread{
     protected $rankPosition;
     /**
      * @MongoDB\Date
+     * @Groups({"display"})
      */
     protected $createAt;
     /**
