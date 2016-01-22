@@ -38,7 +38,10 @@ class UtilityController extends AppBaseController{
      * @Method("GET")
      */
     public function getAreaCodeAction(Request $request){
-        $ret = array('hk', 'mo');
+        $ret = array(
+            array('key' => 'hk', 'name_chi' => '香港', 'name_eng' => 'Hong Kong'),
+            array('key' => 'mo', 'name_chi' => '澳門', 'name_eng' => 'Macau'),
+        );
         return new Response($this->serialize($ret, "display"));
     }
 }

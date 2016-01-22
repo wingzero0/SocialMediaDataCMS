@@ -25,6 +25,11 @@ class ManagedTag {
      */
     protected $id;
     /**
+     * @MongoDB\Int
+     * @MongoDB\Index
+     */
+    protected $displaySeq;
+    /**
      * @MongoDB\String
      * @MongoDB\Index
      * @Groups({"display"})
@@ -171,5 +176,27 @@ class ManagedTag {
     public function getImageLink()
     {
         return $this->imageLink;
+    }
+
+    /**
+     * Set displaySeq
+     *
+     * @param int $displaySeq
+     * @return self
+     */
+    public function setDisplaySeq($displaySeq)
+    {
+        $this->displaySeq = $displaySeq;
+        return $this;
+    }
+
+    /**
+     * Get displaySeq
+     *
+     * @return int $displaySeq
+     */
+    public function getDisplaySeq()
+    {
+        return $this->displaySeq;
     }
 }

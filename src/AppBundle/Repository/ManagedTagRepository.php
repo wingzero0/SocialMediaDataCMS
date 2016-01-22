@@ -15,7 +15,8 @@ class ManagedTagRepository extends DocumentRepository{
      * @return Builder
      */
     public function getFindAllQueryBuilder(){
-        $qb = $this->createQueryBuilder();
+        $qb = $this->createQueryBuilder()
+            ->sort(array('displaySeq' => 1));
         return $qb;
     }
 }
