@@ -7,6 +7,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Repository\DeviceInfoRepository;
 use AppBundle\Repository\Utility\LogRecordRepository;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -121,5 +122,12 @@ abstract class AppBaseController extends Controller{
         }
 
         return $serialize;
+    }
+
+    /**
+     * @return DeviceInfoRepository
+     */
+    protected function getDeviceInfoRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$deviceInfoDocumentPath);
     }
 }
