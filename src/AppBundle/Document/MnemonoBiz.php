@@ -306,6 +306,9 @@ class MnemonoBiz{
      */
     public function getWeighting()
     {
+        if ($this->weighting == null){
+            $this->setWeighting(1.0);
+        }
         return $this->weighting;
     }
 

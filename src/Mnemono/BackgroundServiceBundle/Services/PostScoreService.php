@@ -52,10 +52,9 @@ class PostScoreService extends BaseService{
 
     private function updatePostFinalScore(Post $post){
         $localWeight = $this->getWeighting("localWeight");
-        $globalWeight = $this->getWeighting("globalWeight");
         $adminWeight = $this->getWeighting("adminWeight");
 
-        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
+        $finalScore = $post->updateFinalScore($localWeight, $adminWeight);
         $this->persistPost($post);
         return $finalScore;
     }

@@ -406,10 +406,9 @@ class PostsCRUDController extends AppBaseController{
 
     private function updatePostFinalScore(Post $post){
         $localWeight = $this->getWeighting("localWeight");
-        $globalWeight = $this->getWeighting("globalWeight");
         $adminWeight = $this->getWeighting("adminWeight");
 
-        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
+        $finalScore = $post->updateFinalScore($localWeight, $adminWeight);
         return $finalScore;
     }
 }
