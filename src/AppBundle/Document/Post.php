@@ -165,14 +165,14 @@ class Post extends BaseThread{
         $this->setImageLinks(new ArrayCollection());
     }
 
-    public function updateFinalScore($localWeight = 1.0, $globalWeight = 1.0, $adminWeight = 1.0){
-        $global = 0.0;
+    public function updateFinalScore($localWeight = 1.0, $adminWeight = 1.0){
+        $bizWeight = 0.0;
         if ($this->getMnemonoBiz()){
-            $global = $this->getMnemonoBiz()->getGlobalScore();
+            $bizWeight = $this->getMnemonoBiz()->getWeighting();
         }
         $local = $this->getLocalScore();
         $admin = $this->getAdminScore();
-        $finalScore = $globalWeight * $global + $localWeight * $local + $adminWeight * $admin;
+        $finalScore = $bizWeight * ($localWeight * $local + $adminWeight * $admin);
         $this->setFinalScore( $finalScore );
         return $finalScore;
     }

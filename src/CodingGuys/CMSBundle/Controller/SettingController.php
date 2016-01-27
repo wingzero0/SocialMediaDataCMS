@@ -46,7 +46,7 @@ class SettingController extends AppBaseController{
     /**
      * @Route("/weighting/new", name="weighting_create")
      * @Method({"POST","GET"})
-     * @Template("CodingGuysCMSBundle:Settings:Weighting/new.html.twig")
+     * @Template("CodingGuysCMSBundle:Settings:Weighting/form.html.twig")
      */
     public function weightingCreateAction(Request $request){
         $weighting = new Weighting();
@@ -62,6 +62,62 @@ class SettingController extends AppBaseController{
         return array(
             'form' => $form->createView(),
         );
+    }
+
+
+    /**
+     * @Route("/weighting/{id}/edit", name="weighting_edit")
+     * @Method({"PUT","GET"})
+     * @Template("CodingGuysCMSBundle:Settings:Weighting/form.html.twig")
+     */
+    public function weightingEditAction(Request $request, $id){
+        $document = $this->getWeightingRepo()->find($id);
+
+        if ( !($document instanceof Weighting)){
+            throw $this->createNotFoundException('Unable to find Weighting document.');
+        }
+        $editForm = $this->createEditForm($document);
+
+        $editForm->handleRequest($request);
+
+        if($editForm->isValid()){
+            $dm = $this->getDM();
+            $dm->persist($document);
+            $dm->flush();
+
+            return $this->redirect($this->generateUrl('weighting_home'));
+        }
+
+        return array(
+            'header' => "Edit Weighting",
+            'form' => $editForm->createView(),
+        );
+    }
+
+        /**
+     * Deletes a Weighting document.
+     *
+     * @Route("/{id}", name="weighting_delete")
+     * @Method({"GET","DELETE"})
+     * @Template("CodingGuysCMSBundle:Settings:Weighting/delete.html.twig")
+     */
+    public function deleteAction(Request $request, $id){
+        $document = $this->getWeightingRepo()->find($id);
+
+        if (!$document) {
+            throw $this->createNotFoundException('Unable to find Weighting document.');
+        }
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+        if($form->isValid()){
+
+            $dm = $this->getDM();
+            $dm->remove($document);
+            $dm->flush();
+
+            return $this->redirect($this->generateUrl('weighting_home'));
+        }
+        return array("deleteForm" => $form->createView(), "document" => $document);
     }
 
     /**
@@ -81,5 +137,36 @@ class SettingController extends AppBaseController{
         $form->add('submit', 'submit', array('label' => 'Create'));
 
         return $form;
+    }
+
+    /**
+     * Creates a form to edit a SpotlightAds document.
+     *
+     * @param Weighting $document The document
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createEditForm(Weighting $document){
+        $form = $this->createForm(new WeightingType(), $document, array(
+            'action' => $this->generateUrl('weighting_edit', array('id' => $document->getId())),
+            'method' => 'PUT',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Update'));
+
+        return $form;
+    }
+
+    /**
+     * @param $id
+     * @return \Symfony\Component\Form\Form
+     */
+    private function createDeleteForm($id){
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('weighting_delete', array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Hard Delete'))
+            ->getForm()
+            ;
     }
 }
