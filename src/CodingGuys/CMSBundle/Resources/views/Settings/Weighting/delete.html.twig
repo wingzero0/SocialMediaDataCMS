@@ -1,0 +1,9 @@
+{% extends "CodingGuysCMSBundle:Settings:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <h3>Are you sure to delete weighting </h3>
+    <p><b>{{ document.name }}</b> ?</p>
+    <div>{{ form(deleteForm) }}</div>
+</div>
+{% endblock %}

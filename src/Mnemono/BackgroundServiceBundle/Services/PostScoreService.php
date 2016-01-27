@@ -52,10 +52,9 @@ class PostScoreService extends BaseService{
 
     private function updatePostFinalScore(Post $post){
         $localWeight = $this->getWeighting("localWeight");
-        $globalWeight = $this->getWeighting("globalWeight");
         $adminWeight = $this->getWeighting("adminWeight");
 
-        $finalScore = $post->updateFinalScore($localWeight , $globalWeight , $adminWeight );
+        $finalScore = $post->updateFinalScore($localWeight, $adminWeight);
         $this->persistPost($post);
         return $finalScore;
     }
@@ -105,10 +104,11 @@ class PostScoreService extends BaseService{
 
     private function timePenaltyFactor(\DateTime $dateTime1, \DateTime $dateTime2){
         $interval = $dateTime1->diff($dateTime2);
-        if ($interval->days <= 1){
-            return 1.0 / log(1.5);
+        $gravity = $this->getWeighting("gravity");
+        if ($interval->days < 1){
+            return 1.0 / pow(0.5, $gravity);
         }else{
-            return 1.0 / log($interval->days);
+            return 1.0 / pow($interval->days, $gravity);
         }
     }
 
