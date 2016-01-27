@@ -46,7 +46,7 @@ class SettingController extends AppBaseController{
     /**
      * @Route("/weighting/new", name="weighting_create")
      * @Method({"POST","GET"})
-     * @Template("CodingGuysCMSBundle:Settings:Weighting/from.html.twig")
+     * @Template("CodingGuysCMSBundle:Settings:Weighting/form.html.twig")
      */
     public function weightingCreateAction(Request $request){
         $weighting = new Weighting();
