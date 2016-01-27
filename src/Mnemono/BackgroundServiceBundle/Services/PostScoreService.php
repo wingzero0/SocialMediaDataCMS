@@ -105,8 +105,8 @@ class PostScoreService extends BaseService{
     private function timePenaltyFactor(\DateTime $dateTime1, \DateTime $dateTime2){
         $interval = $dateTime1->diff($dateTime2);
         $gravity = $this->getWeighting("gravity");
-        if ($interval->days <= 1){
-            return 1.0 / pow(1, $gravity);
+        if ($interval->days < 1){
+            return 1.0 / pow(0.5, $gravity);
         }else{
             return 1.0 / pow($interval->days, $gravity);
         }
