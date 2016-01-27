@@ -20,13 +20,15 @@
             <tr>
                 <th>Name</th>
                 <th>Value</th>
+                <th>Delete Action</th>
             </tr>
             </thead>
             <tbody>
             {% for document in pagination %}
                 <tr>
-                    <td><a href="#">{{ document.name }}</a></td>
+                    <td><a href="{{ path('weighting_edit', {id:document.id}) }}">{{ document.name }}</a></td>
                     <td>{{ document.value }}</td>
+                    <td><a href="{{ path('weighting_delete', {id:document.id}) }}">Delete</a></td>
                 </tr>
             {% endfor %}
             </tbody>
