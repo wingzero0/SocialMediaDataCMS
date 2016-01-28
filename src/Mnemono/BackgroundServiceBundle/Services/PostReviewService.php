@@ -9,6 +9,7 @@ namespace Mnemono\BackgroundServiceBundle\Services;
 
 use AppBundle\Document\Post;
 use AppBundle\Document\Utility\LogRecord;
+use AppBundle\Utility\GearmanServiceName;
 use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use AppBundle\Document\MnemonoBiz;
 use Mmoreram\GearmanBundle\Driver\Gearman;
@@ -47,7 +48,7 @@ class PostReviewService extends BaseService{
             if (!$biz instanceof MnemonoBiz) {
                 $biz = null;
             }
-            $updatedPosts = $this->getPostQueryBuilder($biz, 0, 0)->getQuery()->execute();
+            $updatedPosts = $this->getUpdatedPosts($biz);
 
             $i = 1;
             $dm = $this->getDM();
@@ -72,6 +73,48 @@ class PostReviewService extends BaseService{
         }
     }
 
+    private function getUpdatedPosts(MnemonoBiz $biz = null){
+        $postCursor = $this->getPostQueryBuilder($biz, 0, 0)->getQuery()->execute();
+        $updatedPosts = array();
+        foreach ($postCursor as $post) {
+            if ($post instanceof Post) {
+                $updatedPost = $this->updatePostScore($post);
+                if ($updatedPost instanceof Post){
+                    $updatedPosts[] = $updatedPost;
+                }
+            }
+        }
+        usort($updatedPosts, function(Post $a, Post $b){
+            if ($a->getFinalScore() < $b->getFinalScore()){
+                return 1;
+            }else if ($a->getFinalScore() > $b->getFinalScore()){
+                return -1;
+            }else{
+                return 0;
+            }
+        });
+        return $updatedPosts;
+    }
+
+    /**
+     * @param Post $post
+     * @return Post|null
+     */
+    private function updatePostScore(Post $post){
+        $id = $post->getId();
+        $json = json_encode(array("id" => $post->getId()));
+        $oldScore = $post->getFinalScore();
+        $this->getGearman()->doNormalJob(GearmanServiceName::$postScoreUpdateJob, $json);
+        $this->getDM()->detach($post);
+        $post = $this->getPostRepo()->find($id);
+        if ($post instanceof Post){
+            $newScore = $post->getFinalScore();
+            $this->getLogger()->info("post old score:" . $oldScore . " post new score:" . $newScore);
+            return $post;
+        }
+        return null;
+    }
+
     private function writeLogRecord(){
         $logRecord = new LogRecord();
         $logRecord->setCategory("postReview");
@@ -93,9 +136,7 @@ class PostReviewService extends BaseService{
         }else{
             $qb = $postRepo->getQueryBuilderFindNonExpireByBiz($biz, $this->endDate, $limit, $skip);
         }
-        return $qb->field("finalScore")->exists(true)
-            ->field("finalScore")->notEqual(null)
-            ->sort("finalScore", "desc");
+        return $qb;
     }
 
     /**

@@ -44,7 +44,6 @@ class SyncFbFeedService extends BaseService{
             $fbId = $key_json["fbId"];
             $this->resetDM();
             $post = $this->createPostByFbId($fbId);
-            $this->updateScore($post);
             return true;
         }catch (\Exception $e){
             $this->logExecption($e);
@@ -71,23 +70,11 @@ class SyncFbFeedService extends BaseService{
             $fbId = $key_json["fbId"];
             $this->resetDM();
             $post = $this->updatePostByFbId($fbId);
-            $this->updateScore($post);
             return true;
         }catch (\Exception $e){
             $this->logExecption($e);
             exit(-1);
         }
-    }
-
-    /**
-     * @param Post $post
-     */
-    private function updateScore($post){
-        if ($post instanceof Post && $post->getId() != null){
-            $json = json_encode(array("id" => $post->getId()));
-            $this->getGearman()->doBackgroundJob(GearmanServiceName::$postScoreUpdateJob, $json);
-        }
-
     }
 
     /**
