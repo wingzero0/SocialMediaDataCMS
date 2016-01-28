@@ -47,7 +47,15 @@ class MobileDeviceController extends AppBaseController{
         $dm = $this->getDM();
 
         $registrationId = $request->get("registrationId");
+        if (empty($registrationId)){
+            return new JsonResponse(array("success" => false, "error_description" => "missing registrationId"));
+        }
         $AndroidOriOS = $request->get("androidOriOS");
+        if (empty($AndroidOriOS)){
+            return new JsonResponse(array("success" => false, "error_description" => "missing androidOriOS"));
+        }
+
+
         $osVersion = $request->get("osVersion");
         $model = $request->get("model");
         $imei = $request->get("imei");
