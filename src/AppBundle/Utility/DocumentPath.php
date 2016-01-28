@@ -16,6 +16,9 @@ class DocumentPath {
     public static $managedTagFolderPath = "AppBundle\\Document\\ManagedTag";
     public static $mnemonoBizDocumentPath = "AppBundle:MnemonoBiz";
     public static $mnemonoBizFolderPath = "AppBundle\\Document\\MnemonoBiz";
+    public static $userDocumentPath = "AppBundle:User";
+    public static $userFolderPath = "AppBundle\\Document\\User";
+    public static $deviceInfoDocumentPath = "AppBundle:DeviceInfo";
     public static $postDocumentPath = "AppBundle:Post";
     public static $postFolderPath = "AppBundle\\Document\\Post";
     public static $locationDocumentPath = "AppBundle:Location";

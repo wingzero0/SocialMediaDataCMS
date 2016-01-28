@@ -11,3 +11,6 @@ services:
     PostReviewService:
         class:  Mnemono\BackgroundServiceBundle\Services\PostReviewService
         arguments:  [ @service_container ]
+    GCMService:
+        class:  Mnemono\BackgroundServiceBundle\Services\PushServiceAndroid
+        arguments:  [ @service_container ]

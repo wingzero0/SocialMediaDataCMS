@@ -15,6 +15,8 @@ use AppBundle\Repository\Facebook\FacebookFeedTimestampRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostRepository;
 use AppBundle\Repository\MnemonoBizRepository;
+use AppBundle\Repository\UserRepository;
+use AppBundle\Repository\DeviceInfoRepository;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -156,5 +158,19 @@ abstract class BaseService {
      */
     protected function getMnemenoBizRepo(){
         return $this->getDM()->getRepository(DocumentPath::$mnemonoBizDocumentPath);
+    }
+
+    /**
+     * @return UserRepository
+     */
+    protected function getUserRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$userDocumentPath);
+    }
+
+    /**
+     * @return DeviceInfoRepository
+     */
+    protected function getDeviceInfoRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$deviceInfoDocumentPath);
     }
 }
