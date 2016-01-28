@@ -8,13 +8,16 @@
 namespace CodingGuys\CMSBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
+use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Utility\LogRecord;
+use AppBundle\Utility\GearmanServiceName;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\Post;
+use AppBundle\Utility\LoopCollectionStrategy;
 
 /**
  * @Route("/dashboard/report")
@@ -51,6 +54,35 @@ class PostReportController extends AppBaseController{
             'endDatePlaceHolder' => $endDatePlaceHolder->format(\DateTime::ISO8601),
             'lastUpdateTime' => $this->getLastUpdateTime(),
         );
+    }
+    /**
+     * re rank all post
+     *
+     * @Route("/rerank", name="post_report_rerank")
+     * @Method("GET")
+     * @Template()
+     */
+    public function reRankAction(Request $request){
+        if ($request->get("rerank") == "1"){
+            $this->callBackgroundReviewJob();
+            return $this->redirect($this->generateUrl("post_report_home"));
+        }
+        return array();
+    }
+
+    private function callBackgroundReviewJob(){
+        $json = json_encode(array("id" => null));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$postReviewRankJob, $json);
+
+        $loopS = new LoopCollectionStrategy();
+        $loopS->loopCollectionWithSkipParam(function($limit, $skip){
+            return $this->getMnemenoBizRepo()->getQueryBuilderFindAll($limit, $skip);
+        }, function(MnemonoBiz $biz){
+            $json = json_encode(array("id" => $biz->getId()));
+            $this->getGearman()->doBackgroundJob(GearmanServiceName::$postReviewRankJob, $json);
+        }, function(){
+            // to nothing, don't want to reset the dm
+        });
     }
 
 

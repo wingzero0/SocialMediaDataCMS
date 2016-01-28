@@ -166,7 +166,7 @@ class Post extends BaseThread{
     }
 
     public function updateFinalScore($localWeight = 1.0, $adminWeight = 1.0){
-        $bizWeight = 0.0;
+        $bizWeight = 1.0;
         if ($this->getMnemonoBiz()){
             $bizWeight = $this->getMnemonoBiz()->getWeighting();
         }

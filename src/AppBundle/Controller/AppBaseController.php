@@ -7,6 +7,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Repository\DeviceInfoRepository;
 use AppBundle\Repository\Utility\LogRecordRepository;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,9 +18,11 @@ use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
 use AppBundle\Repository\ManagedTagRepository;
 use AppBundle\Repository\SpotlightAdsRepository;
+use AppBundle\Repository\MnemonoBizRepository;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use JMS\Serializer\SerializerInterface;
+use Mmoreram\GearmanBundle\Service\GearmanClient;
 
 abstract class AppBaseController extends Controller{
     /**
@@ -47,6 +50,13 @@ abstract class AppBaseController extends Controller{
     protected function getJMSSerializer(){
         return $this->get('jms_serializer');
     }
+    /**
+     * @return GearmanClient
+     */
+    protected function getGearman(){
+        return $this->get('gearman');
+    }
+
     /**
      * @return WeightingRepository
      */
@@ -99,6 +109,20 @@ abstract class AppBaseController extends Controller{
      */
     protected function getLogRecordRepo(){
         return $this->getDM()->getRepository(DocumentPath::$logRecordDocumentPath);
+    }
+
+    /**
+     * @return DeviceInfoRepository
+     */
+    protected function getDeviceInfoRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$deviceInfoDocumentPath);
+    }
+
+    /**
+     * @return MnemonoBizRepository
+     */
+    protected function getMnemenoBizRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$mnemonoBizDocumentPath);
     }
 
     /**
