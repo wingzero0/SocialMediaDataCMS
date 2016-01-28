@@ -109,7 +109,7 @@ class PostReviewService extends BaseService{
         $post = $this->getPostRepo()->find($id);
         if ($post instanceof Post){
             $newScore = $post->getFinalScore();
-            $this->getLogger()->info("post old score:" . $oldScore . " post new score:" . $newScore);
+            $this->getLogger()->debug("post old score:" . $oldScore . " post new score:" . $newScore);
             return $post;
         }
         return null;

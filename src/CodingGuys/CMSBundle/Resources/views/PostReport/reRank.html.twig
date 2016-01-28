@@ -1,0 +1,11 @@
+{% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+    <div>
+        <h3>Are you sure to re-run the ranking?</h3>
+        <a href="{{ path('post_report_rerank') }}?rerank=1" class="btn btn-danger">Yes</a>
+        <a href="{{ path('post_report_home') }}" class="btn btn-default">Return to report page</a>
+    </div>
+</div>
+{% endblock %}
