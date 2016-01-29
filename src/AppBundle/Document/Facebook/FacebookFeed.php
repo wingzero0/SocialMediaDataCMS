@@ -299,7 +299,7 @@ class FacebookFeed {
             ){
                 return $this->parseSubAttachmentImageURL($attachments["data"][0]["subattachments"]);
             }else if (
-                $attachments["data"][0]["type"] == "photo"
+                ($attachments["data"][0]["type"] == "photo" || $attachments["data"][0]["type"] == "share")
                 && isset($attachments["data"][0]["media"])
             ){
                 $url = $this->parseMediaImageURL($attachments["data"][0]["media"]);
