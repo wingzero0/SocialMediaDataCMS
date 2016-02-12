@@ -59,7 +59,8 @@ class PostController extends AppBaseController{
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
-     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code"},
+     *      {"name"="areaCode[]", "dataType"="string", "required"=false, "description"="filter with area code, deprecated since version 1.0, will be remove at version 1.1"},
+     *      {"name"="areaCodes[]", "dataType"="string", "required"=false, "description"="filter with area code, available at version 1.0"},
      *  }
      * )
      * @Route("/", name="api_all_post")
@@ -132,14 +133,7 @@ class PostController extends AppBaseController{
                 }
             }
         }
-
-        $areaCode = $request->get('areaCode');
-        $trimAreaCode = trim($areaCode);
-        if (!empty($trimAreaCode)){
-            $qb->addAnd(
-                $qb->expr()->field('tags')->equals($trimAreaCode)
-            );
-        }
+        $qb = $this->compileAreaCodeFilter($request->get('areaCode'), $request->get('areaCodes'), $qb);
 
         $interval = intval($request->get("days"));
         $this->getLogger()->info("days");
@@ -148,6 +142,33 @@ class PostController extends AppBaseController{
             $nowDate = new \DateTime();
             $createDate = $nowDate->sub(new \DateInterval("P". $interval ."D"));
             $qb->field("createAt")->gte($createDate);
+        }
+        return $qb;
+    }
+
+    /**
+     * @param string $areaCode
+     * @param array $areaCodes
+     * @param Builder $qb
+     * @return Builder
+     */
+    private function compileAreaCodeFilter($areaCode, $areaCodes, Builder $qb){
+        // TODO patch data, move area code tag to cities field
+        $trimAreaCode = trim($areaCode);
+        if (!empty($trimAreaCode)){
+            $qb->addOr(
+                $qb->expr()->field('cities')->equals($trimAreaCode)
+            );
+        }
+        if (!empty($areaCodes)){
+            foreach($areaCodes as $code){
+                $codeTrim = trim($code);
+                if (!empty($codeTrim)){
+                    $qb->addOr(
+                        $qb->expr()->field('cities')->equals($codeTrim)
+                    );
+                }
+            }
         }
         return $qb;
     }
