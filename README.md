@@ -30,6 +30,7 @@ created by single feed
 By batch
     app/console mnemono:sync:fbfeedtopost --action createFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
     app/console mnemono:sync:fbfeedtopost --action updateFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
+    app/console mnemono:sync:fbfeedtopost --action removePosts --fromDate 2015-12-22T00:00:00+0000 --toDate 2015-12-26T00:00:00+0000
 
 ### create user account
     http://yourServer/app_dev.php/register
