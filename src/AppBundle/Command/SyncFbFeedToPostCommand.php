@@ -86,28 +86,15 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
     private function removePosts(\DateTime $fromDate, \DateTime $toDate){
         $loop = new LoopCollectionStrategy();
-        $loop->loopCollectionWithSkipParam(function($limit, $skip) use ($fromDate, $toDate){
-            $qb = $this->getPostRepo()->getQueryBuilderFindAllByDate($fromDate, $toDate);
+        $loop->loopCollectionWithQueryBuilder(function($limit) use ($fromDate, $toDate){
+            $qb = $this->getPostRepo()->getQueryBuilderFindAllByDate($fromDate, $toDate)->sort(array("id" => 1));
             $qb->limit($limit);
             return $qb;
         }, function (Post $post){
-            $this->removePost($post);
-            //echo $post->getContent() . "\n";
+            $this->removePostById($post->getId());
         }, function (){
             // Do nothing;
         });
-    }
-
-    private function removeFeed(FacebookFeed $fbFeed){
-        $post = $this->getPostRepo()->findOneByFeed($fbFeed);
-        $this->removePost($post);
-    }
-
-    private function removePost(Post $post = null){
-        if ($post != null){
-            $this->getDM()->remove($post);
-            $this->getDM()->flush();
-        }
     }
 
     /**
@@ -124,6 +111,15 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     private function updatePostByFbId($fbId){
         $json = json_encode(array("fbId" => $fbId));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedUpdateJob, $json);
+    }
+
+    /**
+     * @param string $id
+     */
+    private function removePostById($id){
+        $json = json_encode(array("id" => $id));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedRemoveJob, $json);
+        //print_r($json);
     }
 
     /**

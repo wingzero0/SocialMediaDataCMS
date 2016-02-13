@@ -78,6 +78,32 @@ class SyncFbFeedService extends BaseService{
     }
 
     /**
+     * Job for remove post by id
+     *
+     * @param \GearmanJob $job Object with job parameters
+     *
+     * @return boolean
+     *
+     * @Gearman\Job(
+     *     iterations = 1000,
+     *     name = "removePost",
+     *     description = "remove post"
+     * )
+     */
+    public function removePost(\GearmanJob $job){
+        try{
+            $key_json = json_decode($job->workload(), true);
+            $id = $key_json["id"];
+            $this->resetDM();
+            $this->removePostById($id);
+            return true;
+        }catch (\Exception $e){
+            $this->logExecption($e);
+            exit(-1);
+        }
+    }
+
+    /**
      * @param string $fbId
      * @return Post|null
      */
@@ -124,6 +150,23 @@ class SyncFbFeedService extends BaseService{
             $this->persistPost($post);
         }
         return $post;
+    }
+
+    /**
+     * @param string $id
+     * @return null
+     */
+    private function removePostById($id){
+        $post = $this->getPostRepo()->find($id);
+        if (!($post instanceof Post)){
+            $this->logError("Post:" . $id . " not found");
+            return null;
+        }
+
+        $dm = $this->getDM();
+        $dm->remove($post);
+        $dm->flush();
+        return null;
     }
 
     /**
