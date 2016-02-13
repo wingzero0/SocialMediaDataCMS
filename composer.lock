@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "53dab4edf2db825f7368dcfffff3baf8",
-    "content-hash": "f71530de4dfe260e55f76ca07f916841",
+    "hash": "2f8201f05d803b57818ce03cfcfa2c8e",
+    "content-hash": "5f566e4e555664203f8f6c4e47505c70",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -889,7 +889,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/256863346b93ec7aed4bb1da473f09217ec0661e",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/453ef86b8c499b05fefe9b67347b8b9c06e3f176",
                 "reference": "256863346b93ec7aed4bb1da473f09217ec0661e",
                 "shasum": ""
             },
@@ -973,7 +973,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/55a4a8175425aeb345e3ef9f5af39e8af7d492b0",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/beeed22cd07f9e5fe5ac2524a8be37d4656dd514",
                 "reference": "55a4a8175425aeb345e3ef9f5af39e8af7d492b0",
                 "shasum": ""
             },
@@ -1407,7 +1407,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/e5e7a2b8984da8dfedaf44adc7e5f60a62ad280c",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/140cc28026304d3023c880f441689986f99b913b",
                 "reference": "e5e7a2b8984da8dfedaf44adc7e5f60a62ad280c",
                 "shasum": ""
             },

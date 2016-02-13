@@ -26,7 +26,8 @@
     "friendsofsymfony/oauth-server-bundle": "@stable",
     "nelmio/api-doc-bundle": "^2.11",
     "knplabs/knp-paginator-bundle": "~2.4",
-    "mmoreram/gearman-bundle": "@stable"
+    "mmoreram/gearman-bundle": "@stable",
+    "friendsofsymfony/rest-bundle": "^1.7"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3",

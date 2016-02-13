@@ -23,6 +23,7 @@ use Knp\Component\Pager\Paginator;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use JMS\Serializer\SerializerInterface;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
+use FOS\RestBundle\EventListener\VersionListener;
 
 abstract class AppBaseController extends Controller{
     /**
@@ -55,6 +56,13 @@ abstract class AppBaseController extends Controller{
      */
     protected function getGearman(){
         return $this->get('gearman');
+    }
+
+    /**
+     * @return VersionListener
+     */
+    protected function getVersionListener(){
+        return $this->get('fos_rest.version_listener');
     }
 
     /**
