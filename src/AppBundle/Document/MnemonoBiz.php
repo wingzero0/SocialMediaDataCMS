@@ -50,6 +50,11 @@ class MnemonoBiz{
      * @MongoDB\Index
      */
     protected $tags;
+    // TODO should seperate the address and country
+    /**
+     * @MongoDB\EmbedMany(targetDocument="Location")
+     */
+    protected $locations;
     /**
      * @MongoDB\EmbedOne(targetDocument="Location")
      */
@@ -403,10 +408,10 @@ class MnemonoBiz{
     /**
      * Set location
      *
-     * @param AppBundle\Document\Location $location
+     * @param Location $location
      * @return self
      */
-    public function setLocation(\AppBundle\Document\Location $location)
+    public function setLocation(Location $location)
     {
         $this->location = $location;
         return $this;
@@ -415,7 +420,7 @@ class MnemonoBiz{
     /**
      * Get location
      *
-     * @return AppBundle\Document\Location $location
+     * @return Location $location
      */
     public function getLocation()
     {
@@ -491,5 +496,39 @@ class MnemonoBiz{
     public function getLastPostUpdateAt()
     {
         return $this->lastPostUpdateAt;
+    }
+    public function __construct()
+    {
+        $this->locations = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add location
+     *
+     * @param Location $location
+     */
+    public function addLocation(Location $location)
+    {
+        $this->locations[] = $location;
+    }
+
+    /**
+     * Remove location
+     *
+     * @param Location $location
+     */
+    public function removeLocation(Location $location)
+    {
+        $this->locations->removeElement($location);
+    }
+
+    /**
+     * Get locations
+     *
+     * @return \Doctrine\Common\Collections\Collection $locations
+     */
+    public function getLocations()
+    {
+        return $this->locations;
     }
 }

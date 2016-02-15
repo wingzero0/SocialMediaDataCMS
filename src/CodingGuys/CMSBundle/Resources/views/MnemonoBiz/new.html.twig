@@ -46,19 +46,29 @@
             </ul>
         </div>
         <div class="form-group">
-            {{ form_label(form.location.address) }}
-            {{ form_errors(form.location.address) }}
-            {{ form_widget(form.location.address, {'attr': {'class': 'form-control'} }) }}
-        </div>
-        <div class="form-group">
-            {{ form_label(form.location.city) }}
-            {{ form_errors(form.location.city) }}
-            {{ form_widget(form.location.city, {'attr': {'class': 'form-control'} }) }}
-        </div>
-        <div class="form-group">
-            {{ form_label(form.location.country) }}
-            {{ form_errors(form.location.country) }}
-            {{ form_widget(form.location.country, {'attr': {'class': 'form-control'} }) }}
+            {{ form_label(form.locations) }}
+            <a id="add-another-location" href="#" class="btn btn-default btn-sm">Add another location</a>
+            <ul id="location-fields-list" data-prototype="{{ form_widget(form.locations.vars.prototype)|e }}">
+                {% for location in form.locations %}
+                    <li>
+                        <div class="form-group">
+                            {{ form_label(location.address) }}
+                            {{ form_errors(location.address) }}
+                            {{ form_widget(location.address, {'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(location.city) }}
+                            {{ form_errors(location.city) }}
+                            {{ form_widget(location.city, {'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(location.country) }}
+                            {{ form_errors(location.country) }}
+                            {{ form_widget(location.country, {'attr': {'class': 'form-control'} }) }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
         <div class="form-group">
             {{ form_label(form.phones) }}
@@ -107,6 +117,7 @@
             {{ form_widget(form.importFrom, {'attr': {'class': 'form-control'} }) }}
         </div>
         {% do form.tags.setRendered %}
+        {% do form.locations.setRendered %}
         {% do form.phones.setRendered %}
         {% do form.faxes.setRendered %}
         {% do form.websites.setRendered %}
@@ -136,8 +147,9 @@
         var phonesCount = '{{ form.phones|length }}';
         var faxesCount = '{{ form.faxes|length }}';
         var websitesCount = '{{ form.websites|length }}';
+        var locationsCount = '{{ form.locations|length }}';
 
-        var countList = [tagsCount, phonesCount, faxesCount, websitesCount];
+        var countList = [tagsCount, phonesCount, faxesCount, websitesCount, locationsCount];
 
         jQuery(document).ready(function() {
             /* Create and add a delete button behind a input field of list */
@@ -165,11 +177,21 @@
             var addNewItem = function(key, tagName, holderText) {
                 var urlList = jQuery(tagName);
                 var newWidget = urlList.attr('data-prototype');
-                newWidget = newWidget.replace(/__name__/g, tagsCount);
+                newWidget = newWidget.replace(/__name__/g, countList[key]);
                 countList[key]++;
                 var newLi = jQuery('<li></li>').html(newWidget);
                 newLi.children().first().addClass('cg');
                 newLi.children().first().attr('placeholder', holderText);
+                addDeleteTag(newLi);
+                newLi.appendTo(urlList);
+            }
+            /* Add new location function */
+            var addNewLocation = function(key, listId) {
+                var urlList = jQuery(listId);
+                var newWidget = urlList.attr('data-prototype');
+                newWidget = newWidget.replace(/__name__/g, countList[key]);
+                countList[key]++;
+                var newLi = jQuery('<li></li>').html(newWidget);
                 addDeleteTag(newLi);
                 newLi.appendTo(urlList);
             }
@@ -196,6 +218,11 @@
             jQuery('#add-another-website').click(function(e) {
                 e.preventDefault();
                 addNewItem(3, '#website-fields-list', 'URL');
+            });
+            /* Add new item function of Websites */
+            jQuery('#add-another-location').click(function(e) {
+                e.preventDefault();
+                addNewLocation(4, '#location-fields-list');
             });
         })
     </script>

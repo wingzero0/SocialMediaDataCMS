@@ -24,7 +24,20 @@ foreach($cursor as $post){
     if (!empty($areaCode)){
         $updateQuery = array("\$set" => array("cities" => array($areaCode)));
         $criteria = array("_id" => $post["_id"]);
-        var_dump($updateQuery);
         $col->update($criteria, $updateQuery);
     }
+}
+
+
+$col = $cli->selectCollection("Mnemono", "MnemonoBiz");
+
+$cursor = $col->find()->sort(array("_id" => 1));
+foreach($cursor as $biz){
+    $locations = array();
+    if (isset($biz["location"])){
+        $locations[] = $biz["location"];
+    }
+    $updateQuery = array("\$set" => array("locations" => $locations));
+    $criteria = array("_id" => $biz["_id"]);
+    $col->update($criteria, $updateQuery);
 }

@@ -192,6 +192,7 @@ class SyncFbFeedService extends BaseService{
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
+            // TODO handle multiple location
             $tags = array($biz->getCategory(), $biz->getLocation()->getCity());
             $post->setTags($tags);
         }else{
