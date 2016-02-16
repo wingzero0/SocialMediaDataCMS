@@ -3,7 +3,6 @@ namespace AppBundle\Document;
 
 use AppBundle\Document\Facebook\FacebookPage;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use AppBundle\Document\Location;
 use AppBundle\Document\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -40,6 +39,7 @@ class MnemonoBiz{
      * @MongoDB\String
      */
     protected $longDesc;
+    // TODO migrate category to tag?
     /**
      * @MongoDB\String
      * @MongoDB\Index
@@ -50,15 +50,14 @@ class MnemonoBiz{
      * @MongoDB\Index
      */
     protected $tags;
-    // TODO should seperate the address and country
     /**
-     * @MongoDB\EmbedMany(targetDocument="Location")
+     * @MongoDB\Collection
      */
-    protected $locations;
+    protected $addresses;
     /**
-     * @MongoDB\EmbedOne(targetDocument="Location")
+     * @MongoDB\Collection
      */
-    protected $location;
+    protected $cities;
     /**
      * @MongoDB\Collection
      */
@@ -406,34 +405,12 @@ class MnemonoBiz{
     }
 
     /**
-     * Set location
-     *
-     * @param Location $location
-     * @return self
-     */
-    public function setLocation(Location $location)
-    {
-        $this->location = $location;
-        return $this;
-    }
-
-    /**
-     * Get location
-     *
-     * @return Location $location
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
      * Set lastModUser
      *
-     * @param AppBundle\Document\User $lastModUser
+     * @param User $lastModUser
      * @return self
      */
-    public function setLastModUser(\AppBundle\Document\User $lastModUser)
+    public function setLastModUser(User $lastModUser)
     {
         $this->lastModUser = $lastModUser;
         return $this;
@@ -442,7 +419,7 @@ class MnemonoBiz{
     /**
      * Get lastModUser
      *
-     * @return AppBundle\Document\User $lastModUser
+     * @return User $lastModUser
      */
     public function getLastModUser()
     {
@@ -497,38 +474,48 @@ class MnemonoBiz{
     {
         return $this->lastPostUpdateAt;
     }
-    public function __construct()
-    {
-        $this->locations = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
+
     /**
-     * Add location
+     * Set cities
      *
-     * @param Location $location
+     * @param collection $cities
+     * @return self
      */
-    public function addLocation(Location $location)
+    public function setCities($cities)
     {
-        $this->locations[] = $location;
+        $this->cities = $cities;
+        return $this;
     }
 
     /**
-     * Remove location
+     * Get cities
      *
-     * @param Location $location
+     * @return collection $cities
      */
-    public function removeLocation(Location $location)
+    public function getCities()
     {
-        $this->locations->removeElement($location);
+        return $this->cities;
     }
 
     /**
-     * Get locations
+     * Set addresses
      *
-     * @return \Doctrine\Common\Collections\Collection $locations
+     * @param collection $addresses
+     * @return self
      */
-    public function getLocations()
+    public function setAddresses($addresses)
     {
-        return $this->locations;
+        $this->addresses = $addresses;
+        return $this;
+    }
+
+    /**
+     * Get addresses
+     *
+     * @return collection $addresses
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
     }
 }

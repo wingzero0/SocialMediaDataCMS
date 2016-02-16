@@ -33,11 +33,16 @@ $col = $cli->selectCollection("Mnemono", "MnemonoBiz");
 
 $cursor = $col->find()->sort(array("_id" => 1));
 foreach($cursor as $biz){
-    $locations = array();
-    if (isset($biz["location"])){
-        $locations[] = $biz["location"];
+    $cities = array();
+    $addresses = array();
+    if (isset($biz["location"]) &&  isset($biz["location"]["city"])){
+        $cities[] = $biz["location"]["city"];
+
     }
-    $updateQuery = array("\$set" => array("locations" => $locations));
+    if (isset($biz["location"]) &&  isset($biz["location"]["address"])){
+        $addresses[] = $biz["location"]["address"];
+    }
+    $updateQuery = array("\$set" => array("cities" => $cities, "addresses" => $addresses));
     $criteria = array("_id" => $biz["_id"]);
     $col->update($criteria, $updateQuery);
 }

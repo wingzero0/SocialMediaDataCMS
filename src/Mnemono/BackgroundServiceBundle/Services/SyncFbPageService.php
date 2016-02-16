@@ -145,8 +145,9 @@ class SyncFbPageService extends BaseService{
         if (isset($pageRaw["mnemono"]) && isset($pageRaw["mnemono"]["category"])){
             $biz->setCategory($pageRaw["mnemono"]["category"]);
         }
-        $location = $this->createLocation($pageRaw);
-        $biz->setLocation($location)
+        list($address, $city) = $this->createLocation($pageRaw);
+        $biz->setAddresses(array($address))
+            ->setCities(array($city))
             ->setName($pageRaw["name"])
             ->setImportFrom("facebookPage")
             ->setImportFromRef($page)
@@ -156,37 +157,24 @@ class SyncFbPageService extends BaseService{
 
     /**
      * @param $pageRaw
-     * @return Location
+     * @return array
      */
     private function createLocation($pageRaw){
         $city = null;
-        $country = null;
-        $street = null;
+        $address = null;
         if (isset($pageRaw["mnemono"])){
             if (isset($pageRaw["mnemono"]["location"]["city"])){
                 $city = $pageRaw["mnemono"]["location"]["city"];
             }
-            if (isset($pageRaw["mnemono"]["location"]["country"])){
-                $country = $pageRaw["mnemono"]["location"]["country"];
-            }
         }
 
         if (isset($pageRaw["location"])){
-            $street = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
+            $address = (isset($pageRaw["location"]["street"]) ? $pageRaw["location"]["street"] : null);
             if ($city == null){
                 $city = (isset($pageRaw["location"]["city"]) ? $pageRaw["location"]["city"] : null);
             }
-            if ($country == null){
-                $country = (isset($pageRaw["location"]["country"]) ? $pageRaw["location"]["country"] : null);
-            }
         }
-
-        $location = new Location();
-        $location->setCity($city)
-            ->setCountry($country)
-            ->setAddress($street);
-        $this->getDM()->persist($location);
-        return $location;
+        return array($address, $city);
     }
 
     /**

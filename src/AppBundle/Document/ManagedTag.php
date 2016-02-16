@@ -7,8 +7,6 @@
 
 namespace AppBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use AppBundle\Document\Location;
-use AppBundle\Document\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;

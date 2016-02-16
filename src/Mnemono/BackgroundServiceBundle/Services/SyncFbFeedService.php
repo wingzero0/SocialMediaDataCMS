@@ -192,9 +192,8 @@ class SyncFbFeedService extends BaseService{
 
         if ($biz instanceof MnemonoBiz){
             $post->setMnemonoBiz($biz);
-            // TODO handle multiple location
-            $tags = array($biz->getCategory(), $biz->getLocation()->getCity());
-            $post->setTags($tags);
+            $post->setTags(array($biz->getCategory()));
+            $post->setCities($biz->getCities());
         }else{
             $msg = sprintf("biz not found: feed fbID :%s, page fbID: %s", $feed->getFbId() ,$fbPage->getFbId());
             $this->logError($msg);
