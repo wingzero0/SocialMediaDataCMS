@@ -52,18 +52,23 @@ class UtilityController extends AppBaseController{
      * @Method("GET")
      */
     public function testVersioningAction(Request $request){
-        $ret = array();
-        $version = $this->getVersionListener();
-        if ($version->getVersion()) {
-            $ret = array(
-                array('key' => 'v'.$version->getVersion(), 'name_chi' => '香港', 'name_eng' => 'Hong Kong'),
-            );
-        }else{
-            $this->getLogger()->info($version->getVersion());
-            $ret = array(
-                array('key' => 'default', 'name_chi' => '香港v2', 'name_eng' => 'Hong KongV2'),
-            );
-        }
+        $ret = array(
+            array('key' => 'v'.$this->getVersionNum() ),
+        );
+        return new Response($this->serialize($ret, "display"));
+    }
+    /**
+     * @ApiDoc(
+     *  description="output current supported api version",
+     * )
+     * @Route("/version", name="api_area_code")
+     * @Method("GET")
+     */
+    public function getVersionAction(Request $request){
+        $ret = array(
+            array('version' => 'application/json;version=1.0', 'description' => "api version 1.0"),
+            array('version' => 'application/json;', 'description' => "deprecated api. If not specific any accept header, system will handle request with this version"),
+        );
         return new Response($this->serialize($ret, "display"));
     }
 }

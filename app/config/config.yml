@@ -191,4 +191,4 @@ fos_rest:
             version_regex: '/(v|version)=(?P<version>[0-9\.]+)/'
     view:
         mime_types:
-            json: ['application/json', 'application/json;version=1.0', 'application/json;version=2.0']
+            json: ['application/json', 'application/json;version=1.0']
