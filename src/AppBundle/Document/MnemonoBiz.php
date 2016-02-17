@@ -3,7 +3,6 @@ namespace AppBundle\Document;
 
 use AppBundle\Document\Facebook\FacebookPage;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use AppBundle\Document\Location;
 use AppBundle\Document\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -40,6 +39,7 @@ class MnemonoBiz{
      * @MongoDB\String
      */
     protected $longDesc;
+    // TODO migrate category to tag?
     /**
      * @MongoDB\String
      * @MongoDB\Index
@@ -51,9 +51,13 @@ class MnemonoBiz{
      */
     protected $tags;
     /**
-     * @MongoDB\EmbedOne(targetDocument="Location")
+     * @MongoDB\Collection
      */
-    protected $location;
+    protected $addresses;
+    /**
+     * @MongoDB\Collection
+     */
+    protected $cities;
     /**
      * @MongoDB\Collection
      */
@@ -401,34 +405,12 @@ class MnemonoBiz{
     }
 
     /**
-     * Set location
-     *
-     * @param AppBundle\Document\Location $location
-     * @return self
-     */
-    public function setLocation(\AppBundle\Document\Location $location)
-    {
-        $this->location = $location;
-        return $this;
-    }
-
-    /**
-     * Get location
-     *
-     * @return AppBundle\Document\Location $location
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
      * Set lastModUser
      *
-     * @param AppBundle\Document\User $lastModUser
+     * @param User $lastModUser
      * @return self
      */
-    public function setLastModUser(\AppBundle\Document\User $lastModUser)
+    public function setLastModUser(User $lastModUser)
     {
         $this->lastModUser = $lastModUser;
         return $this;
@@ -437,7 +419,7 @@ class MnemonoBiz{
     /**
      * Get lastModUser
      *
-     * @return AppBundle\Document\User $lastModUser
+     * @return User $lastModUser
      */
     public function getLastModUser()
     {
@@ -491,5 +473,49 @@ class MnemonoBiz{
     public function getLastPostUpdateAt()
     {
         return $this->lastPostUpdateAt;
+    }
+
+    /**
+     * Set cities
+     *
+     * @param collection $cities
+     * @return self
+     */
+    public function setCities($cities)
+    {
+        $this->cities = $cities;
+        return $this;
+    }
+
+    /**
+     * Get cities
+     *
+     * @return collection $cities
+     */
+    public function getCities()
+    {
+        return $this->cities;
+    }
+
+    /**
+     * Set addresses
+     *
+     * @param collection $addresses
+     * @return self
+     */
+    public function setAddresses($addresses)
+    {
+        $this->addresses = $addresses;
+        return $this;
+    }
+
+    /**
+     * Get addresses
+     *
+     * @return collection $addresses
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
     }
 }

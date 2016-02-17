@@ -44,8 +44,6 @@
                 <th>Category</th>
                 <th>Tag</th>
                 <th>Address</th>
-                <th>City</th>
-                <th>Country</th>
                 <th>Phones</th>
                 <th>Faxes</th>
                 <th>Websites</th>
@@ -70,15 +68,13 @@
                             {% endfor %}
                         </ul>
                     </td>
-                    {% if document.location is not null %}
-                        <td>{{ document.location.address }}</td>
-                        <td>{{ document.location.city }}</td>
-                        <td>{{ document.location.country }}</td>
-                    {% else %}
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    {% endif %}
+                    <td>
+                        <ul class="list">
+                            {% for address in document.addresses %}
+                                <li>{{ address }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
                     <td>
                         <ul class="list">
                             {% for phone in document.phones %}
