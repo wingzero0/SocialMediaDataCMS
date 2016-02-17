@@ -6,6 +6,7 @@
  */
 namespace Mnemono\BackgroundServiceBundle\Services;
 
+use AppBundle\Document\Facebook\FacebookFeedTimestamp;
 use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\Facebook\FacebookFeed;
@@ -94,8 +95,9 @@ class SyncFbFeedService extends BaseService{
         try{
             $key_json = json_decode($job->workload(), true);
             $id = $key_json["id"];
+            $removeSource = $key_json["removeSource"];
             $this->resetDM();
-            $this->removePostById($id);
+            $this->removePostById($id, $removeSource);
             return true;
         }catch (\Exception $e){
             $this->logExecption($e);
@@ -154,19 +156,37 @@ class SyncFbFeedService extends BaseService{
 
     /**
      * @param string $id
+     * @param boolean $removeSource
      * @return null
      */
-    private function removePostById($id){
+    private function removePostById($id, $removeSource){
         $post = $this->getPostRepo()->find($id);
         if (!($post instanceof Post)){
             $this->logError("Post:" . $id . " not found");
             return null;
         }
 
+        if ($removeSource){
+            $ref = $post->getImportFromRef();
+            if ($ref instanceof FacebookFeed){
+                $this->removeFbFeedAndTimestamp($ref);
+            }
+        }
+
         $dm = $this->getDM();
         $dm->remove($post);
         $dm->flush();
         return null;
+    }
+
+    private function removeFbFeedAndTimestamp(FacebookFeed $feed){
+        $this->getLoopCollectionStrategy()->loopCollectionWithQueryBuilder(function() use ($feed){
+            $this->getFbFeedTimestampRepo()->getQueryBuilderFindAllByFeed($feed)->sort(array('id' => 1));
+        },function(FacebookFeedTimestamp $timestamp){
+            $this->getDM()->remove($timestamp);
+        },function(){
+            // Do nothing, don't want to reset dm;
+        });
     }
 
     /**

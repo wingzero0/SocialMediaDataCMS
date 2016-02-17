@@ -40,8 +40,8 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             ->addOption('fbId', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'the specific fbId you want to sync')
-            ->addOption('removeFBSource', null,
-                InputOption::VALUE_OPTIONAL, '');
+            ->addOption('removeSource', null,
+                InputOption::VALUE_NONE, '');
         ;
 
     }
@@ -79,19 +79,24 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             $fromDate = \DateTime::createFromFormat(\DateTime::ISO8601, $fromDateStr);
             $toDateStr = $input->getOption("toDate");
             $toDate = \DateTime::createFromFormat(\DateTime::ISO8601, $toDateStr);
-            $removeFBSource = $input->getOption("removeFBSource");
-            $this->removePosts($fromDate, $toDate);
+            $removeSource = $input->getOption("removeSource");
+            $this->removePosts($fromDate, $toDate, $removeSource);
         }
     }
 
-    private function removePosts(\DateTime $fromDate, \DateTime $toDate){
+    /**
+     * @param \DateTime $fromDate
+     * @param \DateTime $toDate
+     * @param boolean $removeSource
+     */
+    private function removePosts(\DateTime $fromDate, \DateTime $toDate, $removeSource){
         $loop = new LoopCollectionStrategy();
         $loop->loopCollectionWithQueryBuilder(function($limit) use ($fromDate, $toDate){
             $qb = $this->getPostRepo()->getQueryBuilderFindAllByDate($fromDate, $toDate)->sort(array("id" => 1));
             $qb->limit($limit);
             return $qb;
-        }, function (Post $post){
-            $this->removePostById($post->getId());
+        }, function (Post $post) use ($removeSource) {
+            $this->removePostById($post->getId(), $removeSource);
         }, function (){
             // Do nothing;
         });
@@ -115,11 +120,11 @@ class SyncFbFeedToPostCommand extends BaseCommand{
 
     /**
      * @param string $id
+     * @param boolean $removeSource
      */
-    private function removePostById($id){
-        $json = json_encode(array("id" => $id));
+    private function removePostById($id, $removeSource){
+        $json = json_encode(array("id" => $id, "removeSource" => $removeSource));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedRemoveJob, $json);
-        //print_r($json);
     }
 
     /**

@@ -103,26 +103,6 @@ abstract class BaseService {
     }
 
     /**
-     * @param $queryBuilderCallback
-     * @param $reducerCallBack
-     *
-     * it will reset the dm in the loop
-     */
-    protected function loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack){
-        $this->getLoopCollectionStrategy()
-            ->loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack, function (){
-                $this->resetDM();
-            });
-    }
-
-    protected function loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack){
-        $this->getLoopCollectionStrategy()
-            ->loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack, function(){
-                $this->resetDM();
-            });
-    }
-
-    /**
      * @return FacebookPageRepository
      */
     protected function getFacebookPageRepo(){
