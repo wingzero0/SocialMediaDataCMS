@@ -154,6 +154,12 @@ class Post extends BaseThread{
     protected $softDelete;
 
     /**
+     * @MongoDB\Collection
+     * @MongoDB\Index
+     */
+    protected $cities;
+
+    /**
      * @return array key to label
      */
     public static function listOfPublishStatus(){
@@ -163,6 +169,7 @@ class Post extends BaseThread{
     public function __constract(){
         $this->setTags(new ArrayCollection());
         $this->setImageLinks(new ArrayCollection());
+        $this->setCities(new ArrayCollection());
     }
 
     public function updateFinalScore($localWeight = 1.0, $adminWeight = 1.0){
@@ -673,5 +680,27 @@ class Post extends BaseThread{
 
     public function isShowAtHomepage(){
         return $this->getShowAtHomepage();
+    }
+
+    /**
+     * Set cities
+     *
+     * @param collection $cities
+     * @return self
+     */
+    public function setCities($cities)
+    {
+        $this->cities = $cities;
+        return $this;
+    }
+
+    /**
+     * Get cities
+     *
+     * @return collection $cities
+     */
+    public function getCities()
+    {
+        return $this->cities;
     }
 }

@@ -33,7 +33,8 @@ class PostController extends AppBaseController{
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
-     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code"},
+     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code, will not support after version 1.0"},
+     *      {"name"="areaCodes[]", "dataType"="string", "required"=false, "description"="filter by multiple area codes with 'OR' operator , available at version 1.0"},
      *  }
      * )
      * @Route("/hot", name="api_homepage_post")
@@ -53,13 +54,14 @@ class PostController extends AppBaseController{
 
     /**
      * @ApiDoc(
-     *  description="query all post, can be filter by tags; will separate area code from tag in 0.11.0",
+     *  description="query all post, can be filter by tags, areaCode",
      *  parameters={
-     *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag"},
+     *      {"name"="tags[]", "dataType"="string", "required"=false, "description"="filter by tag, will not support areaCode in tags after version 1.0"},
      *      {"name"="days", "dataType"="int", "required"=false, "description"="filter post within x days"},
      *      {"name"="limit", "dataType"="int", "required"=false, "description"="return x posts, default is 25"},
      *      {"name"="skip", "dataType"="int", "required"=false, "description"="skip first x posts, default is 0"},
-     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code"},
+     *      {"name"="areaCode", "dataType"="string", "required"=false, "description"="filter with area code, will not support after version 1.0"},
+     *      {"name"="areaCodes[]", "dataType"="string", "required"=false, "description"="filter by multiple area codes with 'OR' operator , available at version 1.0"},
      *  }
      * )
      * @Route("/", name="api_all_post")
@@ -78,7 +80,7 @@ class PostController extends AppBaseController{
 
     /**
      * @ApiDoc(
-     *  description="query a post by id, the output field 'bizName' is deprecated, will be removed on 0.8.0",
+     *  description="query a post by id",
      *  requirements={
      *      { "name"="id", "dataType"="string", "requirement"="mongo id in string", "description"="post id"}
      *  }
@@ -120,33 +122,105 @@ class PostController extends AppBaseController{
      * @return Builder
      */
     private function compileFilter(Request $request, Builder $qb){
+        $versionNum = $this->getVersionNum();
+        if ($versionNum < 1.0) {
+            $qb = $this->compileFilterDeprecated($request, $qb);
+        }else{
+            $qb = $this->compileFilterV1($request, $qb);
+        }
+        return $qb;
+    }
+
+    /**
+     * @param Request $request
+     * @param Builder $qb
+     * @return Builder
+     */
+    private function compileFilterV1(Request $request, Builder $qb){
         $qb->field('publishStatus')->equals('published');
         $tags = $request->get('tags');
-        if (!empty($tags)){
-            foreach($tags as $tag){
+        if (!empty($tags)) {
+            foreach ($tags as $tag) {
                 $tagTrim = trim($tag);
-                if (!empty($tagTrim)){
+                if (!empty($tagTrim)) {
                     $qb->addAnd(
                         $qb->expr()->field('tags')->equals($tagTrim)
                     );
                 }
             }
         }
-
-        $areaCode = $request->get('areaCode');
-        $trimAreaCode = trim($areaCode);
-        if (!empty($trimAreaCode)){
-            $qb->addAnd(
-                $qb->expr()->field('tags')->equals($trimAreaCode)
-            );
-        }
+        $qb = $this->compileAreaCodeFilter(null, $request->get('areaCodes'), $qb);
 
         $interval = intval($request->get("days"));
+        $qb = $this->compileCreateAtFilter($interval, $qb);
+        return $qb;
+    }
+
+    /**
+     * @param Request $request
+     * @param Builder $qb
+     * @return Builder
+     * @deprecated
+     */
+    private function compileFilterDeprecated(Request $request, Builder $qb){
+        $qb->field('publishStatus')->equals('published');
+        $tags = $request->get('tags');
+        if (!empty($tags)) {
+            foreach ($tags as $tag) {
+                $tagTrim = trim($tag);
+                if (in_array($tagTrim, array("hk", "mo"))){
+                    $qb = $this->compileAreaCodeFilter($tagTrim, null, $qb);
+                } else if (!empty($tagTrim)) {
+                    $qb->addAnd(
+                        $qb->expr()->field('tags')->equals($tagTrim)
+                    );
+                }
+            }
+        }
+        $qb = $this->compileAreaCodeFilter($request->get('areaCode'), null, $qb);
+
+        $interval = intval($request->get("days"));
+        $qb = $this->compileCreateAtFilter($interval, $qb);
+        return $qb;
+    }
+
+    /**
+     * @param string $areaCode
+     * @param array $areaCodes
+     * @param Builder $qb
+     * @return Builder
+     */
+    private function compileAreaCodeFilter($areaCode, $areaCodes, Builder $qb){
+        $trimAreaCode = trim($areaCode);
+        if (!empty($trimAreaCode)){
+            $qb->addOr(
+                $qb->expr()->field('cities')->equals($trimAreaCode)
+            );
+        }
+        if (!empty($areaCodes) && is_array($areaCodes)){
+            foreach($areaCodes as $code){
+                $codeTrim = trim($code);
+                if (!empty($codeTrim)){
+                    $qb->addOr(
+                        $qb->expr()->field('cities')->equals($codeTrim)
+                    );
+                }
+            }
+        }
+        return $qb;
+    }
+
+    /**
+     * @param int $interval
+     * @param Builder $qb
+     * @return Builder
+     */
+    private function compileCreateAtFilter($interval, Builder $qb){
         $this->getLogger()->info("days");
-        if (!empty($interval)){
+        if (!empty($interval)) {
             $this->getLogger()->info($interval);
             $nowDate = new \DateTime();
-            $createDate = $nowDate->sub(new \DateInterval("P". $interval ."D"));
+            $createDate = $nowDate->sub(new \DateInterval("P" . $interval . "D"));
             $qb->field("createAt")->gte($createDate);
         }
         return $qb;

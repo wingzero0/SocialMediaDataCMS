@@ -66,6 +66,15 @@ abstract class AppBaseController extends Controller{
     }
 
     /**
+     * @return double
+     */
+    protected function getVersionNum(){
+        $version = $this->getVersionListener();
+        $versionNum = doubleval($version->getVersion());
+        return $versionNum;
+    }
+
+    /**
      * @return WeightingRepository
      */
     protected function getWeightingRepo(){

@@ -50,6 +50,18 @@
             </ul>
         </div>
         <div class="form-group">
+            {{ form_label(form.cities) }}
+            <a id="add-another-city" href="#" class="btn btn-default btn-sm">Add another city</a>
+            <ul id="city-fields-list" data-prototype="{{ form_widget(form.cities.vars.prototype)|e }}">
+                {% for city in form.cities %}
+                    <li>
+                        {{ form_errors(city) }}
+                        {{ form_widget(city, {'attr': {'class': 'cg'} }) }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="form-group">
             {{ form_label(form.imageLinks) }}
             <a id="add-another-url" href="#" class="btn btn-default btn-sm">Add another url</a>
             <ul id="url-fields-list" data-prototype="{{ form_widget(form.imageLinks.vars.prototype)|e }}">
@@ -131,6 +143,7 @@
             {{ form_widget(form.submit, {'attr': {'class': 'btn btn-default'} }) }}
         </div>
         {% do form.tags.setRendered %}
+        {% do form.cities.setRendered %}
         {% do form.imageLinks.setRendered %}
         {{ form_end(form) }}
 
@@ -149,8 +162,9 @@
         /* Keep track of how many tags fields have been rendered */
         var tagsCount = '{{ form.tags|length }}';
         var imageLinkCount = '{{ form.imageLinks|length }}';
+        var citiesCount = '{{ form.cities|length }}';
 
-        var countList = [tagsCount, imageLinkCount];
+        var countList = [tagsCount, imageLinkCount, citiesCount];
 
         jQuery(document).ready(function() {
             /* Create and add a delete button behind a input field of list */
@@ -196,6 +210,11 @@
             jQuery('#add-another-url').click(function(e) {
                 e.preventDefault();
                 addNewItem(1, '#url-fields-list', 'New URL');
+            });
+            /* Add new item function of cities */
+            jQuery('#add-another-city').click(function(e) {
+                e.preventDefault();
+                addNewItem(2, '#city-fields-list', 'New City');
             });
         })
     </script>

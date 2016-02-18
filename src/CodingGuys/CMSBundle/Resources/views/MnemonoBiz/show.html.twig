@@ -43,33 +43,26 @@
                     </ul>
                 </td>
             </tr>
-            {% if document.location is not null %}
             <tr>
                 <th>Address</th>
-                <td>{{ document.location.address }}</td>
+                <td>
+                    <ul class="list">
+                        {% for address in document.addresses %}
+                            <li>{{ address }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
             </tr>
             <tr>
-                <th>City</th>
-                <td>{{ document.location.city }}</td>
+                <th>Cities</th>
+                <td>
+                    <ul class="list">
+                        {% for city in document.cities %}
+                            <li>{{ city }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
             </tr>
-            <tr>
-                <th>Country</th>
-                <td>{{ document.location.country }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <th>Address</th>
-                <td></td>
-            </tr>
-            <tr>
-                <th>City</th>
-                <td></td>
-            </tr>
-            <tr>
-                <th>Country</th>
-                <td></td>
-            </tr>
-            {% endif %}
             <tr>
                 <th>Phones</th>
                 <td>
