@@ -124,7 +124,7 @@ class PostController extends AppBaseController{
     private function compileFilter(Request $request, Builder $qb){
         $versionNum = $this->getVersionNum();
         if ($versionNum < 1.0) {
-            $qb = $this->compileFilterDeprecated($request, $qb);
+            $qb = $this->compileFilterV0($request, $qb);
         }else{
             $qb = $this->compileFilterV1($request, $qb);
         }
@@ -162,7 +162,7 @@ class PostController extends AppBaseController{
      * @return Builder
      * @deprecated
      */
-    private function compileFilterDeprecated(Request $request, Builder $qb){
+    private function compileFilterV0(Request $request, Builder $qb){
         $qb->field('publishStatus')->equals('published');
         $tags = $request->get('tags');
         if (!empty($tags)) {

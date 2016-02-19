@@ -109,19 +109,17 @@ class PostRepository extends DocumentRepository
     }
 
     /**
-     * @param array $tags array of key (in string)
-     * @param string $areaCode
+     * @param string $tag (in string)
+     * @param array $areaCodes array of areaCode (in string)
      * @return int
      */
-    public function queryCountOfTagedPost($tags, $areaCode){
+    public function queryCountOfTagedPost($tag, $areaCodes){
         $qb = $this->getQueryBuilderFindNonExpire(null,-1,0);
-        $qb->addAnd(
-            $qb->expr()->field('tags')->in($tags)
-        );
-        if (!empty($areaCode)){
-            $qb->addAnd(
-                $qb->expr()->field('tags')->in(array($areaCode))
-            );
+        if (!empty($tag)){
+            $qb->field('tags')->in(array($tag));
+        }
+        if (!empty($areaCodes) && is_array($areaCodes)){
+            $qb->field('cities')->in($areaCodes);
         }
 
         $count = $qb->count()->getQuery()->execute();
