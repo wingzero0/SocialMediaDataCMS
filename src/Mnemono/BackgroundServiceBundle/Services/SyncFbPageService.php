@@ -10,7 +10,6 @@ namespace Mnemono\BackgroundServiceBundle\Services;
 use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\Facebook\FacebookPage;
-use AppBundle\Document\Location;
 use AppBundle\Document\MnemonoBiz;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
 use Symfony\Component\Config\Definition\Exception\Exception;

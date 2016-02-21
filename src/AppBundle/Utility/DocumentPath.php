@@ -21,8 +21,6 @@ class DocumentPath {
     public static $deviceInfoDocumentPath = "AppBundle:DeviceInfo";
     public static $postDocumentPath = "AppBundle:Post";
     public static $postFolderPath = "AppBundle\\Document\\Post";
-    public static $locationDocumentPath = "AppBundle:Location";
-    public static $locationFolderPath = "AppBundle\\Document\\Location";
     public static $postForReviewDocumentPath = "AppBundle:PostForReview";
     public static $spotlightAdsDocumentPath = "AppBundle:SpotlightAds";
     public static $spotlightAdsFolderPath = "AppBundle\\Document\\SpotlightAds";

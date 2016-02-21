@@ -10,22 +10,30 @@ $col = $cli->selectCollection("Mnemono", "Post");
 
 $cursor = $col->find()->sort(array("_id" => 1));
 foreach($cursor as $post){
-    $tags = array();
-    $areaCode = "";
-    if (isset($post["tags"])){
-        $tags = $post["tags"];
+    if (isset($post["cities"]) && is_array($post["cities"])){
+        $areaCodes = $post["cities"];
+    }else{
+        $areaCodes = array();
     }
+
+    if (isset($post["tags"]) && is_array($post["tags"])){
+        $tags = $post["tags"];
+    }else{
+        $tags = array();
+    }
+
+    $newTags = array();
     foreach($tags as $tag){
         if ($tag == "mo" || $tag == "hk"){
-            $areaCode = $tag;
-            break;
+            $areaCodes = array_merge($areaCodes, array($tag));
+        }else{
+            $newTags[] = $tag;
         }
     }
-    if (!empty($areaCode)){
-        $updateQuery = array("\$set" => array("cities" => array($areaCode)));
-        $criteria = array("_id" => $post["_id"]);
-        $col->update($criteria, $updateQuery);
-    }
+
+    $updateQuery = array("\$set" => array("cities" => array_unique($areaCodes), "tags" => $newTags));
+    $criteria = array("_id" => $post["_id"]);
+    $col->update($criteria, $updateQuery);
 }
 
 
