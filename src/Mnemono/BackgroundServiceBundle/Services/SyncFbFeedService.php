@@ -180,13 +180,15 @@ class SyncFbFeedService extends BaseService{
     }
 
     private function removeFbFeedAndTimestamp(FacebookFeed $feed){
-        $this->getLoopCollectionStrategy()->loopCollectionWithQueryBuilder(function() use ($feed){
-            $this->getFbFeedTimestampRepo()->getQueryBuilderFindAllByFeed($feed)->sort(array('id' => 1));
+        $this->getLoopCollectionStrategy()->loopCollectionWithQueryBuilder(function($limit) use ($feed){
+            $qb = $this->getFbFeedTimestampRepo()->getQueryBuilderFindAllByFeed($feed);
+            return $qb->sort(array('id' => 1))->limit($limit);
         },function(FacebookFeedTimestamp $timestamp){
             $this->getDM()->remove($timestamp);
         },function(){
             // Do nothing, don't want to reset dm;
         });
+        $this->getDM()->remove($feed);
     }
 
     /**
