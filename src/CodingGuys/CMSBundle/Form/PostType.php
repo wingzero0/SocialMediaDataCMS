@@ -33,6 +33,13 @@ class PostType extends AbstractType
                 'prototype' => true,
                 'required' => false
             ))
+            ->add('cities','collection', array(
+                'type' => 'text',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'required' => false
+            ))
             ->add('imageLinks','collection', array(
                 'type' => 'text',
                 'allow_add' => true,

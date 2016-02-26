@@ -124,18 +124,20 @@ class PostReportController extends AppBaseController{
                 $qb->field('showAtHomepage')->notEqual(true);
             }
         }
-        $tagString = $request->get('tag');
-        if (!empty($tagString)){
-            $tags = preg_split('/,/', $tagString);
-            foreach($tags as $tag){
-                $tagTrim = trim($tag);
-                if (!empty($tagTrim)){
-                    $qb->addAnd(
-                        $qb->expr()->field('tags')->equals($tagTrim)
-                    );
-                }
-            }
+        $tagsString = $request->get('tags');
+        $tags = $this->splitStrByComma($tagsString);
+        foreach($tags as $tag){
+            $qb->addAnd(
+                $qb->expr()->field('tags')->equals($tag)
+            );
         }
+
+        $citiesString = $request->get('cities');
+        $cities = $this->splitStrByComma($citiesString);
+        if (!empty($cities)){
+            $qb->field("cities")->in($cities);
+        }
+
         $rank = intval($request->get('rank', "-1"));
         if ($rank >= 0){
             $qb->field("rankPosition")->equals($rank);
@@ -149,6 +151,24 @@ class PostReportController extends AppBaseController{
             $qb->field('content')->all($regexArray);
         }
         return $qb;
+    }
+
+    /**
+     * @param $sourceStr
+     * @return array
+     */
+    private function splitStrByComma($sourceStr){
+        $ret = array();
+        if (!empty($sourceStr)){
+            $splitedStr = preg_split('/,/', $sourceStr);
+            foreach($splitedStr as $str){
+                $trimStr = trim($str);
+                if (!empty($trimStr)){
+                    $ret[] = $trimStr;
+                }
+            }
+        }
+        return $ret;
     }
 
     /**

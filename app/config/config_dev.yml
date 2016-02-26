@@ -38,4 +38,10 @@ doctrine_cache:
             type: array
             namespace: doctrine_cache.ns.gearman
 
-nelmio_api_doc: ~
+nelmio_api_doc:
+    sandbox:
+        request_format:
+            formats:
+                json: application/json
+            method: accept_header
+            default_format: json

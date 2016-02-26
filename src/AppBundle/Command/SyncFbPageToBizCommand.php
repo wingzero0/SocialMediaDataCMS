@@ -9,12 +9,8 @@
 namespace AppBundle\Command;
 
 use AppBundle\Document\Facebook\FacebookPage;
-use AppBundle\Document\Location;
-use AppBundle\Document\MnemonoBiz;
-use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Command\BaseCommand;
 use AppBundle\Utility\GearmanServiceName;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
