@@ -14,6 +14,7 @@ use AppBundle\Document\Facebook\FacebookMeta;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
 use AppBundle\Utility\GearmanServiceName;
+use AppBundle\Utility\LoopCollectionStrategy;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,6 +40,8 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             ->addOption('fbId', null ,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'the specific fbId you want to sync')
+            ->addOption('removeSource', null,
+                InputOption::VALUE_NONE, '');
         ;
 
     }
@@ -46,13 +49,13 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     protected function execute(InputInterface $input, OutputInterface $output){
         $action = $input->getOption('action');
         if ($action == "createFromFbCollection"){
-            $fromDate = $input->getOption("fromDate");
-            $toDate = $input->getOption("toDate");
-            $this->createPostFromFbFeedCollection($fromDate, $toDate);
+            $fromDateStr = $input->getOption("fromDate");
+            $toDateStr = $input->getOption("toDate");
+            $this->createPostFromFbFeedCollection($fromDateStr, $toDateStr);
         }else if ($action == "updateFromFbCollection"){
-            $fromDate = $input->getOption("fromDate");
-            $toDate = $input->getOption("toDate");
-            $this->updatePostFromFbFeedCollection($fromDate, $toDate);
+            $fromDateStr = $input->getOption("fromDate");
+            $toDateStr = $input->getOption("toDate");
+            $this->updatePostFromFbFeedCollection($fromDateStr, $toDateStr);
         }else if ($action == "createFromFb"){
             $fbIds = $input->getOption('fbId');
             if (!empty($fbIds)){
@@ -71,7 +74,32 @@ class SyncFbFeedToPostCommand extends BaseCommand{
             }else{
                 $output->writeln("no fbId");
             }
+        }else if ($action == "removePosts"){
+            $fromDateStr = $input->getOption("fromDate");
+            $fromDate = \DateTime::createFromFormat(\DateTime::ISO8601, $fromDateStr);
+            $toDateStr = $input->getOption("toDate");
+            $toDate = \DateTime::createFromFormat(\DateTime::ISO8601, $toDateStr);
+            $removeSource = $input->getOption("removeSource");
+            $this->removePosts($fromDate, $toDate, $removeSource);
         }
+    }
+
+    /**
+     * @param \DateTime $fromDate
+     * @param \DateTime $toDate
+     * @param boolean $removeSource
+     */
+    private function removePosts(\DateTime $fromDate, \DateTime $toDate, $removeSource){
+        $loop = new LoopCollectionStrategy();
+        $loop->loopCollectionWithQueryBuilder(function($limit) use ($fromDate, $toDate){
+            $qb = $this->getPostRepo()->getQueryBuilderFindAllByDate($fromDate, $toDate)->sort(array("id" => 1));
+            $qb->limit($limit);
+            return $qb;
+        }, function (Post $post) use ($removeSource) {
+            $this->removePostById($post->getId(), $removeSource);
+        }, function (){
+            // Do nothing;
+        });
     }
 
     /**
@@ -88,6 +116,15 @@ class SyncFbFeedToPostCommand extends BaseCommand{
     private function updatePostByFbId($fbId){
         $json = json_encode(array("fbId" => $fbId));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedUpdateJob, $json);
+    }
+
+    /**
+     * @param string $id
+     * @param boolean $removeSource
+     */
+    private function removePostById($id, $removeSource){
+        $json = json_encode(array("id" => $id, "removeSource" => $removeSource));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncFbFeedRemoveJob, $json);
     }
 
     /**

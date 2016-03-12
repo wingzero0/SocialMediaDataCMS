@@ -125,4 +125,21 @@ class PostRepository extends DocumentRepository
         $count = $qb->count()->getQuery()->execute();
         return $count;
     }
+
+    /**
+     * @param \DateTime $fromDate
+     * @param \DateTime $toDate
+     * @return Builder
+     */
+    public function getQueryBuilderFindAllByDate(\DateTime $fromDate, \DateTime $toDate){
+        $qb = $this->createQueryBuilder();
+
+        $qb->addAnd(
+            $qb->expr()->field("createAt")->gte($fromDate)
+        );
+        $qb->addAnd(
+            $qb->expr()->field("createAt")->lte($toDate)
+        );
+        return $qb;
+    }
 }
