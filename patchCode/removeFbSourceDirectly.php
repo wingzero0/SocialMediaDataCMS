@@ -41,24 +41,33 @@ function removeFeedAndTimestampRef($feed){
     ));
 }
 
-function removeFromFb($dateStr){
+function removeFromFb($lastMongoId){
+    $lastCheckedMongoId = new MongoId($lastMongoId);
+
     $cli = new \MongoClient();
     $col = $cli->selectCollection("Mnemono", "FacebookFeed");
-    //$cursor = $col->find(array("_id" => new MongoId("567896ae9e4e0e632c0744aa")));
-    $cursor = $col->find(array("created_time" => array("\$lte" => $dateStr)));
+    $cursor = $col->find(array("_id" => array("\$gt" => $lastCheckedMongoId)));
     $removedCount = 0;
 
-    foreach($cursor as $feed){
-        $isRef = isRefByOtherCollection($feed);
-        //echo $feed["_id"] . " ref:" . ($isRef ? "ref" : "no ref") . "\n";
-        if (!$isRef){
-            $removedCount++;
-            removeFeedAndTimestampRef($feed);
+    try{
+        foreach($cursor as $feed){
+            $isRef = isRefByOtherCollection($feed);
+            if (!$isRef){
+                $removedCount++;
+                removeFeedAndTimestampRef($feed);
+            }
+            $lastCheckedMongoId = $feed["_id"];
+            if ($removedCount >= 1000){
+                break;
+            }
         }
+    }catch (\MongoCursorException $e){
+        echo "MongoCursorException\n";
     }
+    echo "last checked MongodId:" . $lastCheckedMongoId . "\n";
     echo "removed:" . $removedCount . "\n";
 }
 
-$options = getopt(null,array("date:"));
-$dateStr = $options["date"];
-removeFromFb($dateStr);
+$options = getopt(null,array("lastMongoId:"));
+$lastMongoId = $options["lastMongoId"];
+removeFromFb($lastMongoId);
