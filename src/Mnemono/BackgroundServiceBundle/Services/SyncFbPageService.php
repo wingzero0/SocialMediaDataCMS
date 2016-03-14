@@ -94,6 +94,11 @@ class SyncFbPageService extends BaseService{
     }
     private function createBizByFbId($fbId){
         $page = $this->queryPageByFbId($fbId);
+	//TODO refind the checking flow and logic, check the return logic
+	if ($page == null){
+            $this->logError($fbId . ": Page is not FacebookPage");
+	    return null;	
+	}
 
         $pageRaw = $this->queryPageRawByFbId($fbId);
 
