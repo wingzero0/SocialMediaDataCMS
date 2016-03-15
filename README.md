@@ -46,6 +46,7 @@ By batch
 ### background worker command
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbPageService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbFeedService --no-interaction
+    app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncWeiboPageService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostScoreService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostReviewService --no-interaction
 
