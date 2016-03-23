@@ -38,6 +38,10 @@ class WeiboPage {
      * @MongoDB\Raw
      */
     protected $mnemono;
+    /**
+     * @MongoDB\Boolean
+     */
+    protected $excpetion;
 
     /**
      * Get id
@@ -146,5 +150,27 @@ class WeiboPage {
             return $mnemonoArray["location"]["city"];
         }
         return null;
+    }
+
+    /**
+     * Set excpetion
+     *
+     * @param boolean $excpetion
+     * @return self
+     */
+    public function setExcpetion($excpetion)
+    {
+        $this->excpetion = $excpetion;
+        return $this;
+    }
+
+    /**
+     * Get excpetion
+     *
+     * @return boolean $excpetion
+     */
+    public function getExcpetion()
+    {
+        return $this->excpetion;
     }
 }

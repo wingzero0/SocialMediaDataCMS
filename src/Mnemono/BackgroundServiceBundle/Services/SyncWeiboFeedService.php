@@ -7,11 +7,10 @@
 
 namespace Mnemono\BackgroundServiceBundle\Services;
 
+use AppBundle\Document\Weibo\WeiboFeed;
 use Mmoreram\GearmanBundle\Driver\Gearman;
-use Mmoreram\GearmanBundle\Service\GearmanClient;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
-use AppBundle\Utility\GearmanServiceName;
 
 
 /**
@@ -41,7 +40,7 @@ class SyncWeiboFeedService extends BaseService {
             $key_json = json_decode($job->workload(), true);
             $mid = $key_json["mid"];
             $this->resetDM();
-            $post = $this->createPostByFbId($mid);
+            $post = $this->createPostByMid($mid);
             return true;
         }catch (\Exception $e){
             $this->logExecption($e);
@@ -50,16 +49,46 @@ class SyncWeiboFeedService extends BaseService {
     }
 
     /**
-     * @param string $fbId
+     * @param string $mid
      * @return Post|null
      */
-    private function createPostByFbId($fbId){
-        $feed = $this->queryFeedByFbId($fbId);
-        if ($feed instanceof FacebookFeed){
+    private function createPostByMid($mid){
+        $feed = $this->getWeiboFeedRepo()->findOneByMid($mid);
+        if ($feed instanceof WeiboFeed){
             $post = $this->createPostByFeed($feed);
             if ($post != null){$this->persistPost($post);}
             return $post;
         }
         return null;
+    }
+
+    /**
+     * @param WeiboFeed $feed
+     * @return Post|null
+     */
+    private function createPostByFeed(WeiboFeed $feed){
+        $weiboPage = $feed->getWeiboPage();
+        if ($weiboPage->getExcpetion() == true){
+            return null;
+        }
+
+        $post = $this->queryPostByFeed($feed);
+        if ($post != null){
+            return null;
+        }
+        $post = new Post();
+        $post->setImportFrom("weiboFeed");
+        $post->setImportFromRef($feed);
+        $post->setContent($feed->getText());
+        $post->setPublishStatus("review");
+        $post->setCreateAt();
+    }
+
+    /**
+     * @param WeiboFeed $feed
+     * @return Post|null
+     */
+    private function queryPostByFeed(WeiboFeed $feed){
+        return $this->getPostRepo()->findOneByWeiboFeed($feed);
     }
 }

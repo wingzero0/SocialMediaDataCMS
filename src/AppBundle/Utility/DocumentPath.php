@@ -11,6 +11,7 @@ class DocumentPath {
     public static $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
     public static $weiboPageDocumentPath = "AppBundle:Weibo\\WeiboPage";
     public static $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";
+    public static $weiboFeedDocumentPath = "AppBundle:Weibo\\WeiboFeed";
     public static $facebookFeedTimestampDocumentPath = "AppBundle:Facebook\\FacebookFeedTimestamp";
     public static $weightingDocumentPath = "AppBundle:Settings\\Weighting";
     public static $managedTagDocumentPath = "AppBundle:ManagedTag";

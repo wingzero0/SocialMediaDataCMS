@@ -64,6 +64,7 @@ class Post extends BaseThread{
      *   discriminatorField="importFrom",
      *   discriminatorMap={
      *     "facebookFeed"="Document\Facebook\FacebookFeed",
+     *     "weiboFeed"="Document\Weibo\WeiboFeed",
      *     "directory"="Document\Directory"
      *   },
      *   defaultDiscriminatorValue="facebookFeed"

@@ -5,6 +5,7 @@ namespace AppBundle\Repository;
 use AppBundle\Document\Facebook\FacebookFeed;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
+use AppBundle\Document\Weibo\WeiboFeed;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
@@ -17,6 +18,19 @@ class PostRepository extends DocumentRepository
     public function findOneByFeed(FacebookFeed $feed){
         $post = $this->createQueryBuilder()
             ->field("importFrom")->equals("facebookFeed")
+            ->field("importFromRef")->references($feed)
+            ->getQuery()->getSingleResult();
+
+        return $post;
+    }
+
+    /**
+     * @param WeiboFeed $feed
+     * @return Post|null
+     */
+    public function findOneByWeiboFeed(WeiboFeed $feed){
+        $post = $this->createQueryBuilder()
+            ->field("importFrom")->equals("weiboPage")
             ->field("importFromRef")->references($feed)
             ->getQuery()->getSingleResult();
 

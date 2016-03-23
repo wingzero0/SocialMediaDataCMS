@@ -12,6 +12,7 @@ use AppBundle\Utility\DocumentPath;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
 use AppBundle\Repository\Weibo\WeiboPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use AppBundle\Repository\Weibo\WeiboFeedRepository;
 use AppBundle\Repository\Facebook\FacebookFeedTimestampRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostRepository;
@@ -120,6 +121,13 @@ abstract class BaseService {
      */
     protected function getFbFeedRepo(){
         return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
+    }
+
+    /**
+     * @return WeiboFeedRepository
+     */
+    protected function getWeiboFeedRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$weiboFeedDocumentPath);
     }
 
     /**
