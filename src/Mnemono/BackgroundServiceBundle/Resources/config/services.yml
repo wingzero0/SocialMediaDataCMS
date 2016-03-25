@@ -8,6 +8,9 @@ services:
     SyncWeiboPageService:
         class:  Mnemono\BackgroundServiceBundle\Services\SyncWeiboPageService
         arguments:  [ @service_container ]
+    SyncWeiboFeedService:
+        class:  Mnemono\BackgroundServiceBundle\Services\SyncWeiboFeedService
+        arguments:  [ @service_container ]
     PostScoreService:
         class:  Mnemono\BackgroundServiceBundle\Services\PostScoreService
         arguments:  [ @service_container ]

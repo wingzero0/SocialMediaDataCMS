@@ -40,6 +40,10 @@ class WeiboFeed {
      */
     protected $comments_count;
     /**
+     * @MongoDB\Int
+     */
+    protected $reposts_count;
+    /**
      * @MongoDB\Raw
      */
     protected $pics;
@@ -193,5 +197,49 @@ class WeiboFeed {
     public function getWeiboPage()
     {
         return $this->weiboPage;
+    }
+
+    /**
+     * Set createdTimestamp
+     *
+     * @param float $createdTimestamp
+     * @return self
+     */
+    public function setCreatedTimestamp($createdTimestamp)
+    {
+        $this->created_timestamp = $createdTimestamp;
+        return $this;
+    }
+
+    /**
+     * Get createdTimestamp
+     *
+     * @return float $createdTimestamp
+     */
+    public function getCreatedTimestamp()
+    {
+        return $this->created_timestamp;
+    }
+
+    /**
+     * Set repostsCount
+     *
+     * @param int $repostsCount
+     * @return self
+     */
+    public function setRepostsCount($repostsCount)
+    {
+        $this->reposts_count = $repostsCount;
+        return $this;
+    }
+
+    /**
+     * Get repostsCount
+     *
+     * @return int $repostsCount
+     */
+    public function getRepostsCount()
+    {
+        return $this->reposts_count;
     }
 }

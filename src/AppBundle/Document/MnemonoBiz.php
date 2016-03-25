@@ -83,8 +83,7 @@ class MnemonoBiz{
      *   discriminatorField="importFrom",
      *   discriminatorMap={
      *     "facebookPage"="Document\Facebook\FacebookPage",
-     *     "weiboPage"="Document\Weibo\WeiboPage",
-     *     "directory"="Document\Directory"
+     *     "weiboPage"="Document\Weibo\WeiboPage"
      *   },
      *   defaultDiscriminatorValue="facebookPage"
      * )

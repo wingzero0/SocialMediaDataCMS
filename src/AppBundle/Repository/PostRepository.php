@@ -30,7 +30,7 @@ class PostRepository extends DocumentRepository
      */
     public function findOneByWeiboFeed(WeiboFeed $feed){
         $post = $this->createQueryBuilder()
-            ->field("importFrom")->equals("weiboPage")
+            ->field("importFrom")->equals("weiboFeed")
             ->field("importFromRef")->references($feed)
             ->getQuery()->getSingleResult();
 

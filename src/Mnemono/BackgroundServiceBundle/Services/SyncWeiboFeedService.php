@@ -8,6 +8,7 @@
 namespace Mnemono\BackgroundServiceBundle\Services;
 
 use AppBundle\Document\Weibo\WeiboFeed;
+use AppBundle\Document\Weibo\WeiboMeta;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
@@ -22,6 +23,7 @@ use AppBundle\Document\Post;
  * )
  */
 class SyncWeiboFeedService extends BaseService {
+    private $cachedBiz;
     /**
      * Job for create post form weiboID
      *
@@ -56,7 +58,9 @@ class SyncWeiboFeedService extends BaseService {
         $feed = $this->getWeiboFeedRepo()->findOneByMid($mid);
         if ($feed instanceof WeiboFeed){
             $post = $this->createPostByFeed($feed);
-            if ($post != null){$this->persistPost($post);}
+            if ($post != null){
+                $this->persistPost($post);
+            }
             return $post;
         }
         return null;
@@ -67,21 +71,58 @@ class SyncWeiboFeedService extends BaseService {
      * @return Post|null
      */
     private function createPostByFeed(WeiboFeed $feed){
-        $weiboPage = $feed->getWeiboPage();
-        if ($weiboPage->getExcpetion() == true){
+        $ret = $this->newPostChecking($feed);
+        if ($ret == false){
             return null;
+        }
+
+        $post = new Post();
+        $post->setImportFrom(Post::importFromWeibo);
+        $post->setImportFromRef($feed);
+        $post->setContent($feed->getText());
+        $post->setPublishStatus(Post::statusReview);
+        $createdDate = new \DateTime();
+        $createdDate->setTimestamp($feed->getCreatedTimestamp());
+        $post->setCreateAt($createdDate);
+        $post->setMeta($this->metaBuilder($feed));
+
+        $biz = $this->getCachedBiz();
+        $post->setBizTagsCities($biz);
+        return $post;
+    }
+
+    /**
+     * checking feed and page property, also query related MnemonoBiz
+     * and store it in $cachedBiz
+     *
+     * @param WeiboFeed $feed
+     * @return bool If any invalid value found, function return false. if no invalid value found, function return true and set latest MnemonoBiz to $cachedBiz
+     */
+    private function newPostChecking(WeiboFeed $feed){
+        $weiboPage = $feed->getWeiboPage();
+        if ($weiboPage->getException() == true){
+            $msg = sprintf("weibo page exception: uid " . $weiboPage->getUid());
+            $this->logError($msg);
+            return false;
         }
 
         $post = $this->queryPostByFeed($feed);
         if ($post != null){
-            return null;
+            $msg = sprintf("duplicated post:weiboFeed mid " . $feed->getMid());
+            $this->logError($msg);
+            return false;
         }
-        $post = new Post();
-        $post->setImportFrom("weiboFeed");
-        $post->setImportFromRef($feed);
-        $post->setContent($feed->getText());
-        $post->setPublishStatus("review");
-        $post->setCreateAt();
+
+        $biz = $this->getMnemenoBizRepo()->findOneByWeiboPage($weiboPage);
+
+        if (!($biz instanceof MnemonoBiz)){
+            $msg = sprintf("biz not found: weiboFeed mid :%s, weiboPage uid: %s", $feed->getMid() , $weiboPage->getUid());
+            $this->logError($msg);
+            return false;
+        }else{
+            $this->setCachedBiz($biz);
+        }
+        return true;
     }
 
     /**
@@ -90,5 +131,41 @@ class SyncWeiboFeedService extends BaseService {
      */
     private function queryPostByFeed(WeiboFeed $feed){
         return $this->getPostRepo()->findOneByWeiboFeed($feed);
+    }
+
+    /**
+     * @param WeiboFeed $feed
+     * @return WeiboMeta
+     */
+    private function metaBuilder(WeiboFeed $feed){
+        $meta = new WeiboMeta();
+        $meta->setCommentsCount($feed->getCommentsCount());
+        $meta->setLikeCount($feed->getLikeCount());
+        $meta->setRepostsCount($feed->getRepostsCount());
+        return $meta;
+    }
+
+    /**
+     * @param Post $post
+     */
+    private function persistPost(Post $post){
+        $this->getDM()->persist($post);
+        $this->getDM()->flush();
+    }
+
+    /**
+     * @return MnemonoBiz
+     */
+    private function getCachedBiz()
+    {
+        return $this->cachedBiz;
+    }
+
+    /**
+     * @param MnemonoBiz $cachedBiz
+     */
+    private function setCachedBiz(MnemonoBiz $cachedBiz = null)
+    {
+        $this->cachedBiz = $cachedBiz;
     }
 }
