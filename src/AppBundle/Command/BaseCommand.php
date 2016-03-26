@@ -19,6 +19,7 @@ use AppBundle\Utility\DocumentPath;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
 
 abstract class BaseCommand extends ContainerAwareCommand{
+    const OPTION_ACTION = 'action';
     private $documentManager = null;
     /**
      * @param bool $reset

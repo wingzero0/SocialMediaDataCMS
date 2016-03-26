@@ -32,6 +32,12 @@ By batch
     app/console mnemono:sync:fbfeedtopost --action updateFromFbCollection --fromDate 2015-06-01 --toDate 2015-06-30
     app/console mnemono:sync:fbfeedtopost --action removePosts --fromDate 2015-12-22T00:00:00+0000 --toDate 2015-12-26T00:00:00+0000 --removeSource
 
+### create Biz or Post by Weibo
+created by single page
+    app/console mnemono:sync:weibopagetobiz --action createFromUid --uid xxx
+created by single feed
+    app/console mnemono:sync:weibofeedtopost --action createFromMid --mid xxx
+
 ### create user account
     http://yourServer/app_dev.php/register
 
@@ -46,6 +52,10 @@ By batch
 ### background worker command
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbPageService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncFbFeedService --no-interaction
+
+    app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncWeiboPageService --no-interaction
+    app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesSyncWeiboFeedService --no-interaction
+
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostScoreService --no-interaction
     app/console gearman:worker:execute MnemonoBackgroundServiceBundleServicesPostReviewService --no-interaction
 

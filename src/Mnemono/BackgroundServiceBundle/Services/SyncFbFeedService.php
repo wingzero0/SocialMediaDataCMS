@@ -14,7 +14,6 @@ use AppBundle\Document\Facebook\FacebookMeta;
 use AppBundle\Document\MnemonoBiz;
 use AppBundle\Document\Post;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use AppBundle\Utility\GearmanServiceName;
 
 /**
