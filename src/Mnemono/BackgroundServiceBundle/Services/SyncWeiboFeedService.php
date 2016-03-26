@@ -88,6 +88,7 @@ class SyncWeiboFeedService extends BaseService {
 
         $biz = $this->getCachedBiz();
         $post->setBizTagsCities($biz);
+        $post->setTags(array($biz->getCategory()));
         return $post;
     }
 

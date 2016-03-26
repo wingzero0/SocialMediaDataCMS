@@ -24,6 +24,7 @@ class WeiboPage {
     protected $id;
     /**
      * @MongoDB\String
+     * @MongoDB\Index
      */
     protected $uid;
     /**
@@ -148,6 +149,17 @@ class WeiboPage {
         $mnemonoArray = $this->getMnemono();
         if (isset($mnemonoArray["location"]) && $mnemonoArray["location"]["city"]){
             return $mnemonoArray["location"]["city"];
+        }
+        return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCategory(){
+        $mnemonoArray = $this->getMnemono();
+        if (isset($mnemonoArray["category"])){
+            return $mnemonoArray["category"];
         }
         return null;
     }

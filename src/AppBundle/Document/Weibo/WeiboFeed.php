@@ -25,6 +25,7 @@ class WeiboFeed {
     protected $id;
     /**
      * @MongoDB\String
+     * @MongoDB\Index
      */
     protected $mid;
     /**

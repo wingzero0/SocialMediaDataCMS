@@ -82,6 +82,7 @@ class SyncWeiboPageService extends BaseService{
         $biz = new MnemonoBiz();
         $biz->setName($page->getName())
             ->setCities($cities)
+            ->setCategory($page->getCategory())
             ->setImportFrom("weiboPage")
             ->setImportFromRef($page)
             ->setLastModDate(new \DateTime());
