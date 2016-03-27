@@ -177,7 +177,7 @@ class Post extends BaseThread{
         return array(
             Post::statusDraft => 'Draft',
             Post::statusReview => 'Review',
-            Post::statusReview => 'Published'
+            Post::statusPublished => 'Published'
         );
     }
 
