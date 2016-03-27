@@ -49,7 +49,7 @@ class FacebookPage {
     /**
      * @MongoDB\Boolean
      */
-    protected $excpetion;
+    protected $exception;
 
 
     /**
@@ -197,12 +197,12 @@ class FacebookPage {
     /**
      * Set excpetion
      *
-     * @param boolean $excpetion
+     * @param boolean $exception
      * @return self
      */
-    public function setExcpetion($excpetion)
+    public function setException($exception)
     {
-        $this->excpetion = $excpetion;
+        $this->exception = $exception;
         return $this;
     }
 
@@ -211,8 +211,8 @@ class FacebookPage {
      *
      * @return boolean $excpetion
      */
-    public function getExcpetion()
+    public function getException()
     {
-        return $this->excpetion;
+        return $this->exception;
     }
 }

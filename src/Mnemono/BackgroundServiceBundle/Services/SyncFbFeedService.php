@@ -25,6 +25,7 @@ use AppBundle\Utility\GearmanServiceName;
  * )
  */
 class SyncFbFeedService extends BaseService{
+    private $cachedBiz;
     /**
      * Job for create post form fbID
      *
@@ -227,22 +228,55 @@ class SyncFbFeedService extends BaseService{
      * @return Post|null
      */
     private function createPostByFeed(FacebookFeed $feed){
-        $fbPage = $feed->getFbPage();
-        if ($fbPage->getExcpetion() == true){
-            return null;
-        }
-
-        $post = $this->queryPostByFeed($feed);
-        if ($post != null){
+        if ($this->newPostChecking($feed) == false){
             return null;
         }
         $post = new Post();
         $post->setImportFrom("facebookFeed");
         $post->setImportFromRef($feed);
         $post->setContent($feed->getMessage());
-        $post->setPublishStatus("review");
+        $post->setPublishStatus(Post::statusReview);
         $post->setOriginalLink($feed->getGuessLink());
         $post->setImageLinks($feed->getAttachmentImageURL());
+        $post->setVideoLinks($feed->getVideoURLs());
+        $this->setDatesByFBFeedToPost($feed, $post);
+        $post->setMeta($this->fbMetaBuilder($feed));
+        $biz = $this->getCachedBiz();
+        $post->setMnemonoBiz($biz);
+        $post->setTags(array($biz->getCategory()));
+        $post->setCities($biz->getCities());
+
+        return $post;
+    }
+
+    private function newPostChecking(FacebookFeed $feed){
+        $fbPage = $feed->getFbPage();
+        if ($fbPage->getException() == true){
+            return false;
+        }
+
+        $post = $this->queryPostByFeed($feed);
+        if ($post != null){
+            return false;
+        }
+
+        $biz = $this->getMnemenoBizRepo()->findOneByFbPage($feed->getFbPage());
+
+        if ( !($biz instanceof MnemonoBiz) ) {
+            $msg = sprintf("biz not found: feed fbID :%s, page fbID: %s", $feed->getFbId() ,$fbPage->getFbId());
+            $this->logError($msg);
+            return false;
+        }else{
+            $this->setCachedBiz($biz);
+        }
+        return true;
+    }
+
+    /**
+     * @param FacebookFeed $feed
+     * @param Post $post
+     */
+    private function setDatesByFBFeedToPost(FacebookFeed $feed, Post $post){
         $createDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getCreatedTime());
         $post->setCreateAt($createDate);
         $updateDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getUpdatedTime());
@@ -250,20 +284,12 @@ class SyncFbFeedService extends BaseService{
         $expireDate = clone $createDate;
         $expireDate->add(new \DateInterval("P7D"));
         $post->setExpireDate($expireDate);
-        $meta = $this->fbMetaBuilder($feed);
-        $post->setMeta($meta);
-        $biz = $this->getMnemenoBizRepo()->findOneByFbPage($feed->getFbPage());
-
-        if ($biz instanceof MnemonoBiz){
-            $post->setMnemonoBiz($biz);
-            $post->setTags(array($biz->getCategory()));
-            $post->setCities($biz->getCities());
-        }else{
-            $msg = sprintf("biz not found: feed fbID :%s, page fbID: %s", $feed->getFbId() ,$fbPage->getFbId());
-            $this->logError($msg);
-        }
-        return $post;
     }
+
+    /**
+     * @param FacebookFeed $feed
+     * @return FacebookMeta
+     */
     private function fbMetaBuilder(FacebookFeed $feed){
         $meta = new FacebookMeta();
         $likes = $feed->getLikes();
@@ -282,5 +308,21 @@ class SyncFbFeedService extends BaseService{
         }
         $meta->setFbTotalComments($commentCount);
         return $meta;
+    }
+
+    /**
+     * @return MnemonoBiz
+     */
+    public function getCachedBiz()
+    {
+        return $this->cachedBiz;
+    }
+
+    /**
+     * @param MnemonoBiz $cachedBiz
+     */
+    public function setCachedBiz(MnemonoBiz $cachedBiz)
+    {
+        $this->cachedBiz = $cachedBiz;
     }
 }
