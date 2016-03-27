@@ -63,6 +63,8 @@ function removeFromFb($lastMongoId){
         }
     }catch (\MongoCursorException $e){
         echo "MongoCursorException\n";
+        echo $e->getMessage()."\n";
+        echo $e->getTraceAsString()."\n";
     }
     echo "last checked MongodId:" . $lastCheckedMongoId . "\n";
     echo "removed:" . $removedCount . "\n";
