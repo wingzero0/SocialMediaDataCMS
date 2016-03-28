@@ -13,11 +13,9 @@ function isRefByOtherCollection($feed){
     $cli = new \MongoClient();
     $col = $cli->selectCollection("Mnemono", "Post");
     $cursor = $col->find(array(
-        "importFromRef.\$ref" => "FacebookFeed",
+        "importFrom" => "facebookFeed",
         "importFromRef.\$id" => $feed["_id"],
-        "importFromRef.\$db" => "Mnemono",
-        "importFromRef.importFrom" => "AppBundle\\Document\\Facebook\\FacebookFeed"
-    ));
+    ));    
     if ($cursor->hasNext()){
         return true;
     }
@@ -58,7 +56,7 @@ function removeFromFb($lastMongoId){
                 removeFeedAndTimestampRef($feed);
             }
             $lastCheckedMongoId = $feed["_id"];
-            if ($removedCount >= 1000){
+            if ($removedCount >= 3000){
                 break;
             }
         }
