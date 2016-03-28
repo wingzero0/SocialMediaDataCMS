@@ -83,6 +83,11 @@ class Post extends BaseThread{
      */
     protected $imageLinks;
     /**
+     * @MongoDB\Collection
+     * @Groups({"display"})
+     */
+    protected $videoLinks;
+    /**
      * @MongoDB\EmbedOne(
      *   discriminatorField="importFrom",
      *   discriminatorMap={
@@ -172,7 +177,7 @@ class Post extends BaseThread{
         return array(
             Post::statusDraft => 'Draft',
             Post::statusReview => 'Review',
-            Post::statusReview => 'Published'
+            Post::statusPublished => 'Published'
         );
     }
 
@@ -721,5 +726,27 @@ class Post extends BaseThread{
     public function getCities()
     {
         return $this->cities;
+    }
+
+    /**
+     * Set videoLinks
+     *
+     * @param collection $videoLinks
+     * @return self
+     */
+    public function setVideoLinks($videoLinks)
+    {
+        $this->videoLinks = $videoLinks;
+        return $this;
+    }
+
+    /**
+     * Get videoLinks
+     *
+     * @return collection $videoLink
+     */
+    public function getVideoLinks()
+    {
+        return $this->videoLinks;
     }
 }
