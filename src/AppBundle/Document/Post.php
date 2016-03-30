@@ -44,6 +44,7 @@ class Post extends BaseThread{
      */
     protected $tags;
     /**
+     * @deprecated
      * @MongoDB\String
      * @MongoDB\Index
      */
@@ -254,7 +255,7 @@ class Post extends BaseThread{
 
     /**
      * Set mnemonoCat
-     *
+     * @deprecated
      * @param string $mnemonoCat
      * @return self
      */
@@ -266,7 +267,7 @@ class Post extends BaseThread{
 
     /**
      * Get mnemonoCat
-     *
+     * @deprecated
      * @return string $mnemonoCat
      */
     public function getMnemonoCat()
