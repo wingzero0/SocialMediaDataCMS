@@ -8,7 +8,6 @@
 namespace AppBundle\Utility;
 
 class DocumentPath {
-    // TODO change all to const
     public static $facebookPageDocumentPath = "AppBundle:Facebook\\FacebookPage";
     public static $weiboPageDocumentPath = "AppBundle:Weibo\\WeiboPage";
     public static $facebookFeedDocumentPath = "AppBundle:Facebook\\FacebookFeed";

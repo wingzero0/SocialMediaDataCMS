@@ -84,6 +84,11 @@ class SyncWeiboFeedService extends BaseService {
         $createdDate = new \DateTime();
         $createdDate->setTimestamp($feed->getCreatedTimestamp());
         $post->setCreateAt($createdDate);
+        $post->setUpdateAt($createdDate);
+        $expireDate = clone $createdDate;
+        $expireDate->add(new \DateInterval("P7D"));
+        $post->setExpireDate($expireDate);
+
         $post->setMeta($this->metaBuilder($feed));
 
         $biz = $this->getCachedBiz();
