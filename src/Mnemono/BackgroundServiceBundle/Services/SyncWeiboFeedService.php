@@ -25,7 +25,7 @@ use AppBundle\Document\Post;
 class SyncWeiboFeedService extends BaseService {
     private $cachedBiz;
     /**
-     * Job for create post form weiboID
+     * Job for create post form mid
      *
      * @param \GearmanJob $job Object with job parameters
      *
@@ -48,6 +48,65 @@ class SyncWeiboFeedService extends BaseService {
             $this->logExecption($e);
             exit(-1);
         }
+    }
+
+    /**
+     * Job for update post form mid
+     *
+     * @param \GearmanJob $job Object with job parameters
+     *
+     * @return boolean
+     *
+     * @Gearman\Job(
+     *     iterations = 1000,
+     *     name = "updatePost",
+     *     description = "Update post"
+     * )
+     */
+    public function updatePost(\GearmanJob $job){
+        try {
+            $key_json = json_decode($job->workload(), true);
+            $mid = $key_json["mid"];
+            $this->resetDM();
+            $post = $this->updatePostByMid($mid);
+            return true;
+        }catch (\Exception $e){
+            $this->logExecption($e);
+            exit(-1);
+        }
+    }
+
+    /**
+     * @param string $mid
+     * @return Post|null
+     */
+    private function updatePostByMid($mid){
+        $feed = $this->getWeiboFeedRepo()->findOneByMid($mid);
+        if (!($feed instanceof WeiboFeed)) {
+            $this->logError("WeiboFeed of mid " . $mid . " not found");
+            return null;
+        }
+        $post = $this->getPostRepo()->findOneByWeiboFeed($feed);
+        if (!($post instanceof Post)){
+            $this->logError("Post of WeiboFeed: " . $feed->getId() . " mid " . $mid . " not found");
+            return null;
+        }
+
+        return $this->updatePostByRef($post);
+    }
+
+    /**
+     * @param Post $post
+     * @return Post
+     */
+    private function updatePostByRef(Post $post){
+        $ref = $post->getImportFromRef();
+        if ($ref instanceof WeiboFeed){
+            $post->setContent($ref->getText());
+            $post->setMeta($this->metaBuilder($ref));
+            $this->persistPost($post);
+        }
+        return $post;
     }
 
     /**

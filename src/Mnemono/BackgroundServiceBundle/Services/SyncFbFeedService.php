@@ -204,7 +204,7 @@ class SyncFbFeedService extends BaseService{
      * @return Post|null
      */
     private function queryPostByFeed(FacebookFeed $feed){
-        return $this->getPostRepo()->findOneByFeed($feed);
+        return $this->getPostRepo()->findOneByFbFeed($feed);
     }
 
     private function persistPost(Post $post){
