@@ -37,6 +37,7 @@ created by single page
     app/console mnemono:sync:weibopagetobiz --action createFromUid --uid xxx
 created by single feed
     app/console mnemono:sync:weibofeedtopost --action createFromMid --mid xxx
+    app/console mnemono:sync:weibofeedtopost --action updateFromMid --mid xxx
 
 ### create user account
     http://yourServer/app_dev.php/register

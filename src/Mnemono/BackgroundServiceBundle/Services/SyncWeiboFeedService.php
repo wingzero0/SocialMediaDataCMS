@@ -139,6 +139,7 @@ class SyncWeiboFeedService extends BaseService {
         $post->setImportFrom(Post::importFromWeibo);
         $post->setImportFromRef($feed);
         $post->setContent($feed->getText());
+        $post->setImageLinks($feed->getPicLinks());
         $post->setPublishStatus(Post::statusReview);
         $createdDate = new \DateTime();
         $createdDate->setTimestamp($feed->getCreatedTimestamp());
