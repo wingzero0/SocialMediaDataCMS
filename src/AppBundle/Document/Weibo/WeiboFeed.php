@@ -58,6 +58,17 @@ class WeiboFeed {
      */
     protected $created_timestamp;
 
+    public function getPicLinks(){
+        $picArray = $this->getPics();
+        $linksArray = array();
+        if (is_array($picArray) && !empty($picArray)){
+            foreach($picArray as $pic){
+                $linksArray[] = $pic["url"];
+            }
+        }
+        return $linksArray;
+    }
+
     /**
      * Get id
      *
