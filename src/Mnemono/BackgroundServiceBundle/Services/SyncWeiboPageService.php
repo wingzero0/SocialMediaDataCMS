@@ -11,7 +11,6 @@ use AppBundle\Document\Weibo\WeiboPage;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\MnemonoBiz;
 
-// TODO test create and update service
 /**
  * @Gearman\Work(
  *     iterations = 1000,
@@ -111,7 +110,7 @@ class SyncWeiboPageService extends BaseService{
             $this->logError($uid . ": biz is null (biz does not exist)");
             return null;
         }else{
-            $biz = $this->bizBuilder($page);
+            $biz = $this->updateBizByPage($biz, $page);
             $dm = $this->getDM();
             $dm->persist($biz);
             $dm->flush();
@@ -124,11 +123,22 @@ class SyncWeiboPageService extends BaseService{
      * @return MnemonoBiz
      */
     private function bizBuilder(WeiboPage $page){
+        $biz = new MnemonoBiz();
+        $this->updateBizByPage($biz, $page);
+
+        return $biz;
+    }
+
+    /**
+     * @param MnemonoBiz $biz
+     * @param WeiboPage $page
+     * @return MnemonoBiz
+     */
+    private function updateBizByPage(MnemonoBiz $biz, WeiboPage $page){
         $cities = array();
         if ($page->getCity()){
             $cities[] = $page->getCity();
         }
-        $biz = new MnemonoBiz();
         $biz->setName($page->getName())
             ->setCities($cities)
             ->setCategory($page->getCategory())

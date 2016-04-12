@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-// TODO test create and update command
 class SyncWeiboPageToBizCommand extends BaseCommand{
     const ACTION_CREATE_FROM_UID = "createFromUid";
     const ACTION_UPDATE_FROM_UID = "updateFromUid";
