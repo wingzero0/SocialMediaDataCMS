@@ -83,8 +83,13 @@
                             <li><a href="{{ path('mnemonobiz_show', {'id': post.mnemonoBiz.id })}}">{{ post.mnemonoBiz.name }}</a></li>
                         {% endif %}
                         {% if post.meta is not null %}
-                            <li>Total Likes: {{ post.meta.fbTotalLikes }}</li>
-                            <li>Total Comments: {{ post.meta.fbTotalComments }}</li>
+                            {% if post.importFrom == "facebookFeed" %}
+                                <li>Total Likes: {{ post.meta.fbTotalLikes }}</li>
+                                <li>Total Comments: {{ post.meta.fbTotalComments }}</li>
+                            {% elseif post.importFrom == "weiboFeed" %}
+                                <li>Total Likes: {{ post.meta.likeCount }}</li>
+                                <li>Total Comments: {{ post.meta.commentsCount }}</li>
+                            {% endif %}
                         {% endif %}
                     </ul>
                 </td>

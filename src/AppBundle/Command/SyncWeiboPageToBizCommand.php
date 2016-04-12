@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SyncWeiboPageToBizCommand extends BaseCommand{
     const ACTION_CREATE_FROM_UID = "createFromUid";
+    const ACTION_UPDATE_FROM_UID = "updateFromUid";
     const OPTION_UID = 'uid';
     protected function configure(){
         $this->setName("mnemono:sync:weibopagetobiz")
@@ -34,7 +35,13 @@ class SyncWeiboPageToBizCommand extends BaseCommand{
             $uids = $input->getOption(SyncWeiboPageToBizCommand::OPTION_UID);
             foreach($uids as $uid){
                 echo $uid . "\t";
-                $this->createPostByMid($uid);
+                $this->createPageByUid($uid);
+            }
+        }else if ($action == SyncWeiboPageToBizCommand::ACTION_UPDATE_FROM_UID){
+            $uids = $input->getOption(SyncWeiboPageToBizCommand::OPTION_UID);
+            foreach($uids as $uid){
+                echo $uid . "\t";
+                $this->updatePageByUid($uid);
             }
         }
     }
@@ -42,8 +49,16 @@ class SyncWeiboPageToBizCommand extends BaseCommand{
     /**
      * @param string $uid
      */
-    private function createPostByMid($uid){
+    private function createPageByUid($uid){
         $json = json_encode(array("uid" => $uid));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncWeiboPageCreateJob, $json);
+    }
+
+    /**
+     * @param string $uid
+     */
+    private function updatePageByUid($uid){
+        $json = json_encode(array("uid" => $uid));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncWeiboPageUpdateJob, $json);
     }
 }

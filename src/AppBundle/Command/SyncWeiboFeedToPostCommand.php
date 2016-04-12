@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SyncWeiboFeedToPostCommand extends BaseCommand{
     const ACTION_CREATE_FROM_MID = "createFromMid";
+    const ACTION_UPDATE_FROM_MID = "updateFromMid";
     const OPTION_MID = 'mid';
     protected function configure(){
         $this->setName("mnemono:sync:weibofeedtopost")
@@ -36,6 +37,12 @@ class SyncWeiboFeedToPostCommand extends BaseCommand{
                 echo $mid . "\t";
                 $this->createPostByMid($mid);
             }
+        }else if ($action == SyncWeiboFeedToPostCommand::ACTION_UPDATE_FROM_MID){
+            $mids = $input->getOption(SyncWeiboFeedToPostCommand::OPTION_MID);
+            foreach($mids as $mid){
+                echo $mid . "\t";
+                $this->updatePostByMid($mid);
+            }
         }
     }
 
@@ -45,5 +52,13 @@ class SyncWeiboFeedToPostCommand extends BaseCommand{
     private function createPostByMid($mid){
         $json = json_encode(array("mid" => $mid));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncWeiboFeedCreateJob, $json);
+    }
+
+    /**
+     * @param string $mid
+     */
+    private function updatePostByMid($mid){
+        $json = json_encode(array("mid" => $mid));
+        $this->getGearman()->doBackgroundJob(GearmanServiceName::$syncWeiboFeedUpdateJob, $json);
     }
 }

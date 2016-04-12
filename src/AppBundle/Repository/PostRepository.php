@@ -15,7 +15,7 @@ class PostRepository extends DocumentRepository
      * @param FacebookFeed $feed
      * @return Post|null
      */
-    public function findOneByFeed(FacebookFeed $feed){
+    public function findOneByFbFeed(FacebookFeed $feed){
         $post = $this->createQueryBuilder()
             ->field("importFrom")->equals("facebookFeed")
             ->field("importFromRef")->references($feed)
