@@ -148,7 +148,7 @@ class SyncWeiboFeedService extends BaseService {
         $expireDate = clone $createdDate;
         $expireDate->add(new \DateInterval("P7D"));
         $post->setExpireDate($expireDate);
-
+        $post->setOriginalLink($feed->getOriginLink());
         $post->setMeta($this->metaBuilder($feed));
 
         $biz = $this->getCachedBiz();

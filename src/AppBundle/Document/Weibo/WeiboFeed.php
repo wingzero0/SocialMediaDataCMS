@@ -7,7 +7,6 @@
 
 namespace AppBundle\Document\Weibo;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use AppBundle\Document\Weibo\WeiboPage;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
@@ -19,6 +18,7 @@ use JMS\Serializer\Annotation\Since;
  * @ExclusionPolicy("none")
  */
 class WeiboFeed {
+    const WEIBO_HOST = "https://m.weibo.cn/";
     /**
      * @MongoDB\Id
      */
@@ -67,6 +67,14 @@ class WeiboFeed {
             }
         }
         return $linksArray;
+    }
+
+    public function getOriginLink(){
+        $page = $this->getWeiboPage();
+        if ($page instanceof WeiboPage){
+            return WeiboFeed::WEIBO_HOST . $page->getUid() . "/" . $this->getMid();
+        }
+        return null;
     }
 
     /**
