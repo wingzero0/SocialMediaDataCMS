@@ -13,6 +13,8 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
 
 /**
  * @MongoDB\EmbeddedDocument
@@ -34,6 +36,26 @@ class WeiboMeta {
      * @Groups({"display"})
      */
     protected $repostsCount;
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("fb_total_likes")
+     * @Groups({"display"})
+     * @return int
+     */
+    public function getFbTotalLikes(){
+        return $this->getLikeCount();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("fb_total_comments")
+     * @Groups({"display"})
+     * @return int
+     */
+    public function getFbTotalComments(){
+        return $this->getCommentsCount();
+    }
 
     /**
      * Set likeCount
