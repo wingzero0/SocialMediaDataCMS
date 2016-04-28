@@ -41,6 +41,7 @@ function removeFeedAndTimestampRef($feed){
 
 function removeFromFb($lastMongoId){
     $lastCheckedMongoId = new MongoId($lastMongoId);
+    $checkingOnMongodId = null;
 
     $cli = new \MongoClient();
     $col = $cli->selectCollection("Mnemono", "FacebookFeed");
@@ -50,6 +51,7 @@ function removeFromFb($lastMongoId){
 
     try{
         foreach($cursor as $feed){
+            $checkingOnMongodId = $feed["_id"];
             $isRef = isRefByOtherCollection($feed);
             if (!$isRef){
                 $removedCount++;
@@ -61,7 +63,7 @@ function removeFromFb($lastMongoId){
             }
         }
     }catch (\MongoCursorException $e){
-        echo "MongoCursorException\n";
+        echo "MongoCursorException on MongoId:" . $feed["_id"] . "\n";
         echo $e->getMessage()."\n";
         echo $e->getTraceAsString()."\n";
     }
