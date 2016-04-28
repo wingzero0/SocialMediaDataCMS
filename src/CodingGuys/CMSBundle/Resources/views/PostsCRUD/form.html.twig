@@ -79,14 +79,26 @@
             </ul>
         </div>
         <div class="form-group">
+            {{ form_label(form.videoLinks) }}
+            <a id="add-another-video" href="#" class="btn btn-default btn-sm">Add another video</a>
+            <ul id="video-fields-list" data-prototype="{{ form_widget(form.videoLinks.vars.prototype)|e }}">
+                {% set i = 0 %}
+                {% for videoLink in form.videoLinks %}
+                    <li>
+                        {{ form_errors(videoLink) }}
+                        {{ form_widget(videoLink, {'attr': {'class': 'cg'} }) }}
+                        <a href="{{ form.vars.value.videoLinks[i] }}" target="_blank">
+                            play
+                        </a>
+                    </li>
+                    {% set i = i + 1 %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="form-group">
             {{ form_label(form.originalLink) }}
             {{ form_errors(form.originalLink) }}
             {{ form_widget(form.originalLink, {'attr': {'class': 'form-control'} }) }}
-        </div>
-        <div class="form-group">
-            {{ form_label(form.mnemonoCat) }}
-            {{ form_errors(form.mnemonoCat) }}
-            {{ form_widget(form.mnemonoCat, {'attr': {'class': 'form-control'} }) }}
         </div>
         <div class="form-group">
             {{ form_label(form.rankPosition) }}
@@ -163,8 +175,9 @@
         var tagsCount = '{{ form.tags|length }}';
         var imageLinkCount = '{{ form.imageLinks|length }}';
         var citiesCount = '{{ form.cities|length }}';
+        var videoLinkCount = '{{ form.videoLinks|length }}';
 
-        var countList = [tagsCount, imageLinkCount, citiesCount];
+        var countList = [tagsCount, imageLinkCount, citiesCount, videoLinkCount];
 
         jQuery(document).ready(function() {
             /* Create and add a delete button behind a input field of list */
@@ -188,34 +201,28 @@
 
             updateDeleteListionser();
 
-            /* Add new item function */
-            var addNewItem = function(key, listId, holderText) {
-                var listObj = jQuery(listId);
-                var newWidget = listObj.attr('data-prototype');
-                newWidget = newWidget.replace(/__name__/g, countList[key]);
-                countList[key]++;
-                var newLi = jQuery('<li></li>').html(newWidget);
-                newLi.children().first().addClass('cg');
-                newLi.children().first().attr('placeholder', holderText);
-                addDeleteTag(newLi);
-                newLi.appendTo(listObj);
+            var bindNewEvent = function(tagName, countIndex){
+                jQuery('#add-another-' + tagName).click(function(e) {
+                    e.preventDefault();
+                    var addNewItem = function(countIndex, listId, holderText) {
+                        var listObj = jQuery(listId);
+                        var newWidget = listObj.attr('data-prototype');
+                        newWidget = newWidget.replace(/__name__/g, countList[countIndex]);
+                        countList[countIndex]++;
+                        var newLi = jQuery('<li></li>').html(newWidget);
+                        newLi.children().first().addClass('cg');
+                        newLi.children().first().attr('placeholder', holderText);
+                        addDeleteTag(newLi);
+                        newLi.appendTo(listObj);
+                    }
+                    addNewItem(countIndex, '#' + tagName + '-fields-list', 'New ' + tagName);
+                });
             }
 
-            /* Add new item function of Tags */
-            jQuery('#add-another-tag').click(function(e) {
-                e.preventDefault();
-                addNewItem(0, '#tag-fields-list', 'New Tag');
-            });
-            /* Add new item function of URLs */
-            jQuery('#add-another-url').click(function(e) {
-                e.preventDefault();
-                addNewItem(1, '#url-fields-list', 'New URL');
-            });
-            /* Add new item function of cities */
-            jQuery('#add-another-city').click(function(e) {
-                e.preventDefault();
-                addNewItem(2, '#city-fields-list', 'New City');
-            });
+            bindNewEvent('tag', 0);
+            bindNewEvent('url', 1);
+            bindNewEvent('city', 2);
+            bindNewEvent('video', 3);
         })
     </script>
 {% endblock %}

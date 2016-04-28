@@ -10,7 +10,9 @@ namespace Mnemono\BackgroundServiceBundle\Services;
 use AppBundle\Utility\LoopCollectionStrategy;
 use AppBundle\Utility\DocumentPath;
 use AppBundle\Repository\Facebook\FacebookPageRepository;
+use AppBundle\Repository\Weibo\WeiboPageRepository;
 use AppBundle\Repository\Facebook\FacebookFeedRepository;
+use AppBundle\Repository\Weibo\WeiboFeedRepository;
 use AppBundle\Repository\Facebook\FacebookFeedTimestampRepository;
 use AppBundle\Repository\Settings\WeightingRepository;
 use AppBundle\Repository\PostRepository;
@@ -109,10 +111,23 @@ abstract class BaseService {
         return $this->getDM()->getRepository(DocumentPath::$facebookPageDocumentPath);
     }
     /**
+     * @return WeiboPageRepository
+     */
+    protected function getWeiboPageRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$weiboPageDocumentPath);
+    }
+    /**
      * @return FacebookFeedRepository
      */
     protected function getFbFeedRepo(){
         return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
+    }
+
+    /**
+     * @return WeiboFeedRepository
+     */
+    protected function getWeiboFeedRepo(){
+        return $this->getDM()->getRepository(DocumentPath::$weiboFeedDocumentPath);
     }
 
     /**

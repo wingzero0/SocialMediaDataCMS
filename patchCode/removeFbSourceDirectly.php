@@ -46,6 +46,7 @@ function removeFromFb($lastMongoId){
     $cli = new \MongoClient();
     $col = $cli->selectCollection("Mnemono", "FacebookFeed");
 	$cursor = $col->find(array("_id" => array("\$gt" => $lastCheckedMongoId)))->sort(array("_id" => 1));
+
     $removedCount = 0;
 
     try{

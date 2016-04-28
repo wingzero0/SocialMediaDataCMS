@@ -75,7 +75,7 @@
                     <td>{{ document.localScore }}</td>
                     <td>{{ document.adminScore }}</td>
                     <td>{{ document.importFrom }}</td>
-                    {% if document.meta is not null %}
+                    {% if document.meta is not null and document.importFrom == 'facebookFeed' %}
                         <td>
                             <ul>
                                 <li>Facebook ID: {{ document.meta.fbId }}</li>

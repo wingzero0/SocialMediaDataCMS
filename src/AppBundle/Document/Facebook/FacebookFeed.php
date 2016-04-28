@@ -66,6 +66,14 @@ class FacebookFeed {
      * @MongoDB\String
      */
     protected $story;
+    /**
+     * @MongoDB\String
+     */
+    protected $type;
+    /**
+     * @MongoDB\String
+     */
+    protected $source;
 
     /**
      * Get id
@@ -314,6 +322,20 @@ class FacebookFeed {
     }
 
     /**
+     * @return array
+     */
+    public function getVideoURLs(){
+        $ret = array();
+        if ($this->getType() == "video"){
+            $source = $this->getSource();
+            if (!empty($source)){
+                $ret[] = $this->getSource();
+            }
+        }
+        return $ret;
+    }
+
+    /**
      * @param array $subAttachments
      * @return array $imageURLs
      */
@@ -438,5 +460,49 @@ class FacebookFeed {
     public function getUpdatedTime()
     {
         return $this->updatedTime;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return self
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string $type
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set source
+     *
+     * @param string $source
+     * @return self
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * Get source
+     *
+     * @return string $source
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }
