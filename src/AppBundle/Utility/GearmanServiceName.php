@@ -13,10 +13,16 @@ class GearmanServiceName {
     public static $postScoreUpdateJob = "MnemonoBackgroundServiceBundleServicesPostScoreService~updateScore";
     public static $postReviewService = "MnemonoBackgroundServiceBundleServicesPostReviewService";
     public static $postReviewRankJob = "MnemonoBackgroundServiceBundleServicesPostReviewService~rank";
-    public static $syncFbFeedSrevice = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService";
+
+    public static $syncFbFeedService = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService";
     public static $syncFbFeedCreateJob = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService~createPost";
     public static $syncFbFeedUpdateJob = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService~updatePost";
     public static $syncFbFeedRemoveJob = "MnemonoBackgroundServiceBundleServicesSyncFbFeedService~removePost";
     public static $syncFbPageCreateJob = "MnemonoBackgroundServiceBundleServicesSyncFbPageService~createBiz";
     public static $syncFbPageUpdateJob = "MnemonoBackgroundServiceBundleServicesSyncFbPageService~updateBiz";
+
+    public static $syncWeiboFeedCreateJob = "MnemonoBackgroundServiceBundleServicesSyncWeiboFeedService~createPost";
+    public static $syncWeiboFeedUpdateJob = "MnemonoBackgroundServiceBundleServicesSyncWeiboFeedService~updatePost";
+    public static $syncWeiboPageCreateJob = "MnemonoBackgroundServiceBundleServicesSyncWeiboPageService~createBiz";
+    public static $syncWeiboPageUpdateJob = "MnemonoBackgroundServiceBundleServicesSyncWeiboPageService~updateBiz";
 }

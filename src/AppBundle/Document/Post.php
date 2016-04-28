@@ -44,6 +44,7 @@ class Post extends BaseThread{
      */
     protected $tags;
     /**
+     * @deprecated
      * @MongoDB\String
      * @MongoDB\Index
      */
@@ -57,14 +58,17 @@ class Post extends BaseThread{
     protected $mnemonoBiz;
     /**
      * @MongoDB\String
+     * @Groups({"display"})
      */
     protected $importFrom;
+    const importFromFb = "facebookFeed";
+    const importFromWeibo = "weiboFeed";
     /**
      * @MongoDB\ReferenceOne(
      *   discriminatorField="importFrom",
      *   discriminatorMap={
      *     "facebookFeed"="Document\Facebook\FacebookFeed",
-     *     "directory"="Document\Directory"
+     *     "weiboFeed"="Document\Weibo\WeiboFeed"
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
@@ -81,10 +85,16 @@ class Post extends BaseThread{
      */
     protected $imageLinks;
     /**
+     * @MongoDB\Collection
+     * @Groups({"display"})
+     */
+    protected $videoLinks;
+    /**
      * @MongoDB\EmbedOne(
      *   discriminatorField="importFrom",
      *   discriminatorMap={
-     *     "facebookFeed"="Document\Facebook\FacebookMeta"
+     *     "facebookFeed"="Document\Facebook\FacebookMeta",
+     *     "weiboFeed"="Document\Weibo\WeiboMeta"
      *   },
      *   defaultDiscriminatorValue="facebookFeed"
      * )
@@ -95,6 +105,9 @@ class Post extends BaseThread{
      * @MongoDB\String
      */
     protected $publishStatus;
+    const statusDraft = "draft";
+    const statusReview = "review";
+    const statusPublished = "published";
     // passible value: draft(by use), review(by admin), published,
     /**
      * @MongoDB\String
@@ -163,7 +176,11 @@ class Post extends BaseThread{
      * @return array key to label
      */
     public static function listOfPublishStatus(){
-        return array('draft' => 'Draft', 'review' => 'Review', 'published' => 'Published');
+        return array(
+            Post::statusDraft => 'Draft',
+            Post::statusReview => 'Review',
+            Post::statusPublished => 'Published'
+        );
     }
 
     public function __constract(){
@@ -194,6 +211,15 @@ class Post extends BaseThread{
         }else{
             return "";
         }
+    }
+
+    /**
+     * @param MnemonoBiz $biz
+     */
+    public function setBizTagsCities(MnemonoBiz $biz){
+        $this->setMnemonoBiz($biz);
+        $this->setTags(array($biz->getCategory()));
+        $this->setCities($biz->getCities());
     }
 
     /**
@@ -230,7 +256,7 @@ class Post extends BaseThread{
 
     /**
      * Set mnemonoCat
-     *
+     * @deprecated
      * @param string $mnemonoCat
      * @return self
      */
@@ -242,7 +268,7 @@ class Post extends BaseThread{
 
     /**
      * Get mnemonoCat
-     *
+     * @deprecated
      * @return string $mnemonoCat
      */
     public function getMnemonoCat()
@@ -702,5 +728,27 @@ class Post extends BaseThread{
     public function getCities()
     {
         return $this->cities;
+    }
+
+    /**
+     * Set videoLinks
+     *
+     * @param collection $videoLinks
+     * @return self
+     */
+    public function setVideoLinks($videoLinks)
+    {
+        $this->videoLinks = $videoLinks;
+        return $this;
+    }
+
+    /**
+     * Get videoLinks
+     *
+     * @return collection $videoLink
+     */
+    public function getVideoLinks()
+    {
+        return $this->videoLinks;
     }
 }

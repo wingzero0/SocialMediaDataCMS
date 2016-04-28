@@ -6,6 +6,7 @@
  */
 
 namespace AppBundle\Repository;
+use AppBundle\Document\Weibo\WeiboPage;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use AppBundle\Document\Facebook\FacebookPage;
@@ -44,6 +45,18 @@ class MnemonoBizRepository extends DocumentRepository{
     public function findOneByFbPage(FacebookPage $page){
         $biz = $this->createQueryBuilder()
             ->field("importFrom")->equals("facebookPage")
+            ->field("importFromRef")->references($page)
+            ->getQuery()->getSingleResult();
+        return $biz;
+    }
+
+    /**
+     * @param WeiboPage $page
+     * @return MnemonoBiz|null
+     */
+    public function findOneByWeiboPage(WeiboPage $page){
+        $biz = $this->createQueryBuilder()
+            ->field("importFrom")->equals("weiboPage")
             ->field("importFromRef")->references($page)
             ->getQuery()->getSingleResult();
         return $biz;

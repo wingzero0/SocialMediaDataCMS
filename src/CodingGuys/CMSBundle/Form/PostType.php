@@ -47,10 +47,14 @@ class PostType extends AbstractType
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('originalLink', 'text', array(
+            ->add('videoLinks','collection', array(
+                'type' => 'text',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
                 'required' => false
             ))
-            ->add('mnemonoCat', 'text', array(
+            ->add('originalLink', 'text', array(
                 'required' => false
             ))
             ->add('updateAt','date', array(

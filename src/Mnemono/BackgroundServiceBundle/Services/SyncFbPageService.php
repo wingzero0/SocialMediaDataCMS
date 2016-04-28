@@ -12,7 +12,6 @@ use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\Facebook\FacebookPage;
 use AppBundle\Document\MnemonoBiz;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 
 /**
@@ -94,11 +93,11 @@ class SyncFbPageService extends BaseService{
     }
     private function createBizByFbId($fbId){
         $page = $this->queryPageByFbId($fbId);
-	//TODO refind the checking flow and logic, check the return logic
-	if ($page == null){
+        //TODO refind the checking flow and logic, check the return logic
+        if ($page == null){
             $this->logError($fbId . ": Page is not FacebookPage");
-	    return null;	
-	}
+            return null;
+        }
 
         $pageRaw = $this->queryPageRawByFbId($fbId);
 
