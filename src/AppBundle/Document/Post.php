@@ -58,6 +58,7 @@ class Post extends BaseThread{
     protected $mnemonoBiz;
     /**
      * @MongoDB\String
+     * @Groups({"display"})
      */
     protected $importFrom;
     const importFromFb = "facebookFeed";
