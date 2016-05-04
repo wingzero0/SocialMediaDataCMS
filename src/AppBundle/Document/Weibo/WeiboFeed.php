@@ -63,7 +63,7 @@ class WeiboFeed {
         $linksArray = array();
         if (is_array($picArray) && !empty($picArray)){
             foreach($picArray as $pic){
-                $linksArray[] = $pic["url"];
+                $linksArray[] = $pic["bmiddle"];
             }
         }
         return $linksArray;
