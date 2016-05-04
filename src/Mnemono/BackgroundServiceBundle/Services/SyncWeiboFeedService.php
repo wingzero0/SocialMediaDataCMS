@@ -103,6 +103,7 @@ class SyncWeiboFeedService extends BaseService {
         $ref = $post->getImportFromRef();
         if ($ref instanceof WeiboFeed){
             $post->setContent($ref->getText());
+            $post->setImageLinks($ref->getPicLinks());
             $post->setMeta($this->metaBuilder($ref));
             $this->persistPost($post);
         }
