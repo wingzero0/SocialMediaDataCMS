@@ -5,6 +5,10 @@ namespace CodingGuys\ApiBundle\Controller;
 use AppBundle\Controller\AppBaseController;
 use AppBundle\Document\ManagedTag;
 use AppBundle\Document\Post;
+use AppBundle\Proto\AdProto;
+use AppBundle\Proto\AdsDataProto;
+use AppBundle\Proto\TagWithCountDataProto;
+use AppBundle\Proto\TagWithCountProto;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -48,6 +52,11 @@ class ManagedTagController extends AppBaseController{
      * @return Response
      */
     private function getManagedTagsV1(Request $request){
+        $isProto = $request->get('isProto');
+        if (!isset($isProto)){
+            $isProto = false;
+        }
+
         $limit = intval($request->get("limit"));
         if ($limit <= 0){
             $limit = 25;
@@ -57,17 +66,18 @@ class ManagedTagController extends AppBaseController{
             $skip = 0;
         }
         $areaCodes = $request->get('areaCodes');
-        return new Response($this->createMangedTagsQueryBuilderV1($limit, $skip, $areaCodes));
+        return new Response($this->createMangedTagsQueryBuilderV1($limit, $skip, $areaCodes, $request));
     }
 
     /**
      * @param int $limit
      * @param int $skip
      * @param array $areaCodes
+     * @param Request $request
      * @return string
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function createMangedTagsQueryBuilderV1($limit, $skip, $areaCodes){
+    private function createMangedTagsQueryBuilderV1($limit, $skip, $areaCodes, $request){
         $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
         $qb->limit($limit)->skip($skip);
         $managedTags = $qb->getQuery()->execute();
@@ -80,7 +90,9 @@ class ManagedTagController extends AppBaseController{
                 $data[] = array("tag" => $managedTag, "count" => $count);
             }
         }
-        return $this->serialize($data, "display");
+        $serialize =  $this->serialize($data, "display");
+        return $this->OutputFormat($request,$serialize);
+
     }
 
     /**
@@ -89,6 +101,7 @@ class ManagedTagController extends AppBaseController{
      * @deprecated
      */
     private function getManagedTagsV0(Request $request){
+
         $limit = intval($request->get("limit"));
         if ($limit <= 0){
             $limit = 25;
@@ -98,17 +111,21 @@ class ManagedTagController extends AppBaseController{
             $skip = 0;
         }
         $areaCode = $request->get('areaCode');
-        return new Response($this->createMangedTagsQueryBuilder($limit, $skip, $areaCode));
+
+
+        return new Response($this->createMangedTagsQueryBuilder($limit, $skip, $areaCode, $request));
+
     }
 
     /**
      * @param int $limit
      * @param int $skip
      * @param string $areaCode
+     * @param Request $request
      * @return string
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function createMangedTagsQueryBuilder($limit, $skip, $areaCode)
+    private function createMangedTagsQueryBuilder($limit, $skip, $areaCode, $request)
     {
         $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
         $qb->limit($limit)->skip($skip);
@@ -127,6 +144,29 @@ class ManagedTagController extends AppBaseController{
                 $data[] = array("tag" => $managedTag, "count" => $count);
             }
         }
-        return $this->serialize($data, "display");
+        $serialize =  $this->serialize($data, "display");
+
+        return $this->OutputFormat($request,$serialize);
     }
+    /**
+     * @param Request $request
+     * @param string $serialize
+     * @return string
+     */
+    public function OutputFormat($request ,$serialize)
+    {
+        $isProto = $request->get('isProto');
+        if (!isset($isProto)){
+            $isProto = false;
+        }
+        if(!$isProto){
+            return new Response($serialize);
+        }else{
+            $arr = json_decode($serialize,true);
+
+            return TagWithCountDataProto::fromArray($arr)->toStream();
+        }
+    }
+
+
 }

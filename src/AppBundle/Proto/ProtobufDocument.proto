@@ -1,0 +1,61 @@
+package Proto;
+import "php.proto";
+option (php.package) = "AppBundle.Proto";
+
+message MetaProto {
+    optional int32 fb_total_likes = 1;
+    optional int32 fb_total_comments = 2;
+}
+
+message MnemonoBizProto {
+    optional string profile_pic_link = 1;
+    required string id = 2;
+    optional string name = 3;
+}
+
+message PostProto {
+    required string id = 1;
+    repeated string tags = 2;
+    optional MnemonoBizProto mnemono_biz = 3;
+    optional string origina_link = 4;
+    repeated string image_links = 5;
+    repeated string video_links = 6;
+    optional string import_from = 7;
+    optional MetaProto meta = 8;
+    optional string content = 9;
+    optional string create_at = 10;
+    optional string update_at = 11;
+
+}
+
+message AdProto {
+    required string id = 1;
+    optional string description = 2;
+    optional int32 display_seq = 3;
+    optional string image_link = 4;
+    optional string landing_page = 5;
+}
+
+message TagProto {
+    optional string key = 1;
+    optional string name_chi = 2;
+    optional string name_eng = 3;
+    optional string image_link = 4;
+}
+
+message TagWithCountProto {
+    optional TagProto tag = 1;
+    optional int32 count = 2;
+}
+
+message PostsDataProto {
+    repeated PostProto data = 1;
+}
+
+message AdsDataProto {
+    repeated AdProto data = 1;
+}
+
+message TagWithCountDataProto {
+    repeated TagWithCountProto data = 1;
+}

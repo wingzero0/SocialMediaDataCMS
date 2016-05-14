@@ -10,6 +10,8 @@ namespace CodingGuys\ApiBundle\Controller;
 use AppBundle\Controller\AppBaseController;
 use AppBundle\Document\ManagedTag;
 use AppBundle\Document\Post;
+use AppBundle\Proto\PostProto;
+use AppBundle\Proto\PostsDataProto;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -19,7 +21,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Doctrine\ODM\MongoDB\Query\Builder;
-
 /**
  * Api Post controller.
  *
@@ -41,6 +42,8 @@ class PostController extends AppBaseController{
      * @Method("GET")
      */
     public function indexAction(Request $request){
+ 
+
         $qb = $this->createQueryBuilder($request);
         $qb->field('showAtHomepage')->equals(true);
         $posts = $qb->getQuery()->execute();
@@ -49,7 +52,8 @@ class PostController extends AppBaseController{
             $ret[] = $post;
         }
         $serialize = $this->serialize($ret, "display");
-        return new Response($serialize);
+
+        return new Response($this->OutputFormat($request, $serialize));
     }
 
     /**
@@ -75,7 +79,8 @@ class PostController extends AppBaseController{
             $ret[] = $post;
         }
         $serialize = $this->serialize($ret, "display");
-        return new Response($serialize);
+ 
+        return new Response($this->OutputFormat($request, $serialize));
     }
 
     /**
@@ -94,7 +99,7 @@ class PostController extends AppBaseController{
             throw $this->createNotFoundException("Unable to find Post document.");
         }
         $serialize = $this->serialize($post, "display");
-        return new Response($serialize);
+        return new Response($this->OutputFormat($request, $serialize));
     }
 
     /**
@@ -123,6 +128,7 @@ class PostController extends AppBaseController{
      */
     private function compileFilter(Request $request, Builder $qb){
         $versionNum = $this->getVersionNum();
+
         if ($versionNum < 1.0) {
             $qb = $this->compileFilterV0($request, $qb);
         }else{
@@ -224,5 +230,24 @@ class PostController extends AppBaseController{
             $qb->field("createAt")->gte($createDate);
         }
         return $qb;
+    }
+    /**
+     * @param Request $request
+     * @param string $serialize
+     * @return string
+     */
+    public function OutputFormat($request, $serialize){
+        $isProto = $request->get('isProto');
+        if (!isset($isProto)){
+            $isProto = false;
+        }
+        
+        if(!$isProto){
+            return new Response($serialize);
+        }else{
+            $arr = json_decode($serialize,true);
+
+            return PostsDataProto::fromArray($arr)->toStream();
+        }
     }
 }

@@ -9,6 +9,8 @@ namespace CodingGuys\ApiBundle\Controller;
 
 
 use AppBundle\Controller\AppBaseController;
+use AppBundle\Proto\AdProto;
+use AppBundle\Proto\AdsDataProto;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -36,6 +38,7 @@ class SpotlightAdsController extends AppBaseController{
      * @Method("GET")
      */
     public function indexAction(Request $request){
+
         $qb = $this->createQueryBuilder($request);
         $ads = $qb->getQuery()->execute();
         $ret = array();
@@ -43,7 +46,9 @@ class SpotlightAdsController extends AppBaseController{
             $ret[] = $ad;
         }
         $serialize = $this->serialize($ret, "display");
-        return new Response($serialize);
+
+        return new Response($this->OutputFormat($request, $serialize));
+
     }
     /**
      * @param Request $request
@@ -61,5 +66,24 @@ class SpotlightAdsController extends AppBaseController{
         }
         $qb->limit($limit)->skip($skip);
         return $qb;
+    }
+    /**
+     * @param Request $request
+     * @param string $serialize
+     * @return string
+     */
+    public function OutputFormat($request ,$serialize)
+    {
+        $isProto = $request->get('isProto');
+        if (!isset($isProto)){
+            $isProto = false;
+        }
+        if(!$isProto){
+            return new Response($serialize);
+        }else{
+            $arr = json_decode($serialize,true);
+
+            return AdsDataProto::fromArray($arr)->toStream();
+        }
     }
 }

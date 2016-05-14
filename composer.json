@@ -27,7 +27,11 @@
     "nelmio/api-doc-bundle": "^2.11",
     "knplabs/knp-paginator-bundle": "~2.4",
     "mmoreram/gearman-bundle": "@stable",
-    "friendsofsymfony/rest-bundle": "^1.7"
+    "friendsofsymfony/rest-bundle": "^1.7",
+    "protobuf-php/protobuf": "dev-master",
+    "protobuf-php/protobuf-plugin": "dev-master",
+    "protobuf-php/google-protobuf-proto": "dev-master"
+
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3",
