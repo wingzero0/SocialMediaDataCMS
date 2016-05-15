@@ -46,11 +46,11 @@ class PostProto extends \Protobuf\AbstractMessage
     protected $mnemono_biz = null;
 
     /**
-     * origina_link optional string = 4
+     * original_link optional string = 4
      *
      * @var string
      */
-    protected $origina_link = null;
+    protected $original_link = null;
 
     /**
      * image_links repeated string = 5
@@ -206,33 +206,33 @@ class PostProto extends \Protobuf\AbstractMessage
     }
 
     /**
-     * Check if 'origina_link' has a value
+     * Check if 'original_link' has a value
      *
      * @return bool
      */
     public function hasOriginaLink()
     {
-        return $this->origina_link !== null;
+        return $this->original_link !== null;
     }
 
     /**
-     * Get 'origina_link' value
+     * Get 'original_link' value
      *
      * @return string
      */
     public function getOriginaLink()
     {
-        return $this->origina_link;
+        return $this->original_link;
     }
 
     /**
-     * Set 'origina_link' value
+     * Set 'original_link' value
      *
      * @param string $value
      */
     public function setOriginaLink($value = null)
     {
-        $this->origina_link = $value;
+        $this->original_link = $value;
     }
 
     /**
@@ -514,7 +514,7 @@ class PostProto extends \Protobuf\AbstractMessage
         $values  = array_merge([
             'tags' => [],
             'mnemono_biz' => null,
-            'origina_link' => null,
+            'original_link' => null,
             'image_links' => [],
             'video_links' => [],
             'import_from' => null,
@@ -526,7 +526,7 @@ class PostProto extends \Protobuf\AbstractMessage
 
         $message->setId($values['id']);
         $message->setMnemonoBiz(MnemonoBizProto::fromArray($values['mnemono_biz']));
-        $message->setOriginaLink($values['origina_link']);
+        $message->setOriginaLink($values['original_link']);
         $message->setImportFrom($values['import_from']);
         $message->setMeta(MetaProto::fromArray($values['meta']));
         $message->setContent($values['content']);
@@ -577,7 +577,7 @@ class PostProto extends \Protobuf\AbstractMessage
                 ]),
                 \google\protobuf\FieldDescriptorProto::fromArray([
                     'number' => 4,
-                    'name' => 'origina_link',
+                    'name' => 'original_link',
                     'type' => \google\protobuf\FieldDescriptorProto\Type::TYPE_STRING(),
                     'label' => \google\protobuf\FieldDescriptorProto\Label::LABEL_OPTIONAL()
                 ]),
@@ -674,9 +674,9 @@ class PostProto extends \Protobuf\AbstractMessage
             $this->mnemono_biz->writeTo($context);
         }
 
-        if ($this->origina_link !== null) {
+        if ($this->original_link !== null) {
             $writer->writeVarint($stream, 34);
-            $writer->writeString($stream, $this->origina_link);
+            $writer->writeString($stream, $this->original_link);
         }
 
         if ($this->image_links !== null) {
@@ -791,7 +791,7 @@ class PostProto extends \Protobuf\AbstractMessage
             if ($tag === 4) {
                 \Protobuf\WireFormat::assertWireType($wire, 9);
 
-                $this->origina_link = $reader->readString($stream);
+                $this->original_link = $reader->readString($stream);
 
                 continue;
             }
@@ -916,9 +916,9 @@ class PostProto extends \Protobuf\AbstractMessage
             $size += $calculator->computeVarintSize($innerSize);
         }
 
-        if ($this->origina_link !== null) {
+        if ($this->original_link !== null) {
             $size += 1;
-            $size += $calculator->computeStringSize($this->origina_link);
+            $size += $calculator->computeStringSize($this->original_link);
         }
 
         if ($this->image_links !== null) {
@@ -978,7 +978,7 @@ class PostProto extends \Protobuf\AbstractMessage
         $this->id = null;
         $this->tags = null;
         $this->mnemono_biz = null;
-        $this->origina_link = null;
+        $this->original_link = null;
         $this->image_links = null;
         $this->video_links = null;
         $this->import_from = null;
@@ -1000,7 +1000,7 @@ class PostProto extends \Protobuf\AbstractMessage
         $this->id = ($message->id !== null) ? $message->id : $this->id;
         $this->tags = ($message->tags !== null) ? $message->tags : $this->tags;
         $this->mnemono_biz = ($message->mnemono_biz !== null) ? $message->mnemono_biz : $this->mnemono_biz;
-        $this->origina_link = ($message->origina_link !== null) ? $message->origina_link : $this->origina_link;
+        $this->original_link = ($message->original_link !== null) ? $message->original_link : $this->original_link;
         $this->image_links = ($message->image_links !== null) ? $message->image_links : $this->image_links;
         $this->video_links = ($message->video_links !== null) ? $message->video_links : $this->video_links;
         $this->import_from = ($message->import_from !== null) ? $message->import_from : $this->import_from;

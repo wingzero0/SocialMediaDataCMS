@@ -17,7 +17,7 @@ message PostProto {
     required string id = 1;
     repeated string tags = 2;
     optional MnemonoBizProto mnemono_biz = 3;
-    optional string origina_link = 4;
+    optional string original_link = 4;
     repeated string image_links = 5;
     repeated string video_links = 6;
     optional string import_from = 7;
