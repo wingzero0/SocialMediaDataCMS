@@ -15,6 +15,7 @@ use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Doctrine\ODM\MongoDB\Query\Builder;
@@ -26,6 +27,10 @@ use Symfony\Component\HttpFoundation\Response;
  * @Route("/ads")
  */
 class SpotlightAdsController extends AppBaseController{
+
+    public function __construct(Container $container = null){
+        $this->setContainer($container);
+    }
     /**
      * @ApiDoc(
      *  description="query ads",
@@ -79,11 +84,11 @@ class SpotlightAdsController extends AppBaseController{
             $isProto = false;
         }
         if(!$isProto){
-            return new Response($serialize);
+            return $serialize;
         }else{
             $arr = json_decode($serialize,true);
 
-            return AdsDataProto::fromArray($arr)->toStream();
+            return base64_encode(AdsDataProto::fromArray($arr)->toStream());
         }
     }
 }

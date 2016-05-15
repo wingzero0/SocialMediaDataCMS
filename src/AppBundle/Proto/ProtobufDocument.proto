@@ -59,3 +59,9 @@ message AdsDataProto {
 message TagWithCountDataProto {
     repeated TagWithCountProto data = 1;
 }
+
+message HomeDataProto {
+    optional PostsDataProto posts_data = 1;
+    optional AdsDataProto ads_data = 2;
+    optional TagWithCountDataProto tag_data = 3;
+}

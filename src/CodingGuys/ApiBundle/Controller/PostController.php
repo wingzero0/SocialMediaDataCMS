@@ -10,12 +10,17 @@ namespace CodingGuys\ApiBundle\Controller;
 use AppBundle\Controller\AppBaseController;
 use AppBundle\Document\ManagedTag;
 use AppBundle\Document\Post;
+use AppBundle\Proto\AdsDataProto;
+use AppBundle\Proto\HomeDataProto;
+use AppBundle\Proto\OpenAppRequestProto;
 use AppBundle\Proto\PostProto;
 use AppBundle\Proto\PostsDataProto;
+use AppBundle\Proto\TagWithCountDataProto;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +32,10 @@ use Doctrine\ODM\MongoDB\Query\Builder;
  * @Route("/posts")
  */
 class PostController extends AppBaseController{
+
+    public function __construct(Container $container = null){
+        $this->setContainer($container);
+    }
     /**
      * @ApiDoc(
      *  description="home page feed",
@@ -55,6 +64,41 @@ class PostController extends AppBaseController{
 
         return new Response($this->OutputFormat($request, $serialize));
     }
+
+    /**
+     * @ApiDoc(
+     *  description="home page data",
+     *  parameters={
+     *      {"name"="areaCodes[]", "dataType"="string", "required"=false, "description"="filter by multiple area codes with 'OR' operator , available at version 1.0"},
+     *  }
+     * )
+     * @Route("/home", name="api_homepage_data")
+     * @Method("GET")
+     */
+    public function homeAction(Request $request){
+
+        $postsRespond = $this->forward('app.post_controller:indexAction', array("request" => $request));
+        $adsRespond = $this->forward('app.spotlight_ads_controller:indexAction', array("request" => $request));
+        $tagRespond = $this->forward('app.managed_tag_controller:getManagedTagsAction', array("request" => $request));
+
+        $postsSerialize = $postsRespond->getContent();
+        $postsArr = json_decode($postsSerialize,true);
+
+        $tagSerialize = $tagRespond->getContent();
+        $tagArr = json_decode($tagSerialize,true);
+        $adsSerialize = $adsRespond->getContent();
+        $adsArr = json_decode($adsSerialize,true);
+
+        $data = new HomeDataProto();
+
+
+        $data->setAdsData(AdsDataProto::fromArray($adsArr));
+        $data->setPostsData(PostsDataProto::fromArray($postsArr));
+        $data->setTagData(TagWithCountDataProto::fromArray($tagArr));
+
+        return new Response(base64_encode($data->toStream()));
+    }
+
 
     /**
      * @ApiDoc(
@@ -243,11 +287,11 @@ class PostController extends AppBaseController{
         }
         
         if(!$isProto){
-            return new Response($serialize);
+            return $serialize;
         }else{
             $arr = json_decode($serialize,true);
 
-            return PostsDataProto::fromArray($arr)->toStream();
+            return base64_encode(PostsDataProto::fromArray($arr)->toStream());
         }
     }
 }

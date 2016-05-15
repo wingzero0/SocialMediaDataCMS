@@ -1,4 +1,10 @@
 services:
-#    coding_guys_api.example:
-#        class: CodingGuys\ApiBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+    app.post_controller:
+      class:  CodingGuys\ApiBundle\Controller\PostController
+      arguments:  [ @service_container ]
+    app.spotlight_ads_controller:
+      class:  CodingGuys\ApiBundle\Controller\SpotlightAdsController
+      arguments:  [ @service_container ]
+    app.managed_tag_controller:
+      class:  CodingGuys\ApiBundle\Controller\ManagedTagController
+      arguments:  [ @service_container ]
