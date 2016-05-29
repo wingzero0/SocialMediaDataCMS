@@ -177,9 +177,9 @@ class Post extends BaseThread{
      */
     public static function listOfPublishStatus(){
         return array(
+            Post::statusPublished => 'Published',
             Post::statusDraft => 'Draft',
             Post::statusReview => 'Review',
-            Post::statusPublished => 'Published'
         );
     }
 
