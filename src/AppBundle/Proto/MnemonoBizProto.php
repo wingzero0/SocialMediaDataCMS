@@ -32,7 +32,7 @@ class MnemonoBizProto extends \Protobuf\AbstractMessage
     protected $profile_pic_link = null;
 
     /**
-     * id required string = 2
+     * id optional string = 2
      *
      * @var string
      */
@@ -100,7 +100,7 @@ class MnemonoBizProto extends \Protobuf\AbstractMessage
      *
      * @param string $value
      */
-    public function setId($value)
+    public function setId($value = null)
     {
         $this->id = $value;
     }
@@ -171,6 +171,7 @@ class MnemonoBizProto extends \Protobuf\AbstractMessage
         $message = new self();
         $values  = array_merge([
             'profile_pic_link' => null,
+            'id' => null,
             'name' => null
         ], $values);
 
@@ -199,7 +200,7 @@ class MnemonoBizProto extends \Protobuf\AbstractMessage
                     'number' => 2,
                     'name' => 'id',
                     'type' => \google\protobuf\FieldDescriptorProto\Type::TYPE_STRING(),
-                    'label' => \google\protobuf\FieldDescriptorProto\Label::LABEL_REQUIRED()
+                    'label' => \google\protobuf\FieldDescriptorProto\Label::LABEL_OPTIONAL()
                 ]),
                 \google\protobuf\FieldDescriptorProto::fromArray([
                     'number' => 3,
@@ -234,10 +235,6 @@ class MnemonoBizProto extends \Protobuf\AbstractMessage
         $stream      = $context->getStream();
         $writer      = $context->getWriter();
         $sizeContext = $context->getComputeSizeContext();
-
-        if ($this->id === null) {
-            throw new \UnexpectedValueException('Field "\\AppBundle\\Proto\\MnemonoBizProto#id" (tag 2) is required but has no value.');
-        }
 
         if ($this->profile_pic_link !== null) {
             $writer->writeVarint($stream, 10);
