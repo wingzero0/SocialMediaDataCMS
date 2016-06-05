@@ -9,7 +9,7 @@ message MetaProto {
 
 message MnemonoBizProto {
     optional string profile_pic_link = 1;
-    required string id = 2;
+    optional string id = 2;
     optional string name = 3;
 }
 

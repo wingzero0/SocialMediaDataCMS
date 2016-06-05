@@ -528,6 +528,7 @@ class PostProto extends \Protobuf\AbstractMessage
         $message->setMnemonoBiz(MnemonoBizProto::fromArray($values['mnemono_biz']));
         $message->setOriginaLink($values['original_link']);
         $message->setImportFrom($values['import_from']);
+        if($values['meta']!=null)
         $message->setMeta(MetaProto::fromArray($values['meta']));
         $message->setContent($values['content']);
         $message->setCreateAt($values['create_at']);
