@@ -168,10 +168,6 @@ class MnemonoBizProto extends \Protobuf\AbstractMessage
      */
     public static function fromArray(array $values)
     {
-        if ( ! isset($values['id'])) {
-            throw new \InvalidArgumentException('Field "id" (tag 2) is required but has no value.');
-        }
-
         $message = new self();
         $values  = array_merge([
             'profile_pic_link' => null,
