@@ -1,3 +1,9 @@
+### change log
+[change log](resource/doc/changeLog.md)
+
+### business logic
+[doc](resource/doc/index.md)
+
 ### download Composer and install project package
     curl -s http://getcomposer.org/installer | php
     php composer.phar install
