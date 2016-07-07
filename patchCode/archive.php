@@ -14,6 +14,7 @@ define("FACEBOOK_PAGE","FacebookPage");
 define("FACEBOOK_FEED","FacebookFeed");
 define("FACEBOOK_FEED_TIMESTAMP","FacebookFeedTimestamp");
 define("POST","Post");
+define("MNEMONO_BIZ", "MnemonoBiz");
 
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Collection as MongoDBCollection;
@@ -24,6 +25,7 @@ $pageCol = $cli->selectCollection(MNEMONO, FACEBOOK_PAGE);
 $feedCol = $cli->selectCollection(MNEMONO, FACEBOOK_FEED);
 $feedTimestampCol = $cli->selectCollection(MNEMONO, FACEBOOK_FEED_TIMESTAMP);
 $postCol = $cli->selectCollection(MNEMONO, POST);
+$bizCol = $cli->selectCollection(MNEMONO, MNEMONO_BIZ);
 
 $nDayAgo = new \DateTime();
 $nDayAgo->setTimezone(new DateTimeZone("GMT"));
@@ -33,18 +35,30 @@ $archivePageCol = $cli->selectCollection(MNEMONO_ARCHIVE, FACEBOOK_PAGE);
 $archiveFeedCol = $cli->selectCollection(MNEMONO_ARCHIVE, FACEBOOK_FEED);
 $archiveFeedTimestampCol = $cli->selectCollection(MNEMONO_ARCHIVE, FACEBOOK_FEED_TIMESTAMP);
 $archivePostCol = $cli->selectCollection(MNEMONO_ARCHIVE, POST);
+$archiveBizCol = $cli->selectCollection(MNEMONO_ARCHIVE, MNEMONO_BIZ);
 
 $cursor = $pageCol->find();
 foreach ($cursor as $page)
 {
     upsert($archivePageCol, $page);
+    $biz = $bizCol->findOne(
+        [
+            "importFromRef.\$id" => $page["_id"],
+            "importFromRef.\$ref" => FACEBOOK_PAGE,
+        ]
+    );
+    unset($biz["importFromRef"]["\$db"]);
+    //$biz["importFromRef"]["\$db"] = MNEMONO_ARCHIVE;
+    // TODO archive page timestamp;
+    upsert($archiveBizCol, $biz);
+
     $id = $page["_id"];
     $query = [
         "fbPage.\$id" => $id,
         "created_time" => ["\$lte" => $nDayAgo->format(\DateTime::ISO8601)]
     ];
     $options = [
-        "sort" => ["_id" => -1],
+        "sort" => ["created_time" => -1],
         "skip" => 25
     ];
     $feedCur = $feedCol->find(
@@ -71,14 +85,20 @@ foreach ($cursor as $page)
             ]
         );
         foreach($postCur as $post){
-            $post["importFromRef"]["\$db"] = MNEMONO_ARCHIVE;
+            //$post["importFromRef"]["\$db"] = MNEMONO_ARCHIVE;
+            unset($post["importFromRef"]["\$db"]);
+            //$post["mnemonoBiz"]["\$db"] = MNEMONO_ARCHIVE;
+            unset($post["mnemonoBiz"]["\$db"]);
             upsert($archivePostCol, $post);
             deleteOne($postCol, $post);
         }
     }
 }
 
-function upsert(MongoDBCollection $col, \ArrayObject $oldData){
+function upsert(MongoDBCollection $col, \ArrayObject $oldData = null){
+    if ($oldData == null){
+        return;
+    }
     $col->updateOne(
         ["_id" => $oldData["_id"]],
         ["\$set" => $oldData],
