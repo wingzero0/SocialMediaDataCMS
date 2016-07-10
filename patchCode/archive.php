@@ -13,35 +13,25 @@ define("MNEMONO_ARCHIVE", "MnemonoArchive");
 define("FACEBOOK_PAGE","FacebookPage");
 define("FACEBOOK_FEED","FacebookFeed");
 define("FACEBOOK_FEED_TIMESTAMP","FacebookFeedTimestamp");
+define("FACEBOOK_PAGE_TIMESTAMP","FacebookPageTimestamp");
 define("POST","Post");
 define("MNEMONO_BIZ", "MnemonoBiz");
 
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Collection as MongoDBCollection;
+use MongoDB\BSON\ObjectID as MongoObjectID;
+use MongoDB\Model\IndexInfo;
 
-$cli = new MongoDBClient();
+$colMapping = new CollectionMapping();
 
-$pageCol = $cli->selectCollection(MNEMONO, FACEBOOK_PAGE);
-$feedCol = $cli->selectCollection(MNEMONO, FACEBOOK_FEED);
-$feedTimestampCol = $cli->selectCollection(MNEMONO, FACEBOOK_FEED_TIMESTAMP);
-$postCol = $cli->selectCollection(MNEMONO, POST);
-$bizCol = $cli->selectCollection(MNEMONO, MNEMONO_BIZ);
-
-$nDayAgo = new \DateTime();
+$nDayAgo = \DateTime::createFromFormat(\DateTime::ISO8601, "2016-05-15T23:59:59+0000");
 $nDayAgo->setTimezone(new DateTimeZone("GMT"));
-$nDayAgo->sub(new \DateInterval('P30D'));
 
-$archivePageCol = $cli->selectCollection(MNEMONO_ARCHIVE, FACEBOOK_PAGE);
-$archiveFeedCol = $cli->selectCollection(MNEMONO_ARCHIVE, FACEBOOK_FEED);
-$archiveFeedTimestampCol = $cli->selectCollection(MNEMONO_ARCHIVE, FACEBOOK_FEED_TIMESTAMP);
-$archivePostCol = $cli->selectCollection(MNEMONO_ARCHIVE, POST);
-$archiveBizCol = $cli->selectCollection(MNEMONO_ARCHIVE, MNEMONO_BIZ);
-
-$cursor = $pageCol->find();
-foreach ($cursor as $page)
+$pageCur = $colMapping->getCol(FACEBOOK_PAGE)->find();
+foreach ($pageCur as $page)
 {
-    upsert($archivePageCol, $page);
-    $biz = $bizCol->findOne(
+    upsert($colMapping->getArchiveCol(FACEBOOK_PAGE), $page);
+    $biz = $colMapping->getCol(MNEMONO_BIZ)->findOne(
         [
             "importFromRef.\$id" => $page["_id"],
             "importFromRef.\$ref" => FACEBOOK_PAGE,
@@ -49,10 +39,11 @@ foreach ($cursor as $page)
     );
     unset($biz["importFromRef"]["\$db"]);
     //$biz["importFromRef"]["\$db"] = MNEMONO_ARCHIVE;
-    // TODO archive page timestamp;
-    upsert($archiveBizCol, $biz);
 
     $id = $page["_id"];
+    upsert($colMapping->getArchiveCol(MNEMONO_BIZ), $biz);
+    $colMapping->archivePageAndPageTimestamp($id, $nDayAgo);
+
     $query = [
         "fbPage.\$id" => $id,
         "created_time" => ["\$lte" => $nDayAgo->format(\DateTime::ISO8601)]
@@ -61,24 +52,24 @@ foreach ($cursor as $page)
         "sort" => ["created_time" => -1],
         "skip" => 25
     ];
-    $feedCur = $feedCol->find(
+    $feedCur = $colMapping->getCol(FACEBOOK_FEED)->find(
         $query,
         $options
     );
 
     foreach ($feedCur as $feed)
     {
-        upsert($archiveFeedCol, $feed);
-        deleteOne($feedCol, $feed);
-        $historyCur = $feedTimestampCol->find(
+        upsert($colMapping->getArchiveCol(FACEBOOK_FEED), $feed);
+        deleteOne($colMapping->getCol(FACEBOOK_FEED), $feed);
+        $historyCur = $colMapping->getCol(FACEBOOK_FEED_TIMESTAMP)->find(
             ["fbFeed.\$id" => $feed["_id"]]
         );
         foreach($historyCur as $timestamp){
-            upsert($archiveFeedTimestampCol, $timestamp);
-            deleteOne($feedTimestampCol, $timestamp);
+            upsert($colMapping->getArchiveCol(FACEBOOK_FEED_TIMESTAMP), $timestamp);
+            deleteOne($colMapping->getCol(FACEBOOK_FEED_TIMESTAMP), $timestamp);
         }
 
-        $postCur = $postCol->find(
+        $postCur = $colMapping->getCol(POST)->find(
             [
                 "importFromRef.\$id" => $feed["_id"],
                 "importFromRef.\$ref" => FACEBOOK_FEED,
@@ -89,8 +80,8 @@ foreach ($cursor as $page)
             unset($post["importFromRef"]["\$db"]);
             //$post["mnemonoBiz"]["\$db"] = MNEMONO_ARCHIVE;
             unset($post["mnemonoBiz"]["\$db"]);
-            upsert($archivePostCol, $post);
-            deleteOne($postCol, $post);
+            upsert($colMapping->getArchiveCol(POST), $post);
+            deleteOne($colMapping->getCol(POST), $post);
         }
     }
 }
@@ -108,4 +99,67 @@ function upsert(MongoDBCollection $col, \ArrayObject $oldData = null){
 
 function deleteOne(MongoDBCollection $col, \ArrayObject $oldData){
     $col->deleteOne(["_id" => $oldData["_id"]]);
+}
+
+class CollectionMapping{
+    private $colKeys;
+    private $colArray;
+    private $archiveColArray;
+    private $cli;
+    public function __construct()
+    {
+        $this->cli = new MongoDBClient();
+        $this->colKeys = array(FACEBOOK_PAGE,FACEBOOK_FEED,FACEBOOK_FEED_TIMESTAMP,FACEBOOK_PAGE_TIMESTAMP,POST,MNEMONO_BIZ);
+        $this->colArray = array();
+        $this->archiveColArray = array();
+        foreach($this->colKeys as $key){
+            $this->colArray[$key] = $this->cli->selectCollection(MNEMONO, $key);
+            $this->archiveColArray[$key] = $this->cli->selectCollection(MNEMONO_ARCHIVE, $key);
+        }
+        $this->copyIndex();
+    }
+
+    public function copyIndex(){
+        foreach($this->colKeys as $key){
+            $indexIterator = $this->getCol($key)->listIndexes();
+            foreach ($indexIterator as $index){
+                if ($index instanceof IndexInfo){
+                    if ($index->getName() != "_id_"){
+                        $this->getArchiveCol($key)->createIndex($index->getKey());
+                    }
+                }
+            }
+        }
+    }
+
+    public function archivePageAndPageTimestamp(MongoObjectID $pageMongoId, \DateTime $nDayAgo)
+    {
+        $mongoDate = new \MongoDB\BSON\UTCDatetime($nDayAgo->getTimestamp() * 1000);
+        $query = [
+            "batchTime" => ["\$lte" => $mongoDate],
+            "fbPage.\$id" => $pageMongoId,
+            "fbPage.\$ref" => FACEBOOK_PAGE,
+        ];
+        $cursor = $this->getCol(FACEBOOK_PAGE_TIMESTAMP)->find($query);
+        foreach($cursor as $pageTimestamp){
+            upsert($this->getArchiveCol(FACEBOOK_PAGE_TIMESTAMP), $pageTimestamp);
+            deleteOne($this->getCol(FACEBOOK_PAGE_TIMESTAMP), $pageTimestamp);
+        }
+    }
+
+    /**
+     * @param string $key
+     * @return MongoDBCollection
+     */
+    public function getCol($key){
+        return $this->colArray[$key];
+    }
+
+    /**
+     * @param string $key
+     * @return MongoDBCollection
+     */
+    public function getArchiveCol($key){
+        return $this->archiveColArray[$key];
+    }
 }
