@@ -22,9 +22,14 @@ use MongoDB\Collection as MongoDBCollection;
 use MongoDB\BSON\ObjectID as MongoObjectID;
 use MongoDB\Model\IndexInfo;
 
+$options = getopt("", array("date:"));
+if (!isset($options["date"])){
+    echo "you must specific date value for archiving";
+    exit(-1);
+}
 $colMapping = new CollectionMapping();
 
-$nDayAgo = \DateTime::createFromFormat(\DateTime::ISO8601, "2016-05-15T23:59:59+0000");
+$nDayAgo = \DateTime::createFromFormat(\DateTime::ISO8601, $options["date"]);
 $nDayAgo->setTimezone(new DateTimeZone("GMT"));
 
 $pageCur = $colMapping->getCol(FACEBOOK_PAGE)->find();
