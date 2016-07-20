@@ -9,7 +9,7 @@
 
 require_once __DIR__ . "/vendor/autoload.php";
 define("MNEMONO", "Mnemono");
-define("MNEMONO_ARCHIVE", "MnemonoArchive");
+define("MNEMONO_ARCHIVE", "MnemonoUnOfficialArchive");
 define("FACEBOOK_PAGE","FacebookPage");
 define("FACEBOOK_FEED","FacebookFeed");
 define("FACEBOOK_FEED_TIMESTAMP","FacebookFeedTimestamp");
