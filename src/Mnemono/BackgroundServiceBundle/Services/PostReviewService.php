@@ -60,6 +60,9 @@ class PostReviewService extends BaseService{
                         $post->setRankPosition($i);
                     }
                     $post->setPublishStatus("published");
+                    if ($i == 1){
+                        $post->setShowAtHomepage(true);
+                    }
                     $dm->persist($post);
                     $i++;
                 }
