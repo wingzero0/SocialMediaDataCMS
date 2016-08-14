@@ -1,0 +1,2 @@
+use MnemonoArchive;
+db.dropDatabase();
