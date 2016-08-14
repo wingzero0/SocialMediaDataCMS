@@ -1,11 +1,10 @@
 <?php
 /**
  * User: kit
- * Date: 3-Jul-16
- * Time: 9:01 AM
- *
- * Archive the post which is 1 months old and it's not the latest 50 feed;
+ * Date: 14/08/2016
+ * Time: 4:29 PM
  */
+
 
 require_once __DIR__ . "/vendor/autoload.php";
 define("MNEMONO", "Mnemono");
@@ -22,86 +21,41 @@ use MongoDB\Collection as MongoDBCollection;
 use MongoDB\BSON\ObjectID as MongoObjectID;
 use MongoDB\Model\IndexInfo;
 
-$options = getopt("", array("date:"));
-if (!isset($options["date"])){
-    echo "you must specific date value for archiving";
-    exit(-1);
-}
+
 $colMapping = new CollectionMapping();
 
-$nDayAgo = \DateTime::createFromFormat(\DateTime::ISO8601, $options["date"]);
-$nDayAgo->setTimezone(new DateTimeZone("GMT"));
+reviseImportFromRef($colMapping->getCol(MNEMONO_BIZ));
+reviseImportFromRef($colMapping->getCol(POST));
+reviseMnemonoBiz($colMapping->getCol(POST));
 
-$pageCur = $colMapping->getCol(FACEBOOK_PAGE)->find();
-foreach ($pageCur as $page)
-{
-    upsert($colMapping->getArchiveCol(FACEBOOK_PAGE), $page);
-    $biz = $colMapping->getCol(MNEMONO_BIZ)->findOne(
-        [
-            "importFromRef.\$id" => $page["_id"],
-            "importFromRef.\$ref" => FACEBOOK_PAGE,
-        ]
-    );
-    //unset($biz["importFromRef"]["\$db"]);
+function reviseImportFromRef(MongoDBCollection $col){
+    $cursor = $col->find();
 
-    $id = $page["_id"];
-    upsert($colMapping->getArchiveCol(MNEMONO_BIZ), $biz);
-    $colMapping->archivePageAndPageTimestamp($id, $nDayAgo);
-
-    $query = [
-        "fbPage.\$id" => $id,
-        "created_time" => ["\$lte" => $nDayAgo->format(\DateTime::ISO8601)]
-    ];
-    $options = [
-        "sort" => ["created_time" => -1],
-        "skip" => 25
-    ];
-    $feedCur = $colMapping->getCol(FACEBOOK_FEED)->find(
-        $query,
-        $options
-    );
-
-    foreach ($feedCur as $feed)
-    {
-        upsert($colMapping->getArchiveCol(FACEBOOK_FEED), $feed);
-        deleteOne($colMapping->getCol(FACEBOOK_FEED), $feed);
-        $historyCur = $colMapping->getCol(FACEBOOK_FEED_TIMESTAMP)->find(
-            ["fbFeed.\$id" => $feed["_id"]]
-        );
-        foreach($historyCur as $timestamp){
-            upsert($colMapping->getArchiveCol(FACEBOOK_FEED_TIMESTAMP), $timestamp);
-            deleteOne($colMapping->getCol(FACEBOOK_FEED_TIMESTAMP), $timestamp);
-        }
-
-        $postCur = $colMapping->getCol(POST)->find(
-            [
-                "importFromRef.\$id" => $feed["_id"],
-                "importFromRef.\$ref" => FACEBOOK_FEED,
-            ]
-        );
-        foreach($postCur as $post){
-            //unset($post["importFromRef"]["\$db"]);
-            //unset($post["mnemonoBiz"]["\$db"]);
-            upsert($colMapping->getArchiveCol(POST), $post);
-            deleteOne($colMapping->getCol(POST), $post);
-        }
+    foreach($cursor as $item){
+        $backup = $item["importFromRef"];
+        unset($item["importFromRef"]);
+        $item["importFromRef"]["\$ref"] = $backup["\$ref"];
+        $item["importFromRef"]["\$id"] = $backup["\$id"];
+        $item["importFromRef"]["\$db"] = "Mnemono";
+        $item["importFromRef"]["importFrom"] = $backup["importFrom"];
+        $col->updateOne(["_id" => $item["_id"]], ['$set' => $item]);
     }
 }
 
-function upsert(MongoDBCollection $col, \ArrayObject $oldData = null){
-    if ($oldData == null){
-        return;
+
+function reviseMnemonoBiz(MongoDBCollection $col){
+    $cursor = $col->find();
+
+    foreach($cursor as $item){
+        $backup = $item["mnemonoBiz"];
+        unset($item["mnemonoBiz"]);
+        $item["mnemonoBiz"]["\$ref"] = $backup["\$ref"];
+        $item["mnemonoBiz"]["\$id"] = $backup["\$id"];
+        $item["mnemonoBiz"]["\$db"] = "Mnemono";
+        $col->updateOne(["_id" => $item["_id"]], ['$set' => $item]);
     }
-    $col->updateOne(
-        ["_id" => $oldData["_id"]],
-        ["\$set" => $oldData],
-        ["upsert" => true]
-    );
 }
 
-function deleteOne(MongoDBCollection $col, \ArrayObject $oldData){
-    $col->deleteOne(["_id" => $oldData["_id"]]);
-}
 
 class CollectionMapping{
     private $colKeys;
@@ -165,3 +119,4 @@ class CollectionMapping{
         return $this->archiveColArray[$key];
     }
 }
+
