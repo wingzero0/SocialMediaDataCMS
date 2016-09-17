@@ -32,7 +32,7 @@ $colMapping = new CollectionMapping();
 $nDayAgo = \DateTime::createFromFormat(\DateTime::ISO8601, $options["date"]);
 $nDayAgo->setTimezone(new DateTimeZone("GMT"));
 
-$pageCur = $colMapping->getCol(FACEBOOK_PAGE)->find();
+$pageCur = $colMapping->getCol(FACEBOOK_PAGE)->find([], ["noCursorTimeout" => true]);
 foreach ($pageCur as $page)
 {
     upsert($colMapping->getArchiveCol(FACEBOOK_PAGE), $page);
@@ -54,7 +54,8 @@ foreach ($pageCur as $page)
     ];
     $options = [
         "sort" => ["created_time" => -1],
-        "skip" => 25
+        "skip" => 25,
+        "noCursorTimeout" => true,
     ];
     $feedCur = $colMapping->getCol(FACEBOOK_FEED)->find(
         $query,
