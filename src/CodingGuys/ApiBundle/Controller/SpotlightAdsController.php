@@ -7,11 +7,8 @@
 
 namespace CodingGuys\ApiBundle\Controller;
 
-
 use AppBundle\Controller\AppBaseController;
-use AppBundle\Proto\AdProto;
 use AppBundle\Proto\AdsDataProto;
-use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -26,9 +23,11 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @Route("/ads")
  */
-class SpotlightAdsController extends AppBaseController{
+class SpotlightAdsController extends AppBaseController
+{
 
-    public function __construct(Container $container = null){
+    public function __construct(Container $container = null)
+    {
         $this->setContainer($container);
     }
     /**
@@ -42,31 +41,34 @@ class SpotlightAdsController extends AppBaseController{
      * @Route("/", name="api_homepage_ads")
      * @Method("GET")
      */
-    public function indexAction(Request $request){
-
+    public function indexAction(Request $request)
+    {
         $qb = $this->createQueryBuilder($request);
         $ads = $qb->getQuery()->execute();
         $ret = array();
-        foreach($ads as $ad){
+        foreach ($ads as $ad)
+        {
             $ret[] = $ad;
         }
-        $serialize = $this->serialize($ret, "display");
+        $serialize = $this->serialize($request, $ret, "display");
 
         return new Response($this->OutputFormat($request, $serialize));
-
     }
     /**
      * @param Request $request
      * @return Builder
      */
-    private function createQueryBuilder(Request $request){
+    private function createQueryBuilder(Request $request)
+    {
         $qb = $this->getSpotlightAdsRepo()->getFindAllQueryBuilder();
         $limit = intval($request->get("limit"));
-        if ($limit <= 0){
+        if ($limit <= 0)
+        {
             $limit = 25;
         }
         $skip = intval($request->get("skip"));
-        if ($skip <= 0){
+        if ($skip <= 0)
+        {
             $skip = 0;
         }
         $qb->limit($limit)->skip($skip);

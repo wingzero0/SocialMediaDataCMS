@@ -11,6 +11,7 @@ use AppBundle\Document\MnemonoBiz;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use FOS\CommentBundle\Document\Thread as BaseThread;
+use DateTime;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
@@ -31,21 +32,27 @@ use JMS\Serializer\Annotation\Accessor;
  *   @MongoDB\Index(keys={"expireDate"="desc", "rankPosition"="asc", "finalScore"="desc"}),
  * )
  */
-class Post extends BaseThread{
+class Post extends BaseThread
+{
+    const FACEBOOK_FEED = 'facebookFeed';
+    const WEIBO_FEED = 'weiboFeed';
+    const STATUS_DRAFT = "draft";
+    const STATUS_REVIEW = "review";
+    const STATUS_PUBLISHED = "published";
     /**
      * @MongoDB\Id
      * @Groups({"display"})
      */
     protected $id;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      * @MongoDB\Index
      * @Groups({"display"})
      */
     protected $tags;
     /**
      * @deprecated
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
     protected $mnemonoCat;
@@ -57,12 +64,10 @@ class Post extends BaseThread{
      */
     protected $mnemonoBiz;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $importFrom;
-    const importFromFb = "facebookFeed";
-    const importFromWeibo = "weiboFeed";
     /**
      * @MongoDB\ReferenceOne(
      *   discriminatorField="importFrom",
@@ -75,17 +80,22 @@ class Post extends BaseThread{
      */
     protected $importFromRef;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $originalLink;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      * @Groups({"display"})
      */
     protected $imageLinks;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\EmbedMany(targetDocument="AppBundle\Document\Image")
+     * @Groups({"display"})
+     */
+    protected $images;
+    /**
+     * @MongoDB\Field(type="collection")
      * @Groups({"display"})
      */
     protected $videoLinks;
@@ -102,42 +112,39 @@ class Post extends BaseThread{
      */
     protected $meta;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $publishStatus;
-    const statusDraft = "draft";
-    const statusReview = "review";
-    const statusPublished = "published";
     // passible value: draft(by use), review(by admin), published,
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $content;
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      */
     protected $adminScore;
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      */
     protected $localScore;
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      * @MongoDB\Index
      */
     protected $finalScore;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      */
     protected $rankPosition;
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      * @Groups({"display"})
      */
     protected $createAt;
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      * @MongoDB\Index
      * @Groups({"display"})
      */
@@ -145,29 +152,29 @@ class Post extends BaseThread{
 
     /**
      * @deprecated
-     * @MongoDB\Boolean
+     * @MongoDB\Field(type="boolean")
      * @MongoDB\Index
      */
     protected $spotlight;
     /**
-     * @MongoDB\Boolean
+     * @MongoDB\Field(type="boolean")
      * @MongoDB\Index
      */
     protected $showAtHomepage;
 
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      * @MongoDB\Index
      */
     protected $expireDate;
     /**
-     * @MongoDB\Boolean
+     * @MongoDB\Field(type="boolean")
      * @MongoDB\Index
      */
     protected $softDelete;
 
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      * @MongoDB\Index
      */
     protected $cities;
@@ -175,18 +182,20 @@ class Post extends BaseThread{
     /**
      * @return array key to label
      */
-    public static function listOfPublishStatus(){
-        return array(
-            Post::statusPublished => 'Published',
-            Post::statusDraft => 'Draft',
-            Post::statusReview => 'Review',
-        );
+    public static function listOfPublishStatus()
+    {
+        return [
+            self::STATUS_PUBLISHED => self::STATUS_PUBLISHED,
+            self::STATUS_DRAFT => self::STATUS_DRAFT,
+            self::STATUS_REVIEW => self::STATUS_REVIEW,
+        ];
     }
 
-    public function __constract(){
+    public function __construct(){
         $this->setTags(new ArrayCollection());
         $this->setImageLinks(new ArrayCollection());
         $this->setCities(new ArrayCollection());
+        $this->images = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function updateFinalScore($localWeight = 1.0, $adminWeight = 1.0){
@@ -225,7 +234,7 @@ class Post extends BaseThread{
     /**
      * Get id
      *
-     * @return id $id
+     * @return String $id
      */
     public function getId()
     {
@@ -489,7 +498,7 @@ class Post extends BaseThread{
     /**
      * Set createAt
      *
-     * @param date $createAt
+     * @param DateTime $createAt
      * @return self
      */
     public function setCreateAt($createAt)
@@ -501,7 +510,7 @@ class Post extends BaseThread{
     /**
      * Get createAt
      *
-     * @return date $createAt
+     * @return DateTime $createAt
      */
     public function getCreateAt()
     {
@@ -511,7 +520,7 @@ class Post extends BaseThread{
     /**
      * Set updateAt
      *
-     * @param date $updateAt
+     * @param DateTime $updateAt
      * @return self
      */
     public function setUpdateAt($updateAt)
@@ -523,7 +532,7 @@ class Post extends BaseThread{
     /**
      * Get updateAt
      *
-     * @return date $updateAt
+     * @return DateTime $updateAt
      */
     public function getUpdateAt()
     {
@@ -571,7 +580,7 @@ class Post extends BaseThread{
     /**
      * Set expireDate
      *
-     * @param date $expireDate
+     * @param DateTime $expireDate
      * @return self
      */
     public function setExpireDate($expireDate)
@@ -583,7 +592,7 @@ class Post extends BaseThread{
     /**
      * Get expireDate
      *
-     * @return date $expireDate
+     * @return DateTime $expireDate
      */
     public function getExpireDate()
     {
@@ -750,5 +759,69 @@ class Post extends BaseThread{
     public function getVideoLinks()
     {
         return $this->videoLinks;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param string $tag
+     * @return boolean
+     */
+    public function addTag($tag)
+    {
+        $tag = trim($tag);
+        if (!empty($tag) &&
+            !in_array($tag, $this->tags))
+        {
+            $this->tags[] = $tag;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param string $tag
+     * @return boolean
+     */
+    public function removeTag($tag)
+    {
+        $key = array_search($tag, $this->tags, true);
+        if ($key === false) {
+            return false;
+        }
+        unset($this->tags[$key]);
+        return true;
+    }
+
+    /**
+     * Add image
+     *
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        $this->images[] = $image;
+    }
+
+    /**
+     * Remove image
+     *
+     * @param Image $image
+     */
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    /**
+     * Get images
+     *
+     * @return \Doctrine\Common\Collections\Collection $images
+     */
+    public function getImages()
+    {
+        return $this->images;
     }
 }

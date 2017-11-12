@@ -8,21 +8,16 @@
 namespace CodingGuys\ApiBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
-use AppBundle\Document\ManagedTag;
 use AppBundle\Document\Post;
 use AppBundle\Proto\AdsDataProto;
 use AppBundle\Proto\HomeDataProto;
-use AppBundle\Proto\OpenAppRequestProto;
-use AppBundle\Proto\PostProto;
 use AppBundle\Proto\PostsDataProto;
 use AppBundle\Proto\TagWithCountDataProto;
-use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Doctrine\ODM\MongoDB\Query\Builder;
@@ -31,11 +26,14 @@ use Doctrine\ODM\MongoDB\Query\Builder;
  *
  * @Route("/posts")
  */
-class PostController extends AppBaseController{
+class PostController extends AppBaseController
+{
 
-    public function __construct(Container $container = null){
+    public function __construct(Container $container = null)
+    {
         $this->setContainer($container);
     }
+
     /**
      * @ApiDoc(
      *  description="home page feed",
@@ -49,18 +47,21 @@ class PostController extends AppBaseController{
      * )
      * @Route("/hot", name="api_homepage_post")
      * @Method("GET")
+     *
+     * @param Request $request
+     * @return Response
      */
-    public function indexAction(Request $request){
- 
-
+    public function indexAction(Request $request)
+    {
         $qb = $this->createQueryBuilder($request);
         $qb->field('showAtHomepage')->equals(true);
         $posts = $qb->getQuery()->execute();
         $ret = array();
-        foreach($posts as $post){
+        foreach($posts as $post)
+        {
             $ret[] = $post;
         }
-        $serialize = $this->serialize($ret, "display");
+        $serialize = $this->serialize($request, $ret, "display");
 
         return new Response($this->OutputFormat($request, $serialize));
     }
@@ -74,6 +75,9 @@ class PostController extends AppBaseController{
      * )
      * @Route("/home", name="api_homepage_data")
      * @Method("GET")
+     *
+     * @param Request $request
+     * @return Response
      */
     public function homeAction(Request $request){
 
@@ -114,6 +118,9 @@ class PostController extends AppBaseController{
      * )
      * @Route("/", name="api_all_post")
      * @Method("GET")
+     *
+     * @param Request $request
+     * @return Response
      */
     public function getPostsAction(Request $request){
         $qb = $this->createQueryBuilder($request);
@@ -122,7 +129,7 @@ class PostController extends AppBaseController{
         foreach($posts as $post){
             $ret[] = $post;
         }
-        $serialize = $this->serialize($ret, "display");
+        $serialize = $this->serialize($request, $ret, "display");
  
         return new Response($this->OutputFormat($request, $serialize));
     }
@@ -136,13 +143,18 @@ class PostController extends AppBaseController{
      * )
      * @Route("/{id}", name="api_specific_post")
      * @Method("GET")
+     *
+     * @param Request $request
+     * @param string $id
+     * @return Response
      */
-    public function getPostAction(Request $request,$id){
+    public function getPostAction(Request $request,$id)
+    {
         $post = $this->getPostRepo()->find($id);
         if (!($post instanceof Post)){
             throw $this->createNotFoundException("Unable to find Post document.");
         }
-        $serialize = $this->serialize($post, "display");
+        $serialize = $this->serialize($request, $post, "display");
         return new Response($this->OutputFormat($request, $serialize));
     }
 
@@ -150,7 +162,8 @@ class PostController extends AppBaseController{
      * @param Request $request
      * @return Builder
      */
-    private function createQueryBuilder(Request $request){
+    private function createQueryBuilder(Request $request)
+    {
         $qb = $this->getPostRepo()->getPublicQueryBuilderSortWithRank();
         $qb = $this->compileFilter($request, $qb);
         $limit = intval($request->get("limit"));
@@ -170,8 +183,9 @@ class PostController extends AppBaseController{
      * @param Builder $qb
      * @return Builder
      */
-    private function compileFilter(Request $request, Builder $qb){
-        $versionNum = $this->getVersionNum();
+    private function compileFilter(Request $request, Builder $qb)
+    {
+        $versionNum = $this->getVersionNum($request);
 
         if ($versionNum < 1.0) {
             $qb = $this->compileFilterV0($request, $qb);
@@ -186,8 +200,9 @@ class PostController extends AppBaseController{
      * @param Builder $qb
      * @return Builder
      */
-    private function compileFilterV1(Request $request, Builder $qb){
-        $qb->field('publishStatus')->equals('published');
+    private function compileFilterV1(Request $request, Builder $qb)
+    {
+        $qb->field('publishStatus')->equals(Post::STATUS_PUBLISHED);
         $tags = $request->get('tags');
         if (!empty($tags)) {
             foreach ($tags as $tag) {
@@ -212,13 +227,15 @@ class PostController extends AppBaseController{
      * @return Builder
      * @deprecated
      */
-    private function compileFilterV0(Request $request, Builder $qb){
-        $qb->field('publishStatus')->equals('published');
+    private function compileFilterV0(Request $request, Builder $qb)
+    {
+        $qb->field('publishStatus')->equals(Post::STATUS_PUBLISHED);
         $tags = $request->get('tags');
         if (!empty($tags)) {
             foreach ($tags as $tag) {
                 $tagTrim = trim($tag);
                 if (in_array($tagTrim, array("hk", "mo"))){
+                    // TODO confirm hk, mo will appears on  tags?
                     $qb = $this->compileAreaCodeFilter($tagTrim, null, $qb);
                 } else if (!empty($tagTrim)) {
                     $qb->addAnd(
@@ -240,22 +257,14 @@ class PostController extends AppBaseController{
      * @param Builder $qb
      * @return Builder
      */
-    private function compileAreaCodeFilter($areaCode, $areaCodes, Builder $qb){
+    private function compileAreaCodeFilter($areaCode, $areaCodes, Builder $qb)
+    {
         $trimAreaCode = trim($areaCode);
         if (!empty($trimAreaCode)){
-            $qb->addOr(
-                $qb->expr()->field('cities')->equals($trimAreaCode)
-            );
+            $qb->field('cities')->equals($trimAreaCode);
         }
         if (!empty($areaCodes) && is_array($areaCodes)){
-            foreach($areaCodes as $code){
-                $codeTrim = trim($code);
-                if (!empty($codeTrim)){
-                    $qb->addOr(
-                        $qb->expr()->field('cities')->equals($codeTrim)
-                    );
-                }
-            }
+            $this->compileArrayInFilter($areaCodes, $qb, 'cities');
         }
         return $qb;
     }
@@ -265,7 +274,8 @@ class PostController extends AppBaseController{
      * @param Builder $qb
      * @return Builder
      */
-    private function compileCreateAtFilter($interval, Builder $qb){
+    private function compileCreateAtFilter($interval, Builder $qb)
+    {
         $this->getLogger()->info("days");
         if (!empty($interval)) {
             $this->getLogger()->info($interval);
@@ -280,12 +290,13 @@ class PostController extends AppBaseController{
      * @param string $serialize
      * @return string
      */
-    public function OutputFormat($request, $serialize){
+    public function OutputFormat($request, $serialize)
+    {
         $isProto = $request->get('isProto');
         if (!isset($isProto)){
             $isProto = false;
         }
-        
+
         if(!$isProto){
             return $serialize;
         }else{

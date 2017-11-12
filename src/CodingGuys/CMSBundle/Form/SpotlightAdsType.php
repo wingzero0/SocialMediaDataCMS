@@ -11,8 +11,10 @@ use AppBundle\Utility\DocumentPath;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class SpotlightAdsType extends AbstractType{
+class SpotlightAdsType extends AbstractType
+{
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -20,16 +22,16 @@ class SpotlightAdsType extends AbstractType{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('description', 'text', array(
+            ->add('description', TextType::class, array(
                 'required' => false
             ))
-            ->add('displaySeq', 'text', array(
+            ->add('displaySeq', TextType::class, array(
                 'required' => true
             ))
-            ->add('imageLink', 'text', array(
+            ->add('imageLink', TextType::class, array(
                 'required' => false
             ))
-            ->add('landingPage', 'text', array(
+            ->add('landingPage', TextType::class, array(
                 'required' => false
             ))
         ;

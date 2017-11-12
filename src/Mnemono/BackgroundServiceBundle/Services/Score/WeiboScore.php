@@ -11,9 +11,12 @@ use AppBundle\Document\Weibo\WeiboFeed;
 use Mnemono\BackgroundServiceBundle\Services\PostScoreService;
 use AppBundle\Document\Post;
 
-class WeiboScore implements CalScore{
+class WeiboScore implements CalScore
+{
     private $postService;
-    public function __construct(PostScoreService $postService){
+
+    public function __construct(PostScoreService $postService)
+    {
         $this->postService = $postService;
     }
 
@@ -21,12 +24,12 @@ class WeiboScore implements CalScore{
      * @param Post $post
      * @return float
      */
-    public function calLocalScore(Post $post){
+    public function calLocalScore(Post $post)
+    {
         $feed = $post->getImportFromRef();
-        $postService = $this->postService;
         $score = 0.0;
-        if ($feed instanceof WeiboFeed
-            && $postService instanceof PostScoreService){
+        if ($feed instanceof WeiboFeed)
+        {
             $score = floatval($feed->getCommentsCount() + $feed->getLikeCount());
         }
         return $score;

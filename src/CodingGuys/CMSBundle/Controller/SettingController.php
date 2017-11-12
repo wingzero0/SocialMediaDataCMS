@@ -15,17 +15,20 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\Settings\Weighting;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * @Route("/dashboard/settings")
  */
-class SettingController extends AppBaseController{
+class SettingController extends AppBaseController
+{
     /**
      * @Route("/weighting", name="weighting_home")
      * @Method("GET")
      * @Template("CodingGuysCMSBundle:Settings:Weighting/index.html.twig")
      */
-    public function weightingIndexAction(Request $request){
+    public function weightingIndexAction(Request $request)
+    {
         $limit = 15;
         $page = intval($request->get('page', 1));
         $query = $this->getWeightingRepo()->getBaseQueryBuilder()->getQuery();
@@ -48,12 +51,14 @@ class SettingController extends AppBaseController{
      * @Method({"POST","GET"})
      * @Template("CodingGuysCMSBundle:Settings:Weighting/form.html.twig")
      */
-    public function weightingCreateAction(Request $request){
+    public function weightingCreateAction(Request $request)
+    {
         $weighting = new Weighting();
         $form = $this->createWeightingCreateForm($weighting);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isValid())
+        {
             $dm = $this->getDM();
             $dm->persist($weighting);
             $dm->flush();
@@ -70,17 +75,20 @@ class SettingController extends AppBaseController{
      * @Method({"PUT","GET"})
      * @Template("CodingGuysCMSBundle:Settings:Weighting/form.html.twig")
      */
-    public function weightingEditAction(Request $request, $id){
+    public function weightingEditAction(Request $request, $id)
+    {
         $document = $this->getWeightingRepo()->find($id);
 
-        if ( !($document instanceof Weighting)){
+        if (!($document instanceof Weighting))
+        {
             throw $this->createNotFoundException('Unable to find Weighting document.');
         }
         $editForm = $this->createEditForm($document);
 
         $editForm->handleRequest($request);
 
-        if($editForm->isValid()){
+        if ($editForm->isValid())
+        {
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
@@ -101,16 +109,18 @@ class SettingController extends AppBaseController{
      * @Method({"GET","DELETE"})
      * @Template("CodingGuysCMSBundle:Settings:Weighting/delete.html.twig")
      */
-    public function deleteAction(Request $request, $id){
+    public function deleteAction(Request $request, $id)
+    {
         $document = $this->getWeightingRepo()->find($id);
 
-        if (!$document) {
+        if (!$document)
+        {
             throw $this->createNotFoundException('Unable to find Weighting document.');
         }
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
-        if($form->isValid()){
-
+        if ($form->isValid())
+        {
             $dm = $this->getDM();
             $dm->remove($document);
             $dm->flush();
@@ -129,12 +139,12 @@ class SettingController extends AppBaseController{
      */
     private function createWeightingCreateForm(Weighting $document)
     {
-        $form = $this->createForm(new WeightingType(), $document, array(
+        $form = $this->createForm(WeightingType::class, $document, array(
             'action' => $this->generateUrl('weighting_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', SubmitType::class, array('label' => 'Create'));
 
         return $form;
     }
@@ -146,13 +156,14 @@ class SettingController extends AppBaseController{
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createEditForm(Weighting $document){
-        $form = $this->createForm(new WeightingType(), $document, array(
+    private function createEditForm(Weighting $document)
+    {
+        $form = $this->createForm(WeightingType::class, $document, array(
             'action' => $this->generateUrl('weighting_edit', array('id' => $document->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', SubmitType::class, array('label' => 'Update'));
 
         return $form;
     }
@@ -161,11 +172,12 @@ class SettingController extends AppBaseController{
      * @param $id
      * @return \Symfony\Component\Form\Form
      */
-    private function createDeleteForm($id){
+    private function createDeleteForm($id)
+    {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('weighting_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Hard Delete'))
+            ->add('submit', SubmitType::class, array('label' => 'Hard Delete'))
             ->getForm()
             ;
     }

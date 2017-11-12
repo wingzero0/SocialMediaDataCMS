@@ -1,22 +1,22 @@
 services:
     SyncFbPageService:
         class:  Mnemono\BackgroundServiceBundle\Services\SyncFbPageService
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]
     SyncFbFeedService:
         class:  Mnemono\BackgroundServiceBundle\Services\SyncFbFeedService
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]
     SyncWeiboPageService:
         class:  Mnemono\BackgroundServiceBundle\Services\SyncWeiboPageService
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]
     SyncWeiboFeedService:
         class:  Mnemono\BackgroundServiceBundle\Services\SyncWeiboFeedService
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]
     PostScoreService:
         class:  Mnemono\BackgroundServiceBundle\Services\PostScoreService
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]
     PostReviewService:
         class:  Mnemono\BackgroundServiceBundle\Services\PostReviewService
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]
     GCMService:
         class:  Mnemono\BackgroundServiceBundle\Services\PushServiceAndroid
-        arguments:  [ @service_container ]
+        arguments:  [ "@service_container" ]

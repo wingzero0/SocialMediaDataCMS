@@ -4,33 +4,28 @@ namespace CodingGuys\ApiBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
 use AppBundle\Document\ManagedTag;
-use AppBundle\Document\Post;
-use AppBundle\Proto\AdProto;
-use AppBundle\Proto\AdsDataProto;
 use AppBundle\Proto\TagWithCountDataProto;
-use AppBundle\Proto\TagWithCountProto;
-use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Doctrine\ODM\MongoDB\Query\Builder;
 
 /**
  * Api ManagedTag controller.
  *
  * @Route("/tags")
  */
-class ManagedTagController extends AppBaseController{
+class ManagedTagController extends AppBaseController
+{
 
-    public function __construct(Container $container = null){
+    public function __construct(Container $container = null)
+    {
         $this->setContainer($container);
     }
-    
+
     /**
      * @ApiDoc(
      *  description="query all managed tag, with total number of tag's post",
@@ -43,12 +38,19 @@ class ManagedTagController extends AppBaseController{
      * )
      * @Route("/", name="api_managedTag")
      * @Method("GET")
+     *
+     * @param Request $request
+     * @return Response
      */
-    public function getManagedTagsAction(Request $request){
-        $versionNum = $this->getVersionNum();
-        if ($versionNum < 1.0) {
+    public function getManagedTagsAction(Request $request)
+    {
+        $versionNum = $this->getVersionNum($request);
+        if ($versionNum < 1.0)
+        {
             return $this->getManagedTagsV0($request);
-        }else{
+        }
+        else
+        {
             return $this->getManagedTagsV1($request);
         }
     }
@@ -57,22 +59,20 @@ class ManagedTagController extends AppBaseController{
      * @param Request $request
      * @return Response
      */
-    private function getManagedTagsV1(Request $request){
-        $isProto = $request->get('isProto');
-        if (!isset($isProto)){
-            $isProto = false;
-        }
-
+    private function getManagedTagsV1(Request $request)
+    {
         $limit = intval($request->get("limit"));
-        if ($limit <= 0){
+        if ($limit <= 0)
+        {
             $limit = 25;
         }
         $skip = intval($request->get("skip"));
-        if ($skip <= 0){
+        if ($skip <= 0)
+        {
             $skip = 0;
         }
         $areaCodes = $request->get('areaCodes');
-        return new Response($this->createMangedTagsQueryBuilderV1($limit, $skip, $areaCodes, $request));
+        return new Response($this->createTagsQueryBuilderV1($limit, $skip, $areaCodes, $request));
     }
 
     /**
@@ -83,22 +83,24 @@ class ManagedTagController extends AppBaseController{
      * @return string
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function createMangedTagsQueryBuilderV1($limit, $skip, $areaCodes, $request){
+    private function createTagsQueryBuilderV1($limit, $skip, $areaCodes, Request $request)
+    {
         $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
         $qb->limit($limit)->skip($skip);
         $managedTags = $qb->getQuery()->execute();
 
         $data = array();
 
-        foreach($managedTags as $managedTag){
-            if ($managedTag instanceof ManagedTag){
+        foreach ($managedTags as $managedTag)
+        {
+            if ($managedTag instanceof ManagedTag)
+            {
                 $count = $this->getPostRepo()->queryCountOfTagedPost($managedTag->getKey(), $areaCodes);
                 $data[] = array("tag" => $managedTag, "count" => $count);
             }
         }
-        $serialize =  $this->serialize($data, "display");
+        $serialize =  $this->serialize($request, $data, "display");
         return $this->OutputFormat($request,$serialize);
-
     }
 
     /**
@@ -106,21 +108,21 @@ class ManagedTagController extends AppBaseController{
      * @return Response
      * @deprecated
      */
-    private function getManagedTagsV0(Request $request){
-
+    private function getManagedTagsV0(Request $request)
+    {
         $limit = intval($request->get("limit"));
-        if ($limit <= 0){
+        if ($limit <= 0)
+        {
             $limit = 25;
         }
         $skip = intval($request->get("skip"));
-        if ($skip <= 0){
+        if ($skip <= 0)
+        {
             $skip = 0;
         }
         $areaCode = $request->get('areaCode');
 
-
-        return new Response($this->createMangedTagsQueryBuilder($limit, $skip, $areaCode, $request));
-
+        return new Response($this->createTagsQueryBuilder($limit, $skip, $areaCode, $request));
     }
 
     /**
@@ -131,7 +133,7 @@ class ManagedTagController extends AppBaseController{
      * @return string
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function createMangedTagsQueryBuilder($limit, $skip, $areaCode, $request)
+    private function createTagsQueryBuilder($limit, $skip, $areaCode, Request $request)
     {
         $qb = $this->getManagedTagRepo()->getFindAllQueryBuilder();
         $qb->limit($limit)->skip($skip);
@@ -139,19 +141,23 @@ class ManagedTagController extends AppBaseController{
 
         $data = array();
 
-        foreach ($managedTags as $managedTag) {
-            if ($managedTag instanceof ManagedTag) {
-                if (!empty($areaCode)){
+        foreach ($managedTags as $managedTag)
+        {
+            if ($managedTag instanceof ManagedTag)
+            {
+                if (!empty($areaCode))
+                {
                     $areaCodes = array($areaCode);
-                }else{
+                }
+                else
+                {
                     $areaCodes = array();
                 }
                 $count = $this->getPostRepo()->queryCountOfTagedPost($managedTag->getKey(), $areaCodes);
                 $data[] = array("tag" => $managedTag, "count" => $count);
             }
         }
-        $serialize =  $this->serialize($data, "display");
-
+        $serialize =  $this->serialize($request, $data, "display");
         return $this->OutputFormat($request,$serialize);
     }
     /**
@@ -173,6 +179,4 @@ class ManagedTagController extends AppBaseController{
             return base64_encode(TagWithCountDataProto::fromArray($arr)->toStream());
         }
     }
-
-
 }

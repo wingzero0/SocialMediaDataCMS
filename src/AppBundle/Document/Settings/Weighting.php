@@ -23,12 +23,12 @@ class Weighting {
      */
     protected $id;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
     protected $name;
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      */
     protected $value;
 

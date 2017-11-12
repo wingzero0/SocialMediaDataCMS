@@ -13,16 +13,20 @@ use AppBundle\Controller\AppBaseController;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\ManagedTag;
 use CodingGuys\CMSBundle\Form\ManagedTagType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
 /**
  * @Route("/dashboard/managedTag")
  */
-class ManagedTagController extends AppBaseController{
+class ManagedTagController extends AppBaseController
+{
     /**
      * @Route("/", name="managedTag_home")
      * @Method("GET")
      * @Template()
      */
-    public function indexAction(Request $request){
+    public function indexAction(Request $request)
+    {
         $limit = 15;
         $page = intval($request->get('page', 1));
 
@@ -101,13 +105,14 @@ class ManagedTagController extends AppBaseController{
     {
         $document = $this->getManagedTagRepo()->find($id);
 
-        if (!$document) {
+        if (!$document)
+        {
             throw $this->createNotFoundException('Unable to find ManagedTag document.');
         }
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
-        if($form->isValid()){
-
+        if ($form->isValid())
+        {
             $dm = $this->getDM();
             $dm->remove($document);
             $dm->flush();
@@ -126,12 +131,12 @@ class ManagedTagController extends AppBaseController{
      */
     private function createNewForm(ManagedTag $document)
     {
-        $form = $this->createForm(new ManagedTagType(), $document, array(
+        $form = $this->createForm(ManagedTagType::class, $document, array(
             'action' => $this->generateUrl('managedTag_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', SubmitType::class, array('label' => 'Create'));
 
         return $form;
     }
@@ -143,13 +148,14 @@ class ManagedTagController extends AppBaseController{
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createEditForm(ManagedTag $document){
-        $form = $this->createForm(new ManagedTagType(), $document, array(
+    private function createEditForm(ManagedTag $document)
+    {
+        $form = $this->createForm(ManagedTagType::class, $document, array(
             'action' => $this->generateUrl('managedTag_edit', array('id' => $document->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', SubmitType::class, array('label' => 'Update'));
 
         return $form;
     }
@@ -158,11 +164,12 @@ class ManagedTagController extends AppBaseController{
      * @param $id
      * @return \Symfony\Component\Form\Form
      */
-    private function createDeleteForm($id){
+    private function createDeleteForm($id)
+    {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('managedTag_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Hard Delete'))
+            ->add('submit', SubmitType::class, array('label' => 'Hard Delete'))
             ->getForm()
             ;
     }

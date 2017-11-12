@@ -8,7 +8,8 @@
 namespace Mnemono\BackgroundServiceBundle\Services\Score;
 use AppBundle\Document\Post;
 
-interface CalScore {
+interface CalScore
+{
     /**
      * @param Post $post
      * @return float

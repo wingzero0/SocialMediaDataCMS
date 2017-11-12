@@ -14,17 +14,20 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\SpotlightAds;
 use CodingGuys\CMSBundle\Form\SpotlightAdsType;
 use AppBundle\Controller\AppBaseController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * @Route("/dashboard/spotlight")
  */
-class SpotlightAdsController extends AppBaseController {
+class SpotlightAdsController extends AppBaseController
+{
     /**
      * @Route("/", name="spotlightAds_home")
      * @Method("GET")
      * @Template()
      */
-    public function indexAction(Request $request){
+    public function indexAction(Request $request)
+    {
         $limit = 15;
         $page = intval($request->get('page', 1));
 
@@ -42,13 +45,15 @@ class SpotlightAdsController extends AppBaseController {
      * @Method({"GET","POST"})
      * @Template("CodingGuysCMSBundle:SpotlightAds:form.html.twig")
      */
-    public function createAction(Request $request){
+    public function createAction(Request $request)
+    {
         $document = new SpotlightAds();
         $newForm = $this->createNewForm($document);
 
         $newForm->handleRequest($request);
 
-        if($newForm->isValid()){
+        if ($newForm->isValid())
+        {
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
@@ -69,16 +74,19 @@ class SpotlightAdsController extends AppBaseController {
      * @Method({"GET","PUT"})
      * @Template("CodingGuysCMSBundle:SpotlightAds:form.html.twig")
      */
-    public function editAction(Request $request, $id){
+    public function editAction(Request $request, $id)
+    {
         $document = $this->getSpotlightAdsRepo()->find($id);
-        if ( !($document instanceof SpotlightAds)){
+        if (!($document instanceof SpotlightAds))
+        {
             throw $this->createNotFoundException('Unable to find SpotlightAds document.');
         }
         $editForm = $this->createEditForm($document);
 
         $editForm->handleRequest($request);
 
-        if($editForm->isValid()){
+        if ($editForm->isValid())
+        {
             $dm = $this->getDM();
             $dm->persist($document);
             $dm->flush();
@@ -102,12 +110,12 @@ class SpotlightAdsController extends AppBaseController {
      */
     private function createNewForm(SpotlightAds $document)
     {
-        $form = $this->createForm(new SpotlightAdsType(), $document, array(
+        $form = $this->createForm(SpotlightAdsType::class, $document, array(
             'action' => $this->generateUrl('spotlightAds_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', SubmitType::class, array('label' => 'Create'));
 
         return $form;
     }
@@ -123,13 +131,14 @@ class SpotlightAdsController extends AppBaseController {
     {
         $document = $this->getSpotlightAdsRepo()->find($id);
 
-        if (!$document) {
+        if (!$document)
+        {
             throw $this->createNotFoundException('Unable to find SpotlightAds document.');
         }
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
-        if($form->isValid()){
-
+        if ($form->isValid())
+        {
             $dm = $this->getDM();
             $dm->remove($document);
             $dm->flush();
@@ -146,13 +155,14 @@ class SpotlightAdsController extends AppBaseController {
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createEditForm(SpotlightAds $document){
-        $form = $this->createForm(new SpotlightAdsType(), $document, array(
+    private function createEditForm(SpotlightAds $document)
+    {
+        $form = $this->createForm(SpotlightAdsType::class, $document, array(
             'action' => $this->generateUrl('spotlightAds_edit', array('id' => $document->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', SubmitType::class, array('label' => 'Update'));
 
         return $form;
     }
@@ -161,11 +171,12 @@ class SpotlightAdsController extends AppBaseController {
      * @param $id
      * @return \Symfony\Component\Form\Form
      */
-    private function createDeleteForm($id){
+    private function createDeleteForm($id)
+    {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('spotlightAds_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Hard Delete'))
+            ->add('submit', SubmitType::class, array('label' => 'Hard Delete'))
             ->getForm()
             ;
     }

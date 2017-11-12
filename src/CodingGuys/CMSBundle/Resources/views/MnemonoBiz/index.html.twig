@@ -2,134 +2,132 @@
 
 {% block mainContent %}
     <style>
-        th, li{
-            white-space: nowrap;
+        .item-count {
+            color: #666;
+            font-size: 12px;
+            margin: 20px 0 10px;
         }
-        tr td:nth-of-type(11) div{
-            /*background-color: yellow;*/
+        .first-item {
+            border-top: 1px solid #ccc;
         }
-        ul{
-            padding: 0;
-            list-style-type: none;
+        .item {
+            border-bottom: 1px solid #ccc;
+            padding: 18px 0;
         }
-        .mycontainer {
-            padding-right: 15px;
-            padding-left: 15px;
-            margin-right: auto;
-            margin-left: auto;
+        .item-title {
+            margin: 10px 0 18px;
         }
-        @media (min-width: 1200px) {
-            .mycontainer {
-                width: 1350px;
-            }
+        .item strong {
+            display: inline-block;
+            color: #999;
+            margin-right: 10px;
+        }
+        .inline-pcs {
+            display: inline-block;
+            margin-right: 10px;
         }
     </style>
     <div class="container">
-        <h2 class="page-header"><strong>MnemonoBiz list</strong></h2>
-        <div class="navbar-header">
-            <a class="btn btn-primary btn-large" href="{{ path('mnemonobiz_new') }}"> Create MnemonoBiz </a>
+        <div class="page-header">
+            <h2>Biz <a href="{{ path('mnemonobiz_new') }}" class="btn btn-default btn-sm">Create</a></h2>
         </div>
-        <form class="navbar-form navbar-right" role="form" method="get" action="{{ path('mnemonobiz_search')}}">
-            <div class="form-group">
-                <input name="query" type="text" placeholder="keyword" class="form-control">
+        <form class="form-horizontal" role="form" method="get" action="">
+            <div class="col-sm-8 col-xs-9">
+                <div class="form-group">
+                    <input name="q" type="text" placeholder="keyword" class="form-control" value="{{ q }}" >
+                </div>
             </div>
-            <button type="submit" class="btn btn-success">Search</button>
+            <div class="col-xs-2">
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span>search</span>
+                </button>
+            </div>
         </form>
-        <table class="records_list table table-striped table-bordered table-condensed">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Actions</th>
-                <th>Short Description</th>
-                <th>Category</th>
-                <th>Tag</th>
-                <th>Address</th>
-                <th>Phones</th>
-                <th>Faxes</th>
-                <th>Websites</th>
-                <th>Weighting</th>
-                <th>Import From</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for document in pagination %}
-                <tr>
-                    <td><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">{{ document.name }}</a></td>
-                    <td><ul>
-                        <li><a href="{{ path('mnemonobiz_show', { 'id': document.id }) }}">show detail</a></li>
-                        <li><a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">edit</a></li>
-                    </ul></td>
-                    <td>{{ document.shortDesc }}</td>
-                    <td>{{ document.category }}</td>
-                    <td>
-                        <ul class="list">
-                            {% for tag in document.tags %}
-                                <li>{{ tag }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
-                        <ul class="list">
-                            {% for address in document.addresses %}
-                                <li>{{ address }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
-                        <ul class="list">
-                            {% for phone in document.phones %}
-                                <li>{{ phone }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
-                        <ul class="list">
-                            {% for fax in document.faxes %}
-                                <li>{{ fax }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>
-                        <ul class="list">
-                            {% for website in document.websites %}
-                                <div><a href="{{ website }}" >link</a></div>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>{{ document.weighting }}</td>
-                    <td>{{ document.importFrom }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div class="clearfix"></div>
+        <p class="item-count">{{ items.getTotalItemCount }} item(s)</p>
+        {% for item in items %}
+            <div class="{{ loop.first ? 'first-item item' : 'item' }}">
+                <h3 class="item-title">
+                    <a href="{{ path('mnemonobiz_edit', { 'id': item.id }) }}">{{ item.name }}</a>
+                </h3>
+
+                {% if item.shortDesc %}
+                    <p>{{ item.shortDesc }}</p>
+                {% endif %}
+
+                {% if item.category %}
+                    <p>
+                        <strong>Category:</strong>
+                        <span class="inline-pcs">{{ item.category }}</span>
+                    </p>
+                {% endif %}
+
+                {% if item.tags %}
+                    <p>
+                        <strong>Tags: </strong>
+                        {% for tag in item.tags %}
+                            <span class="inline-pcs">{{ tag }}</span>&nbsp;
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                {% if item.cities %}
+                    <p>
+                        <strong>City: </strong>
+                        {% for city in item.cities %}
+                            <span class="inline-pcs">{{ city }}</span>&nbsp;
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                {% if item.websites %}
+                    <p>
+                        <strong>Official link: </strong>
+                        {% for website in item.websites %}
+                            <span class="inline-pcs"><a href="{{ website }}">link</a></span>&nbsp;
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                {% if item.weighting %}
+                    <p>
+                        <strong>Weight: </strong>
+                        <span class="inline-pcs">{{ item.weighting }}</span>&nbsp;
+                    </p>
+                {% endif %}
+
+                {% if item.importFrom %}
+                    <p>
+                        <strong>Imported From: </strong>
+                        <span class="inline-pcs">{{ item.importFrom }}</span>
+                    </p>
+                {% endif %}
+
+                {% if item.lastPostUpdateAt %}
+                    <p><strong>Updated At: </strong>{{ item.lastPostUpdateAt|date('Y-m-d H:i') }}</p>
+                {% endif %}
+
+                <p>
+                    <a href="{{ path('mnemonobiz_edit', { 'id': item.id }) }}">edit</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('mnemonobiz_show_snapshots', { 'id': item.id }) }}">snapshots</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('mnemonobiz_show_stats', { 'id': item.id }) }}">stats</a>
+                    &nbsp;&middot;&nbsp;
+                    {% set q = 'byid:' ~ item.id %}
+                    <a href="{{ path('posts_home', { 'q':  q }) }}">posts</a>
+                </p>
+            </div>
+        {% endfor %}
         <div class="text-center">
-            {{ knp_pagination_render(pagination) }}
+            {{ knp_pagination_render(items) }}
         </div>
     </div>
+
     {% block footer %}
         <div class="container">
             {{ parent() }}
         </div>
     {% endblock %}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script type="text/javascript">
-        jQuery(document).ready(function () {
-            jQuery('div.pagination span.current').each(function (index) {
-                jQuery(this).replaceWith(jQuery('<li class="active"><a href="#">' + this.innerHTML + '</a></li>'));
-            });
-            var classArray = ['first', 'previous', 'page', 'next', 'last'];
-            jQuery.each(classArray, function (key, className) {
-                jQuery('div.pagination span.' + className).each(function (index) {
-                    jQuery(this).replaceWith(jQuery('<li>' + this.innerHTML + '</li>'));
-                });
-            })
-            jQuery('div.pagination').each(function (index) {
-                jQuery(this).replaceWith(jQuery('<ul class="pagination">' + this.innerHTML + '</ul>'));
-            });
-
-        });
-    </script>
 {% endblock %}

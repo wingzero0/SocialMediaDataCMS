@@ -27,15 +27,15 @@ class FacebookPage {
      */
     protected $fbId;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $name;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      */
     protected $likes;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      */
     protected $checkins;
     /**
@@ -47,7 +47,7 @@ class FacebookPage {
      */
     protected $wereHereCount;
     /**
-     * @MongoDB\Boolean
+     * @MongoDB\Field(type="boolean")
      */
     protected $exception;
 

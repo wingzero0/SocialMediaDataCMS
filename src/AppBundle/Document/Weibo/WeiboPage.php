@@ -23,24 +23,24 @@ class WeiboPage {
      */
     protected $id;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
     protected $uid;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $description;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $name;
     /**
-     * @MongoDB\Raw
+     * @MongoDB\Field(type="raw")
      */
     protected $mnemono;
     /**
-     * @MongoDB\Boolean
+     * @MongoDB\Field(type="boolean")
      */
     protected $exception;
 

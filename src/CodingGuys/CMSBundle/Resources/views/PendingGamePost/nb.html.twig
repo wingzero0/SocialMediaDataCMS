@@ -1,0 +1,348 @@
+{% extends "CodingGuysCMSBundle:PendingGamePost:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        .item {
+            background-color: #fff;
+            border: 1px solid #f7f7f7;
+            border-top: 4px solid #ccc;
+            margin: 10px auto;
+            max-width: 640px;
+            min-height: 320px;
+            position: relative;
+        }
+        .item-container {
+            padding: 15px;
+        }
+        .item-by {
+            font-size: 18px;
+            line-height: 30px;
+            margin: 5px 0;
+        }
+        .item-meta {
+            color: #717171;
+            font-size: 12px;
+            margin: 5px 0 10px;
+        }
+        .item-created-at,
+        .item-like-count,
+        .item-comment-count {
+            display: inline-block;
+            margin-right: 15px;
+        }
+        .item-message {
+            font-size: 14px;
+            margin: 20px 0;
+            padding: 10px 0;
+            overflow: auto;
+        }
+        .item-media-container {
+            margin: 5px 0;
+        }
+        .item-img {
+            display: block;
+            max-width: 100%;
+            margin: 0 auto 20px;
+        }
+        .item-bottom-stuff {
+            background-color: #f7f7f7;
+            border-left: 4px solid #111;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 12px;
+            margin: 10px 10px 5px 0;
+            padding: 4px 8px;
+        }
+        .item-permalink:link {
+            color: #369;
+            text-decoration: none;
+        }
+        .item-permalink:visited {
+            text-decoration: none;
+        }
+        .item-permalink:hover {
+            text-decoration: none;
+        }
+        .item-permalink:active {
+            text-decoration: none;
+        }
+        .item-type-container {
+            position: absolute;
+            padding: 15px;
+            top: 0;
+            left: -180px;
+            width: 180px;
+        }
+        .item-type-attr {
+            margin: 10px 0;
+            height: 24px;
+        }
+        .item-action-container {
+            position: absolute;
+            padding: 15px;
+            top: 0;
+            right: -180px;
+            width: 180px;
+        }
+        .item-action-attr {
+            margin: 8px 0 30px;
+        }
+        .date-title {
+            color: #717171;
+            font-size: 16px;
+            margin: 20px auto 10px;
+            max-width: 140px;
+            text-align: center;
+        }
+        #msg-success, #msg-fail {
+            color: #fff;
+            display: none;
+            height: 40px;
+            left: 50%;
+            line-height: 40px;
+            margin-left: -150px;
+            overflow: hidden;
+            position: fixed;
+            text-align: center;
+            top: 80px;
+            width: 300px;
+            z-index: 100;
+        }
+        #msg-success {
+            background-color: #111;
+            background-color: rgba(17, 17, 17 , 0.8);
+        }
+        #msg-success::before {
+            content: "\2713  ";
+        }
+        #msg-fail {
+            background-color: #ee7060;
+            background-color: rgba(238, 112, 96 , 0.8);
+        }
+        #msg-fail::before {
+            content: "\2717  ";
+        }
+        .video-icon {
+            position: relative;
+        }
+        .video-icon:before {
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            content: "";
+            height: 18px;
+            position: absolute;
+            right: 0;
+            top: 0px;
+            width: 21px;
+        }
+        .video-icon:after {
+            border-bottom: 4px solid #fff;
+            border-left: 5px solid #ccc;
+            border-right: 5px solid #fff;
+            border-top: 4px solid #fff;
+            content: "";
+            height: 0;
+            position: absolute;
+            right: 2px;
+            top: 5px;
+            width: 0;
+        }
+        .multi-image-icon {
+            position: relative;
+        }
+        .multi-image-icon:before {
+            background-color: #ccc;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            content: "";
+            height: 18px;
+            position: absolute;
+            right: 0;
+            top: 3px;
+            width: 18px;
+        }
+        .multi-image-icon:after {
+            background-color: #ccc;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            content: "";
+            height: 18px;
+            position: absolute;
+            right: 3px;
+            top: 0;
+            width: 18px;
+        }
+        .item-tags {
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .tag-icon {
+            background-color: #ccc;
+            height: 10px;
+            left: 1px;
+            position: absolute;
+            width: 10px;
+            bottom: 3px;
+        }
+        .tag-icon:before {
+            border-bottom: 5px solid #ccc;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid transparent;
+            content: "";
+            height: 0;
+            left: 0;
+            position: absolute;
+            top: -10px;
+            width: 0;
+        }
+        .tag-icon:after {
+            background-color: #fff;
+            border-radius: 50%;
+            content: "";
+            position: absolute;
+            height: 3px;
+            width: 3px;
+            left: 4px;
+        }
+        .item-action-attr-name {
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <h2>Pending Game Posts <small>(by Naive Bayes)</small></h2>
+        </div>
+        {% if items|length > 0 %}
+            <div class="text-center">{{ knp_pagination_render(items) }}</div>
+            {% set dateTitle = '' %}
+            {% for item in items %}
+                {% if item.createdAt|date('Y-m-d') != dateTitle %}
+                    {% set dateTitle = item.createdAt|date('Y-m-d') %}
+                    <div class="date-title">{{ dateTitle }}</div>
+                {% endif %}
+                {% if 'facebookFeed' == item.importFrom %}
+                    {{ include('CodingGuysCMSBundle:PendingGamePost:fbItem.html.twig', {item: item, post: item.importFromRef, mnPost: mnPostsInfo[item.id]}) }}
+                {% endif %}
+            {% endfor %}
+            <div class="text-center">{{ knp_pagination_render(items) }}</div>
+        {% else %}
+            <div class="text-center">
+                <p style="color: #999; font-size: 24px;">NO DATA</p>
+            </div>
+        {% endif %}
+    </div>
+    <div id="msg-success" class="msg-box"></div>
+    <div id="msg-fail" class="msg-box"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var timer = null;
+        var showSuccessfulMsg = function (msg) {
+            var generalSuccessMsg = 'update made';
+            msg = msg ? msg : generalSuccessMsg;
+            $('.msg-box').hide();
+            clearTimeout(timer);
+            var el = $('#msg-success');
+            el.html(msg);
+            el.show();
+            timer = setTimeout(function () {
+                el.hide();
+                el.html('');
+            }, 5000);
+        };
+        var showFailedMsg = function (msg) {
+            var generalFailedMsg = 'update failed';
+            msg = msg ? msg : generalFailedMsg;
+            $('.msg-box').hide();
+            clearTimeout(timer);
+            var el = $('#msg-fail');
+            el.html(msg);
+            el.show();
+            timer = setTimeout(function () {
+                el.hide();
+                el.html('');
+            }, 5000);
+        };
+        $(function () {
+            $('.pending-game-post-tag-toogle-link').click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr('data-mn-post-id');
+                var loadingEl = $('#pending-game-post-tag-loading-' + id);
+                var tagAction = $(this).attr('data-tag-action');
+                var addTagUrl = "{{ path('post_add_tag', { 'id': '__id__' }) }}";
+                var removeTagUrl = "{{ path('post_remove_tag', { 'id': '__id__' }) }}";
+                var url = ('remove' === tagAction) ?
+                    removeTagUrl.replace(/__id__/, id) :
+                    addTagUrl.replace(/__id__/, id);
+                var d = {
+                    'csrf-token': $('meta[name="csrf-token"]').attr('content'),
+                    'tag': 'game',
+                };
+                $(this).hide();
+                loadingEl.show();
+                var self = this;
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: d,
+                    success: function (res) {
+                        if (res.ok && true === res.ok) {
+                            var el = $('#pending-game-post-tag-' + id);
+                            el.html(res.tags.join(', '));
+                            var tagAction = (-1 === res.tags.indexOf('game')) ?
+                                'add' : 'remove';
+                            $(self).attr('data-tag-action', tagAction);
+                            showSuccessfulMsg();
+                        } else {
+                            showFailedMsg();
+                        }
+                        loadingEl.hide();
+                        $(self).show();
+                    },
+                    error: function (res) {
+                        showFailedMsg();
+                        loadingEl.hide();
+                        $(self).show();
+                    }
+                });
+            });
+            $('.pending-game-post-expn-form').submit(function (e) {
+                e.preventDefault();
+                if ('0' !== $(this).attr('data-is-loading')) {
+                    return;
+                }
+                $(this).attr('data-is-loading', '1');
+                var id = $(this).attr('data-mn-post-id');
+                var d = {
+                  'expn': $('.pending-game-post-expn-input-' + id).val(),
+                  'csrf-token': $('meta[name="csrf-token"]').attr('content')
+                };
+                var self = this;
+                $.ajax({
+                    type: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    data: d,
+                    dataType: 'json',
+                    success: function (res) {
+                      if (res.ok && true === res.ok) {
+                        $('#pending-game-post-expn-' + id).html(res.expn);
+                        showSuccessfulMsg();
+                      } else {
+                        showFailedMsg();
+                      }
+                      $(self).attr('data-is-loading', '0');
+                    },
+                    error: function (res) {
+                      showFailedMsg();
+                      $(self).attr('data-is-loading', '0');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

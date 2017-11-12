@@ -7,6 +7,7 @@
 namespace Mnemono\BackgroundServiceBundle\Services;
 
 use AppBundle\Document\Facebook\FacebookFeedTimestamp;
+use AppBundle\Document\Image;
 use Mnemono\BackgroundServiceBundle\Services\BaseService;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use AppBundle\Document\Facebook\FacebookFeed;
@@ -46,7 +47,9 @@ class SyncFbFeedService extends BaseService{
             $this->resetDM();
             $post = $this->createPostByFbId($fbId);
             return true;
-        }catch (\Exception $e){
+        } catch (\UnexpectedValueException $e){
+            $this->logExecption($e); 
+        } catch (\Exception $e){
             $this->logExecption($e);
             exit(-1);
         }
@@ -235,9 +238,12 @@ class SyncFbFeedService extends BaseService{
         $post->setImportFrom("facebookFeed");
         $post->setImportFromRef($feed);
         $post->setContent($feed->getMessage());
-        $post->setPublishStatus(Post::statusReview);
+        $post->setPublishStatus(Post::STATUS_REVIEW);
         $post->setOriginalLink($feed->getGuessLink());
         $post->setImageLinks($feed->getAttachmentImageURL());
+        foreach ($feed->getAttachmentImages() as $imageRaw){
+            $post->addImage(Image::createFromArray($imageRaw));
+        }
         $post->setVideoLinks($feed->getVideoURLs());
         $this->setDatesByFBFeedToPost($feed, $post);
         $post->setMeta($this->fbMetaBuilder($feed));
@@ -277,6 +283,10 @@ class SyncFbFeedService extends BaseService{
      * @param Post $post
      */
     private function setDatesByFBFeedToPost(FacebookFeed $feed, Post $post){
+        if ($feed->getCreatedTime() === null)
+        {
+            throw new \UnexpectedValueException("created time can't be null");
+        }
         $createDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getCreatedTime());
         $post->setCreateAt($createDate);
         $updateDate = \DateTime::createFromFormat(\DateTime::ISO8601, $feed->getUpdatedTime());

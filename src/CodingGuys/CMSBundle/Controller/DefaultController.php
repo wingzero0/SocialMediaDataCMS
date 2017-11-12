@@ -18,8 +18,14 @@ class DefaultController extends AppBaseController
      */
     public function dashboardAction()
     {
-
-        return array();
+        $bizCount = $this->getMnemenoBizRepo()
+            ->getHomeCount();
+        $postItems = $this->getPostOverallStatsRepo()
+            ->findAllWithSortedKey();
+        return [
+            'bizCount' => $bizCount,
+            'postItems' => $postItems,
+        ];
     }
 
     /**
@@ -37,13 +43,9 @@ class DefaultController extends AppBaseController
      */
     public function indexAction(Request $request)
     {
-        $session = $request->getSession();
-        $csrfToken = $this->get('form.csrf_provider')->generateCsrfToken('authenticate');
-        $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
-        return array(
-            'csrfToken' => $csrfToken,
-            'lastUsername' => $session->get(SecurityContext::LAST_USERNAME),
-            'error' => ($error?$error:null),
-        );
+        $helper = $this->get('security.authentication_utils');
+        return [
+            'lastUsername' => $helper->getLastUsername(),
+        ];
     }
 }

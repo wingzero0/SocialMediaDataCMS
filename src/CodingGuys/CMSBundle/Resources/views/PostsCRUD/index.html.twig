@@ -2,128 +2,141 @@
 
 {% block mainContent %}
     <style>
-        th, li{
-            white-space: nowrap;
+        .item-count {
+            color: #666;
+            font-size: 12px;
+            margin: 20px 0 10px;
         }
-        ul{
-            padding: 0;
-            list-style-type: none;
+        .first-item {
+            border-top: 1px solid #eee;
         }
-        .mycontainer {
-            padding-right: 15px;
-            padding-left: 15px;
-            margin-right: auto;
-            margin-left: auto;
+        .item {
+            border-bottom: 1px solid #eee;
+            padding: 28px 0 18px;
         }
-        @media (min-width: 1200px) {
-            .mycontainer {
-                width: 1350px;
-            }
+        .item strong {
+            display: inline-block;
+            color: #999;
+            margin-right: 10px;
+        }
+        .inline-pcs {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .item-content {
+            border-left: 4px solid #999;
+            margin: 20px 0;
+            padding: 10px;
+        }
+        .label-deleted {
+            background-color: #f90c0a;
+            color: #fff;
+            display: inline-block;
+            font-size: 12px;
+            padding: 3px 5px;
+            margin: 5px 0;
         }
     </style>
-    <div class="mycontainer">
-        <h1 class="page-header"><strong>Posts list</strong></h1>
-        <p><a href="{{ path('posts_create') }}" class="btn btn-default">Create Post</a></p>
-        <form class="navbar-form navbar-right form-inline" role="form" method="get" action="{{ path('posts_search')}}">
-            <div class="form-group">
-                <input name="query" type="text" placeholder="keyword" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Search</button>
-        </form>
-        <table class="records_list table table-striped table-bordered table-condensed">
-            <thead>
-            <tr>
-                <th>Publish Status</th>
-                <th>Content</th>
-                <th>Action</th>
-                <th>MnemonoBiz</th>
-                <th>Tags</th>
-                <th>Local Score</th>
-                <th>Admin Score</th>
-                <th>Import From</th>
-                <th>Meta</th>
-                <th>Last Modified date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for document in pagination %}
-                <tr>
-                    <td>{{ document.publishStatus }}</td>
-                    <td>{{ document.content }}</td>
-                    <td>
-                        <ul>
-                            <li>
-                                <a href="{{ path('posts_show', { 'id': document.id }) }}">show</a>
-                            </li>
-                            <li>
-                                <a href="{{ path('posts_edit', { 'id': document.id }) }}">edit</a>
-                            </li>
-                        </ul>
-                    </td>
-                    {% if document.mnemonoBiz is not null %}
-                        <td><a href="{{ path('mnemonobiz_show', {'id': document.mnemonoBiz.id })}}">{{ document.mnemonoBiz.name }}</a></td>
-                    {% else %}
-                        <td>null</td>
-                    {% endif %}
-                    <td>
-                        <ul>
-                            {% for tag in document.tags %}
-                                <li>{{ tag }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>{{ document.localScore }}</td>
-                    <td>{{ document.adminScore }}</td>
-                    <td>{{ document.importFrom }}</td>
-                    {% if document.meta is not null and document.importFrom == 'facebookFeed' %}
-                        <td>
-                            <ul>
-                                <li>Facebook ID: {{ document.meta.fbId }}</li>
-                                <li>Total Likes: {{ document.meta.fbTotalLikes }}</li>
-                                <li>Total Comments: {{ document.meta.fbTotalComments }}</li>
-                            </ul>
-                        </td>
-                    {% else %}
-                        <td>null</td>
-                    {% endif %}
-                    {% if document.updateAt is not null %}
-                        <td>{{ document.updateAt.format('Y-m-d') }}</td>
-                    {% else %}
-                        <td></td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    <div>
-        <div class="text-center">
-            {{ knp_pagination_render(pagination) }}
+    <div class="container">
+        <div class="page-header">
+            <h2>Posts <a href="{{ path('posts_create') }}" class="btn btn-default btn-sm">Create</a></h2>
         </div>
-    {#</div>#}
+        <form class="form-horizontal" role="form" method="get" action="">
+            <div class="col-sm-8 col-xs-9">
+                <div class="form-group">
+                    <input name="q" type="text" placeholder="keyword" class="form-control" value="{{ q }}" >
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span>search</span>
+                </button>
+            </div>
+        </form>
+        <div class="clearfix"></div>
+        <p class="item-count">{{ items.getTotalItemCount }} item(s)</p>
+        {% for item in items %}
+            <div class="{{ loop.first ? 'first-item item' : 'item' }}">
+                {% if (true == item.softDelete) %}
+                    <div class="label-deleted">deleted</div>
+                {% endif %}
+                {% if item.mnemonoBiz is not null %}
+                    <p>
+                        <strong>By: </strong>
+                        <a href="{{ path('mnemonobiz_edit', {'id': item.mnemonoBiz.id })}}">{{ item.mnemonoBiz.name }}</a>
+                    </p>
+                {% endif %}
+
+                <p class="item-content">{{ item.content ?? '---' }}</p>
+                <p><strong>Status: </strong>{{ item.publishStatus }}</p>
+
+                {% if item.tags %}
+                    <p>
+                        <strong>Tags: </strong>
+                        {% for tag in item.tags %}
+                            <span class="inline-pcs">{{ tag }}</span>&nbsp;
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                {% if item.cities %}
+                    <p>
+                        <strong>City: </strong>
+                        {% for city in item.cities %}
+                            <span class="inline-pcs">{{ city }}</span>&nbsp;
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                {% if item.meta is not null and item.importFrom == 'facebookFeed' %}
+                    <p><strong>Facebook ID: </strong>{{ item.meta.fbId }}</p>
+                    <p><strong>Total Likes: </strong>{{ item.meta.fbTotalLikes }}</p>
+                    <p><strong>Total Comments: </strong>{{ item.meta.fbTotalComments }}</p>
+                {% endif %}
+
+                {% if item.localScore %}
+                    <p>
+                        <strong>Local Score: </strong>
+                        <span class="inline-pcs">{{ item.localScore }}</span>&nbsp;
+                    </p>
+                {% endif %}
+
+                {% if item.adminScore %}
+                    <p>
+                        <strong>Admin Score: </strong>
+                        <span class="inline-pcs">{{ item.adminScore }}</span>&nbsp;
+                    </p>
+                {% endif %}
+
+                {% if item.importFrom %}
+                    <p>
+                        <strong>Imported From: </strong>
+                        <span class="inline-pcs">{{ item.importFrom }}</span>
+                    </p>
+                {% endif %}
+
+                {% if item.updateAt %}
+                    <p><strong>Updated At: </strong>{{ item.updateAt|date('Y-m-d H:i') }}</p>
+                {% endif %}
+
+                <p>
+                    <a href="{{ path('posts_edit', { 'id': item.id }) }}">edit</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('posts_show_snapshots', { 'id': item.id }) }}">snapshots</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('posts_show_stats', { 'id': item.id }) }}">stats</a>
+                </p>
+            </div>
+        {% endfor %}
+
+        <div class="text-center">
+            {{ knp_pagination_render(items) }}
+        </div>
+    </div>
     {% block footer %}
         <div class="container">
             {{ parent() }}
         </div>
     {% endblock %}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script type="text/javascript">
-        jQuery(document).ready(function () {
-            jQuery('div.pagination span.current').each(function (index) {
-                jQuery(this).replaceWith(jQuery('<li class="active"><a href="#">' + this.innerHTML + '</a></li>'));
-            });
-            var classArray = ['first', 'previous', 'page', 'next', 'last'];
-            jQuery.each(classArray, function (key, className) {
-                jQuery('div.pagination span.' + className).each(function (index) {
-                    jQuery(this).replaceWith(jQuery('<li>' + this.innerHTML + '</li>'));
-                });
-            })
-            jQuery('div.pagination').each(function (index) {
-                jQuery(this).replaceWith(jQuery('<ul class="pagination">' + this.innerHTML + '</ul>'));
-            });
-
-        });
-    </script>
 {% endblock %}

@@ -20,62 +20,66 @@ use JMS\Serializer\Annotation\Accessor;
  *   @MongoDB\Index(keys={"importFrom"="asc", "importFromRef.$id"="desc"}),
  * )
  */
-class MnemonoBiz{
+class MnemonoBiz
+{
+    const FACEBOOK_PAGE = 'facebookPage';
+    const WEIBO_PAGE = 'weiboPage';
+
     /**
      * @MongoDB\Id
      * @Groups({"display"})
      */
     protected $id;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $name;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $shortDesc;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $longDesc;
     // TODO migrate category to tag?
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
     protected $category;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      * @MongoDB\Index
      */
     protected $tags;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      */
     protected $addresses;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      */
     protected $cities;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      */
     protected $phones;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      */
     protected $faxes;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      */
     protected $websites;
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      */
     protected $weighting;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $importFrom;
     /**
@@ -91,7 +95,7 @@ class MnemonoBiz{
     protected $importFromRef;
 
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      */
     protected $lastModDate;
     /**
@@ -100,12 +104,12 @@ class MnemonoBiz{
     protected $lastModUser;
 
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      */
     protected $globalScore;
 
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      * @MongoDB\Index
      */
     protected $lastPostUpdateAt;
@@ -126,11 +130,14 @@ class MnemonoBiz{
      * @Groups({"display"})
      * @return string|null
      */
-    public function getProfilePicLink(){
+    public function getProfilePicLink()
+    {
         $discriminator = $this->getImportFrom();
-        if ($discriminator == "facebookPage"){
+        if ($discriminator === self::FACEBOOK_PAGE)
+        {
             $fbPage = $this->getImportFromRef();
-            if ($fbPage instanceof FacebookPage){
+            if ($fbPage instanceof FacebookPage)
+            {
                 return "http://graph.facebook.com/" . $fbPage->getFbId() . "/picture?type=large";
             }
         }
@@ -310,7 +317,8 @@ class MnemonoBiz{
      */
     public function getWeighting()
     {
-        if ($this->weighting === null){
+        if ($this->weighting === null)
+        {
             $this->setWeighting(1.0);
         }
         return $this->weighting;
@@ -445,7 +453,8 @@ class MnemonoBiz{
      */
     public function getGlobalScore()
     {
-        if ($this->globalScore === null){
+        if ($this->globalScore === null)
+        {
             return 0.0;
         }
         return $this->globalScore;
@@ -459,7 +468,9 @@ class MnemonoBiz{
      */
     public function setLastPostUpdateAt(\DateTime $lastPostUpdateAt)
     {
-        if ($this->lastPostUpdateAt == null || $lastPostUpdateAt > $this->lastPostUpdateAt){
+        if ($this->lastPostUpdateAt == null ||
+            $lastPostUpdateAt > $this->lastPostUpdateAt)
+        {
             $this->lastPostUpdateAt = $lastPostUpdateAt;
         }
         return $this;

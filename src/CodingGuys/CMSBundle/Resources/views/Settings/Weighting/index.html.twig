@@ -11,16 +11,17 @@
         }
     </style>
     <div class="container">
-        <h1 class="page-header"><strong>Settings</strong></h1>
-        <div class="navbar-header">
-            <a class="btn btn-primary btn-large" href="{{ path('weighting_create') }}"> Create Weighting </a>
+        <div class="page-header">
+            <h2>Settings</h2>
         </div>
-        <table class="records_list table table-striped table-bordered table-condensed">
+        <h4>Weighting <a class="btn btn-default btn-sm" href="{{ path('weighting_create') }}">Create</a></h4>
+        <p>{{ pagination.getTotalItemCount }} item(s)</p>
+        <table class="table table-striped">
             <thead>
             <tr>
                 <th>Name</th>
                 <th>Value</th>
-                <th>Delete Action</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -28,7 +29,11 @@
                 <tr>
                     <td><a href="{{ path('weighting_edit', {id:document.id}) }}">{{ document.name }}</a></td>
                     <td>{{ document.value }}</td>
-                    <td><a href="{{ path('weighting_delete', {id:document.id}) }}">Delete</a></td>
+                    <td>
+                        <a href="{{ path('weighting_edit', {id:document.id}) }}">edit</a>
+                            &nbsp;&middot;&nbsp;
+                        <a href="{{ path('weighting_delete', {id:document.id}) }}">delete</a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

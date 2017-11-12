@@ -1,10 +1,10 @@
 services:
     app.post_controller:
       class:  CodingGuys\ApiBundle\Controller\PostController
-      arguments:  [ @service_container ]
+      arguments:  [ "@service_container" ]
     app.spotlight_ads_controller:
       class:  CodingGuys\ApiBundle\Controller\SpotlightAdsController
-      arguments:  [ @service_container ]
+      arguments:  [ "@service_container" ]
     app.managed_tag_controller:
       class:  CodingGuys\ApiBundle\Controller\ManagedTagController
-      arguments:  [ @service_container ]
+      arguments:  [ "@service_container" ]

@@ -9,7 +9,15 @@
     </style>
     <div class="container">
 
-        <h2>MnemonoBiz</h2>
+        <div class="page-header">
+            <a href="{{ path('mnemonobiz_home') }}">All Biz</a>
+            <h2>
+                {{ document.name }}
+                <a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}" class="btn btn-default btn-sm">
+                    Edit
+                </a>
+            </h2>
+        </div>
 
         <table class="record_properties table table-striped">
             <tbody>
@@ -103,20 +111,6 @@
             </tr>
             </tbody>
         </table>
-
-        <ul class="record_actions list list-inline">
-            <li>
-                <a href="{{ path('mnemonobiz_home') }}">
-                    Back to the list
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('mnemonobiz_edit', { 'id': document.id }) }}">
-                    Edit
-                </a>
-            </li>
-            <li>{{ form(delete_form) }}</li>
-        </ul>
     </div>
     {% block footer %}
         <div class="container">

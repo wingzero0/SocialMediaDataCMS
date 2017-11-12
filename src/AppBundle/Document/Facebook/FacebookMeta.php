@@ -20,16 +20,16 @@ use JMS\Serializer\Annotation\Groups;
  */
 class FacebookMeta {
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $fbId;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @Groups({"display"})
      */
     protected $fbTotalLikes;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @Groups({"display"})
      */
     protected $fbTotalComments;

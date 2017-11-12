@@ -2,6 +2,9 @@
 
 {% block mainContent %}
     <div class="container">
+        <div class="page-header">
+            <a href="{{ path('managedTag_home') }}">&laquo;&nbsp;Back to Tag list</a>
+        </div>
         {{ form_start(form) }}
         {{ form_errors(form) }}
         <div class="form-group">
@@ -30,13 +33,5 @@
             {{ form_widget(form.imageLink, {'attr': {'class': 'form-control'} }) }}
         </div>
         {{ form_end(form) }}
-
-        <ul class="record_actions list list-inline">
-            <li>
-                <a href="{{ path('managedTag_home') }}" class="btn btn-link">
-                    Back to the list
-                </a>
-            </li>
-        </ul>
     </div>
 {% endblock %}

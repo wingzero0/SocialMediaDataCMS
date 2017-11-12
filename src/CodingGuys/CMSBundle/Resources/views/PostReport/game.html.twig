@@ -1,0 +1,71 @@
+{% extends "CodingGuysCMSBundle:PostReport:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        .item-count {
+            color: #666;
+            font-size: 12px;
+            margin: 20px 0 10px;
+        }
+        .word-wrap {
+            word-break: break-word;
+        }
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <h2>Active Game Posts</h2>
+        </div>
+        {% if posts|length > 0 %}
+            <p class="item-count">{{ posts.getTotalItemCount }} item(s)</p>
+            <div class="text-center">{{ knp_pagination_render(posts) }}</div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Facebook Page</th>
+                        <th class="text-center">Game Link</th>
+                        <th class="text-center">Like</th>
+                        <th class="text-center">Comment</th>
+                        <th class="text-center">Created Time</th>
+                        <th class="text-center">Expiration Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            {% if (post.mnemonoBiz) %}
+                                <td>{{ post.mnemonoBiz.name }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            <td class="text-center word-wrap">{{ post.originalLink }}</td>
+                            {% if (post.meta) %}
+                                <td class="text-center">{{ post.meta.fbTotalLikes }}{{ post.meta.fbTotalLikes > 0 ? '+' : '' }}</td>
+                                <td class="text-center">{{ post.meta.fbTotalComments }}{{ post.meta.fbTotalComments > 0 ? '+' : '' }}</td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
+                            {% endif %}
+                            <td class="text-center">{{ post.createAt|date('Y-m-d H:i') }}</td>
+                            <td class="text-center">{{ post.expireDate|date('Y-m-d H:i') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Facebook Page</th>
+                        <th class="text-center">Game Link </th>
+                        <th class="text-center">Like</th>
+                        <th class="text-center">Comment</th>
+                        <th class="text-center">Created Time</th>
+                        <th class="text-center">Expiration Date</th>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="text-center">{{ knp_pagination_render(posts) }}</div>
+        {% else %}
+            <div class="text-center">
+                <p style="color: #999; font-size: 24px;">NO DATA</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

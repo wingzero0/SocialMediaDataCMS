@@ -1,0 +1,123 @@
+{% extends "CodingGuysCMSBundle:PopularPost:layout.html.twig" %}
+
+{% block mainContent %}
+<div class="container">
+  <div class="page-header">
+    <h2>Popular FB Posts</h2>
+  </div>
+  {% if items|length > 0 %}
+    <div class="text-center">{{ knp_pagination_render(items) }}</div>
+    {% for item in items %}
+      <div style="margin: 30px 0 40px;">
+        <h4>
+          {{ item.metric|upper }}
+          <small>&nbsp;/&nbsp;</small>
+          {{ item.key }}
+        </h4>
+        <p>
+          [{{ item.from|date('Y-m-d H:i') }}, {{ item.to|date('Y-m-d H:i') }})
+        </p>
+        {% set angryStyle = item.metric == 'angry' ? 'font-weight: bold;' : '' %}
+        {% set hahaStyle = item.metric == 'haha' ? 'font-weight: bold;' : '' %}
+        {% set likeStyle = item.metric == 'like' ? 'font-weight: bold;' : '' %}
+        {% set loveStyle = item.metric == 'love' ? 'font-weight: bold;' : '' %}
+        {% set sadStyle = item.metric == 'sad' ? 'font-weight: bold;' : '' %}
+        {% set wowStyle = item.metric == 'wow' ? 'font-weight: bold;' : '' %}
+        {% set commentStyle = item.metric == 'comment' ? 'font-weight: bold;' : '' %}
+        {% set shareStyle = item.metric == 'share' ? 'font-weight: bold;' : '' %}
+        <div>
+          <p>
+            The display metric values are from last snapshot
+          </p>
+          <table class="table table-striped">
+          <thead>
+          <tr>
+          <th class="text-center">angry</th>
+          <th class="text-center">haha</th>
+          <th class="text-center">like</th>
+          <th class="text-center">love</th>
+          <th class="text-center">sad</th>
+          <th class="text-center">wow</th>
+          <th class="text-center">comment</th>
+          <th class="text-center">share</th>
+          <th class="text-center">snapshot</th>
+          <th class="text-center">post created time</th>
+          <th class="text-center">by</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for entry in item.value %}
+            {% if (entry.fbPostLink) %}
+              {% set fbPostLink = entry.fbPostLink %}
+            {% else %}
+              {% set fbPostLink = 'https://www.fb.com/' ~ entry.fbPostId %}
+            {% endif %}
+            <tr>
+              <td class="text-center" style="{{ angryStyle }}">
+                <div>{{ entry.angry }}</div>
+              </td>
+              <td class="text-center" style="{{ hahaStyle }}">
+                <div>{{ entry.haha }}</div>
+              </td>
+              <td class="text-center" style="{{ likeStyle }}">
+                <div>{{ entry.like }}</div>
+              </td>
+              <td class="text-center" style="{{ loveStyle }}">
+                <div>{{ entry.love }}</div>
+              </td>
+              <td class="text-center" style="{{ sadStyle }}">
+                <div>{{ entry.sad }}</div>
+              </td>
+              <td class="text-center" style="{{ wowStyle }}">
+                <div>{{ entry.wow }}</div>
+              </td>
+              <td class="text-center" style="{{ commentStyle }}">
+                <div>{{ entry.comment }}</div>
+              </td>
+              <td class="text-center" style="{{ shareStyle }}">
+                <div>{{ entry.share }}</div>
+              </td>
+              <td class="text-center">
+                <div title="last snapshot: {{ entry.updatedAt.toDateTime()|date('Y-m-d H:i') }}">
+                  {{ entry.snapshot }}
+                </div>
+              </td>
+              <td class="text-center">{{ entry.postCreatedTime.toDateTime()|date('Y-m-d H:i') }}</td>
+              <td class="text-center">
+                <div>{{ entry.fbPageName }}</div>
+                <div>
+                  <a href="{{ fbPostLink }}" target="_blank">
+                    {{ fbPostLink }}
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+          <tfoot>
+          <tr>
+          <th class="text-center">angry</th>
+          <th class="text-center">haha</th>
+          <th class="text-center">like</th>
+          <th class="text-center">love</th>
+          <th class="text-center">sad</th>
+          <th class="text-center">wow</th>
+          <th class="text-center">comment</th>
+          <th class="text-center">share</th>
+          <th class="text-center">snapshot</th>
+          <th class="text-center">post created time</th>
+          <th class="text-center">by</th>
+          </tr>
+          </tfoot>
+          </table>
+        </div>
+      </div>
+    {% endfor %}
+    <div class="text-center">{{ knp_pagination_render(items) }}</div>
+  {% else %}
+    <div class="text-center">
+      <p style="color: #999; font-size: 24px;">NO DATA</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -8,23 +8,26 @@
             margin-bottom: 5px;
             margin-top: 5px;
         }
+        .inline-img {
+            display: inline-block;
+            max-width: 80%;
+            margin: 5px 5px 5px 0;
+        }
     </style>
     <div class="container">
-        <h2>{{ header }}</h2>
-        <ul class="record_actions list list-inline">
-            <li>
-                {% if backLink is defined %}
-                    <a href="{{ backLink }}" class="btn btn-default">Back</a>
-                {% else %}
-                    <a href="{{ path('post_report_home') }}" class="btn btn-default">Back to the list</a>
-                {% endif %}
-            </li>
-            {% if form.vars.value.id != "" %}
-            <li>
-                <a class="btn btn-default" href="{{ path('posts_source_raw', {'id':form.vars.value.id}) }}" target="_blank">raw</a>
-            </li>
+        <div class="page-header">
+            <a href="{{ path('posts_home') }}">All Posts</a>
+            <h2>{{ header }}</h2>
+            {% if post is not null %}
+                <p>
+                    <a href="{{ path('posts_source_raw', {'id': post.id}) }}">raw</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('posts_show_snapshots', { 'id': post.id }) }}">snapshots</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('posts_show_stats', { 'id': post.id }) }}">stats</a>
+                </p>
             {% endif %}
-        </ul>
+        </div>
         {{ form_start(form) }}
         {{ form_errors(form) }}
         <div class="form-group">
@@ -71,7 +74,7 @@
                         {{ form_errors(imageLink) }}
                         {{ form_widget(imageLink, {'attr': {'class': 'cg'} }) }}
                         <a href="{{ form.vars.value.imageLinks[i] }}" target="_blank">
-                            <img src="{{ form.vars.value.imageLinks[i] }}">
+                            <img src="{{ form.vars.value.imageLinks[i] }}" class="inline-img">
                         </a>
                     </li>
                     {% set i = i + 1 %}
@@ -138,12 +141,12 @@
         <div class="form-group">
             {{ form_label(form.softDelete) }}
             {{ form_errors(form.softDelete) }}
-            {{ form_widget(form.softDelete, {'attr': {'class': 'form-control'} }) }}
+            {{ form_widget(form.softDelete) }}
         </div>
         <div class="form-group">
             {{ form_label(form.showAtHomepage) }}
             {{ form_errors(form.showAtHomepage) }}
-            {{ form_widget(form.showAtHomepage, {'attr': {'class': 'form-control'} }) }}
+            {{ form_widget(form.showAtHomepage) }}
         </div>
         <div class="form-group">
             {{ form_label(form.updateAt) }}
@@ -157,6 +160,7 @@
         {% do form.tags.setRendered %}
         {% do form.cities.setRendered %}
         {% do form.imageLinks.setRendered %}
+        {% do form.videoLinks.setRendered %}
         {{ form_end(form) }}
 
     </div>

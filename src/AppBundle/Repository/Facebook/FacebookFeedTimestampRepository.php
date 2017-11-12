@@ -12,11 +12,10 @@ class FacebookFeedTimestampRepository extends DocumentRepository
     /**
      * @param FacebookFeed $feed
      * @param int $limit
-     * @return FacebookFeedTimestamp|null
+     * @return FacebookFeedTimestamp[]|null
      */
     public function findAllByFeed(FacebookFeed $feed, $limit=25){
-        $facebookFeedTimestamp = $this->createQueryBuilder()
-            ->field("fbFeed")->references($feed)
+        $facebookFeedTimestamp = $this->getQueryBuilderFindAllByFeed($feed)
             ->limit($limit)
             ->sort("id", "desc")
             ->getQuery()->execute();
@@ -31,5 +30,23 @@ class FacebookFeedTimestampRepository extends DocumentRepository
         $qb = $this->createQueryBuilder()
             ->field("fbFeed")->references($feed);
         return $qb;
+    }
+
+    /**
+     * @param FacebookFeed $feed
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return FacebookFeedTimestamp[]|null
+     */
+    public function findAllByFeedAndTimeRange(FacebookFeed $feed,
+                                              \DateTime $start,
+                                              \DateTime $end)
+    {
+        return $this->getQueryBuilderFindAllByFeed($feed)
+            ->field("updateTime")->gte($start)
+            ->field("updateTime")->lte($end)
+            ->sort('id', 'desc')
+            ->getQuery()
+            ->execute();
     }
 }

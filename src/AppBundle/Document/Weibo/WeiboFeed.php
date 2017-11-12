@@ -24,28 +24,28 @@ class WeiboFeed {
      */
     protected $id;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
     protected $mid;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $text;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      */
     protected $like_count;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      */
     protected $comments_count;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      */
     protected $reposts_count;
     /**
-     * @MongoDB\Raw
+     * @MongoDB\Field(type="raw")
      */
     protected $pics;
 
@@ -54,7 +54,7 @@ class WeiboFeed {
      */
     protected $weiboPage;
     /**
-     * @MongoDB\Float
+     * @MongoDB\Field(type="float")
      */
     protected $created_timestamp;
 

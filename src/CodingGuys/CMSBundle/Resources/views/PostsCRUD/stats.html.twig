@@ -1,0 +1,94 @@
+{% extends "CodingGuysCMSBundle:PostsCRUD:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        .row-content {
+        }
+        .col-header {
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .col-header small {
+            color: #999;
+            font-weight: normal;
+        }
+        .col-content {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+            text-align: center;
+        }
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <a href="{{ path('posts_home') }}">All Posts</a>
+            <h2>Stats</h2>
+            <p>
+                <a href="{{ path('posts_edit', { 'id': post.id }) }}">edit post</a>
+                &nbsp;&middot;&nbsp;
+                <a href="{{ path('posts_show_snapshots', { 'id': post.id }) }}">snapshots</a>
+            </p>
+            <p>
+                post created at {{ post.createAt|date('Y-m-d H:i') }}
+            </p>
+            <p>
+                [ {{ start|date('Y-m-d') }}, {{ end|date('Y-m-d') }} ]
+            </p>
+        </div>
+        <div class="container">
+            {% if items|length > 0 %}
+                <div class="row row-content">
+                    <div class="col-xs-2 col-header">
+                        date
+                        <br />
+                        <small>from: {{ start|date('Y-m-d') }}</small>
+                        <br />
+                        <small>to: {{ end|date('Y-m-d') }}</small>
+                    </div>
+                    <div class="col-xs-2 col-header">
+                        daily post like
+                        <br />
+                        <small>min: {{ min.postLike }}</small>
+                        <br />
+                        <small>max: {{ max.postLike }}</small>
+                    </div>
+                    <div class="col-xs-2 col-header">
+                        daily post comment
+                        <br />
+                        <small>min: {{ min.postComment }}</small>
+                        <br />
+                        <small>max: {{ max.postComment }}</small>
+                    </div>
+                    <div class="col-xs-2 col-header">
+                        daily post share
+                        <br />
+                        <small>min: {{ min.postShare }}</small>
+                        <br />
+                        <small>max: {{ max.postShare }}</small>
+                    </div>
+                </div>
+                {% for key, item in items %}
+                    <div class="row row-content">
+                        <div class="col-xs-2 col-content">
+                            {{ key }}
+                        </div>
+                        <div class="col-xs-2 col-content">
+                            {{ item.postLike }}
+                        </div>
+                        <div class="col-xs-2 col-content">
+                            {{ item.postComment }}
+                        </div>
+                        <div class="col-xs-2 col-content">
+                            {{ item.postShare }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center">
+                  <p style="color: #999; font-size: 24px;">NO DATA</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

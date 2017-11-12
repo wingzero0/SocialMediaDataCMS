@@ -11,11 +11,11 @@
         }
     </style>
     <div class="container">
-        <h1 class="page-header"><strong>Tags</strong></h1>
-        <div class="navbar-header">
-            <a class="btn btn-primary btn-large" href="{{ path('managedTag_create') }}"> Create Tag </a>
+        <div class="page-header">
+            <h2>Tags <a href="{{ path('managedTag_create') }}" class="btn btn-default btn-sm">Create</a></h2>
         </div>
-        <table class="records_list table table-striped table-bordered table-condensed">
+        <p>{{ pagination.getTotalItemCount }} item(s)</p>
+        <table class="table table-striped">
         <thead>
         <tr>
             <th>Display Seq</th>
@@ -23,7 +23,7 @@
             <th>Chinese Name</th>
             <th>English Name</th>
             <th>Image Link</th>
-            <th>Action</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -34,7 +34,11 @@
                     <td>{{ document.nameChi }}</td>
                     <td>{{ document.nameEng }}</td>
                     <td><img src="{{ document.imageLink }}" style="max-width: 100px;"></td>
-                    <td><a href="{{ path('managedTag_delete', {id:document.id}) }}">delete</a></td>
+                    <td>
+                        <a href="{{ path('managedTag_edit', {id:document.id}) }}">edit</a>
+                            &nbsp;&middot;&nbsp;
+                        <a href="{{ path('managedTag_delete', {id:document.id}) }}">delete</a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

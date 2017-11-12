@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -rf app/cache/prod/*
-rm -rf app/cache/dev/*
+rm -rf var/cache/prod/*
+rm -rf var/cache/dev/*

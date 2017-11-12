@@ -18,11 +18,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Document\Post;
 use AppBundle\Utility\LoopCollectionStrategy;
+use MongoDB\BSON\Regex;
 
 /**
  * @Route("/dashboard/report")
  */
-class PostReportController extends AppBaseController{
+class PostReportController extends AppBaseController
+{
+
+    private $dateFormat = 'Y-m-d H:i';
     /**
      * show post by rank
      *
@@ -30,29 +34,34 @@ class PostReportController extends AppBaseController{
      * @Method("GET")
      * @Template()
      */
-    public function indexAction(Request $request){
+    public function indexAction(Request $request)
+    {
         $limit = 50;
         $page = intval($request->get('page', 1));
         $qb = $this->getPostRepo()->getQueryBuilderSortWithRank();
-        $qb = $this->compileFilter($request, $qb);
-        $paginator  = $this->getKnpPaginator();
+        $filterParams = $this->getFilterParams($request);
+        $qb = $this->compileFilter($filterParams, $qb);
+        $paginator = $this->getKnpPaginator();
         $pagination = $paginator->paginate(
             $qb->getQuery(),
             $page,
             $limit
         );
-
+        $this->getPostRepo()
+            ->primeReferences($pagination, ['mnemonoBiz']);
         $endDatePlaceHolder = new \DateTime();
-        $startDatePlaceHolder = $endDatePlaceHolder->sub(new \DateInterval("P7D"));
+        $startDatePlaceHolder = clone $endDatePlaceHolder;
+        $startDatePlaceHolder->sub(new \DateInterval("P7D"));
 
         return array(
             'pagination' => $pagination,
             'page' => $page,
             'limit' => $limit,
             'lovPublishStatus' => Post::listOfPublishStatus(),
-            'startDatePlaceHolder' => $startDatePlaceHolder->format(\DateTime::ISO8601),
-            'endDatePlaceHolder' => $endDatePlaceHolder->format(\DateTime::ISO8601),
+            'startDatePlaceHolder' => $startDatePlaceHolder->format($this->dateFormat),
+            'endDatePlaceHolder' => $endDatePlaceHolder->format($this->dateFormat),
             'lastUpdateTime' => $this->getLastUpdateTime(),
+            'filterParams' => $filterParams,
         );
     }
     /**
@@ -62,91 +71,100 @@ class PostReportController extends AppBaseController{
      * @Method("GET")
      * @Template()
      */
-    public function reRankAction(Request $request){
-        if ($request->get("rerank") == "1"){
+    public function reRankAction(Request $request)
+    {
+        if ($request->get("rerank") == "1")
+        {
             $this->callBackgroundReviewJob();
             return $this->redirect($this->generateUrl("post_report_home"));
         }
         return array();
     }
 
-    private function callBackgroundReviewJob(){
+    private function callBackgroundReviewJob()
+    {
         $json = json_encode(array("id" => null));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$postReviewRankJob, $json);
 
         $loopS = new LoopCollectionStrategy();
-        $loopS->loopCollectionWithSkipParam(function($limit, $skip){
+        $loopS->loopCollectionWithSkipParam(function($limit, $skip) {
             return $this->getMnemenoBizRepo()->getQueryBuilderFindAll($limit, $skip);
-        }, function(MnemonoBiz $biz){
+        }, function(MnemonoBiz $biz) {
             $json = json_encode(array("id" => $biz->getId()));
             $this->getGearman()->doBackgroundJob(GearmanServiceName::$postReviewRankJob, $json);
-        }, function(){
+        }, function() {
             // to nothing, don't want to reset the dm
         });
     }
 
 
     /**
-     * @return String
+     * @return string
      */
-    private function getLastUpdateTime(){
+    private function getLastUpdateTime()
+    {
         $logRecord = $this->getLogRecordRepo()->findLastPostReportLogRecord();
-        if ($logRecord instanceof LogRecord){
+        if ($logRecord instanceof LogRecord)
+        {
             return $logRecord->getLogTime()->format(\DateTime::ISO8601);
-        }else{
-            return "No record";
+        }
+        else
+        {
+            return null;
         }
     }
 
     /**
-     * @param Request $request
+     * @param array $filterParams
      * @param Builder $qb
      * @return Builder
      */
-    private function compileFilter(Request $request, Builder $qb){
-        $publishStatus = $request->get('publishStatus');
-        if (!empty($publishStatus)){
+    private function compileFilter(array $filterParams, Builder $qb)
+    {
+        $publishStatus = $filterParams['publishStatus'];
+        if (!empty($publishStatus))
+        {
             $qb->field('publishStatus')->equals($publishStatus);
         }
-        $spotlight = $request->get('spotlight');
-        if (!empty($spotlight)){
-            if ($spotlight == 'Y'){
-                $qb->field('spotlight')->equals(true);
-            }else{
-                $qb->field('spotlight')->notEqual(true);
-            }
-        }
-        $showAtHomepage = $request->get('showAtHomepage');
-        if (!empty($showAtHomepage)){
-            if ($showAtHomepage == 'Y'){
+        $showAtHomepage = $filterParams['showAtHomepage'];
+        if (!empty($showAtHomepage))
+        {
+            if ($showAtHomepage == 'Y')
+            {
                 $qb->field('showAtHomepage')->equals(true);
-            }else{
+            }
+            else
+            {
                 $qb->field('showAtHomepage')->notEqual(true);
             }
         }
-        $tagsString = $request->get('tags');
+        $tagsString = $filterParams['tags'];
         $tags = $this->splitStrByComma($tagsString);
-        foreach($tags as $tag){
+        foreach ($tags as $tag)
+        {
             $qb->addAnd(
                 $qb->expr()->field('tags')->equals($tag)
             );
         }
 
-        $citiesString = $request->get('cities');
+        $citiesString = $filterParams['cities'];
         $cities = $this->splitStrByComma($citiesString);
-        if (!empty($cities)){
+        if (!empty($cities))
+        {
             $qb->field("cities")->in($cities);
         }
 
-        $rank = intval($request->get('rank', "-1"));
-        if ($rank >= 0){
+        $rank = intval($filterParams['rank']);
+        if ($rank > 0)
+        {
             $qb->field("rankPosition")->equals($rank);
         }
 
-        $qb = $this->parseStartEndDate($qb, $request);
+        $qb = $this->parseStartEndDate($qb, $filterParams);
 
-        $searchField = $request->get('search');
-        if (!empty($searchField)){
+        $searchField = $filterParams['search'];
+        if (!empty($searchField))
+        {
             $regexArray = $this->getKeywordRegex($searchField);
             $qb->field('content')->all($regexArray);
         }
@@ -157,13 +175,17 @@ class PostReportController extends AppBaseController{
      * @param $sourceStr
      * @return array
      */
-    private function splitStrByComma($sourceStr){
+    private function splitStrByComma($sourceStr)
+    {
         $ret = array();
-        if (!empty($sourceStr)){
+        if (!empty($sourceStr))
+        {
             $splitedStr = preg_split('/,/', $sourceStr);
-            foreach($splitedStr as $str){
+            foreach($splitedStr as $str)
+            {
                 $trimStr = trim($str);
-                if (!empty($trimStr)){
+                if (!empty($trimStr))
+                {
                     $ret[] = $trimStr;
                 }
             }
@@ -175,35 +197,45 @@ class PostReportController extends AppBaseController{
      * @param string $searchField
      * @return array
      */
-    private function getKeywordRegex($searchField){
+    private function getKeywordRegex($searchField)
+    {
         $keywords = explode(',', $searchField);
         $regexArray = array();
-        foreach($keywords as $keyword){
-            $keyword = '/' . $keyword . '/i';
-            $regexArray[] = new \MongoRegex($keyword);
+        foreach ($keywords as $keyword)
+        {
+            $regexArray[] = new Regex(trim($keyword), 'i');
         }
         return $regexArray;
     }
 
-    private function parseStartEndDate(Builder $qb, Request $request){
-        $startDateStr = $request->get("startDate");
+    /**
+     * @param Builder $qb
+     * @param array $filterParams
+     * @return Builder
+     */
+    private function parseStartEndDate(Builder $qb, array $filterParams)
+    {
+        $startDateStr = $filterParams["startDate"];
         $this->getLogger()->info("startDate");
 
-        if (!empty($startDateStr)){
+        if (!empty($startDateStr))
+        {
             $this->getLogger()->info($startDateStr);
-            $startDate = \DateTime::createFromFormat(\DateTime::ISO8601, $startDateStr);
-            if ($startDate instanceof \DateTime){
+            $startDate = \DateTime::createFromFormat($this->dateFormat, $startDateStr);
+            if ($startDate instanceof \DateTime)
+            {
                 $qb->addAnd(
                     $qb->expr()->field("createAt")->gte($startDate)
                 );
             }
         }
 
-        $endDateStr = $request->get("endDate");
+        $endDateStr = $filterParams["endDate"];
         $this->getLogger()->info("endDate");
-        if (!empty($endDateStr)){
+        if (!empty($endDateStr))
+        {
             $this->getLogger()->info($endDateStr);
-            $endDate = \DateTime::createFromFormat(\DateTime::ISO8601, $endDateStr);
+            $endDate = \DateTime::createFromFormat($this->dateFormat, $endDateStr);
             if ($endDate instanceof \DateTime){
                 $qb->addAnd(
                     $qb->expr()->field("createAt")->lte($endDate)
@@ -211,5 +243,46 @@ class PostReportController extends AppBaseController{
             }
         }
         return $qb;
+    }
+
+    /**
+     * Show active game posts
+     *
+     * @Route("/game", name="post_report_active_game")
+     * @Method("GET")
+     * @Template()
+     */
+    public function gameAction(Request $request)
+    {
+        $limit = 200;
+        $page = intval($request->get('page', 1));
+        $query = $this->getPostRepo()->getActiveGamePostsQuery();
+        $paginator = $this->getKnpPaginator();
+        $posts = $paginator->paginate($query, $page, $limit);
+        $this->getPostRepo()
+            ->primeReferences($posts, ['mnemonoBiz']);
+        return [
+            'posts' => $posts,
+        ];
+    }
+
+    /**
+     *
+     * @param Request $request
+     * @return array
+     *
+     */
+    private function getFilterParams(Request $request)
+    {
+        return [
+            'tags' => trim($request->get('tags', '')),
+            'cities' => trim($request->get('cities', '')),
+            'rank' => trim($request->get('rank', '')),
+            'search' => trim($request->get('search', '')),
+            'publishStatus' => trim($request->get('publishStatus', '')),
+            'showAtHomepage' => trim($request->get('showAtHomepage', '')),
+            'startDate' => trim(preg_replace('/(\s+)/', ' ', $request->get('startDate', ''))),
+            'endDate' => trim(preg_replace('/(\s+)/', ' ', $request->get('endDate', ''))),
+        ];
     }
 }

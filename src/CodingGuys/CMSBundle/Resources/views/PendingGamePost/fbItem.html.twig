@@ -1,0 +1,94 @@
+<div class="item">
+    {% if (mnPost and post) %}
+        {% set imgUrls = post.getAttachmentImageURL() %}
+        {% set tagAction = ('game' in mnPost.tags) ? 'remove' : 'add' %}
+        <div class="item-type-container">
+            {% if 'video' == post.type %}
+                <div class="item-type-attr" style="border: 0px solid #ccc;">
+                    <div class="video-icon"></div>
+                </div>
+            {% endif %}
+            {% if imgUrls|length > 1%}
+                <div class="item-type-attr">
+                    <div class="multi-image-icon"></div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="item-action-container">
+            <div class="item-action-attr">
+                <div class="item-tags">
+                    <span class="tag-icon"></span>
+                    <em id="pending-game-post-tag-{{ mnPost.id }}">{{ mnPost.tags|join(', ') }}</em>
+                </div>
+                <p>
+                    <a href="#" class="pending-game-post-tag-toogle-link btn btn-default btn-sm" data-mn-post-id="{{ mnPost.id }}" data-tag-action="{{ tagAction }}">toggle game</a>
+                    <span id="pending-game-post-tag-loading-{{ mnPost.id }}" style="color: #999; display: none;">loading...</span>
+                </p>
+            </div>
+            <div class="item-action-attr">
+                {% if item.byK is same as(true) %}
+                    <div><small>by Keyword</small></div>
+                {% endif %}
+                {% if item.byNB is same as(true) %}
+                    <div><small>by Naive Bayes</small></div>
+                {% endif %}
+            </div>
+            <div class="item-action-attr">
+                <div class="item-action-attr-name">Expiration date:</div>
+                <p id="pending-game-post-expn-{{ mnPost.id }}">{{ mnPost.expireDate|date('Y-m-d H:i') }}</p>
+                <div class="pending-game-expn-form-container">
+                    <form class="pending-game-post-expn-form" action="{{ path('post_set_expn', { 'id': mnPost.id }) }}" method="POST" data-mn-post-id={{ mnPost.id }} data-is-loading="0">
+                        <input type="text" name="expn" class="form-control pending-game-post-expn-input-{{ mnPost.id }}" value="{{ mnPost.expireDate|date('Y-m-d H:i') }}" />
+                        <input type="hidden" name="csrf-token" value="{{ csrf_token('ajax-request') }}" />
+                        <input type="submit" class="btn btn-default btn-sm" style="margin-top: 6px;" value="set" />
+                    </form>
+                </div>
+            </div>
+            <div class="item-action-attr">
+                <a href="{{ path('posts_edit', { 'id': mnPost.id }) }}">edit post</a>
+            </div>
+        </div>
+    {% endif %}
+    <div class="item-container">
+        <div class="item-by">{{ post.from.name }}</div>
+        <div class="item-meta">
+            <span class="item-created-at">{{ post.createdTime|date('Y-m-d H:i') }}</span>
+            {% if (post.likes and
+                   post.likes.summary and
+                   post.likes.summary.total_count and
+                   post.likes.summary.total_count > 0) %}
+                <span class="item-like-count">
+                    {{ post.likes.summary.total_count }}
+                    {{ (1 == post.likes.summary.total_count) ? ' like' : ' likes' }}
+                </span>
+            {% endif %}
+            {% if (post.comments and
+                   post.comments.summary and
+                   post.comments.summary.total_count and
+                   post.comments.summary.total_count > 0) %}
+                <span class="item-comment-count">
+                    {{ post.comments.summary.total_count }}
+                    {{ (1 == post.comments.summary.total_count) ? ' comment' : ' comments' }}
+                </span>
+            {% endif %}
+            {% if (post.shares) %}
+                <span class="item-share-count">
+                    {{ post.shares.count }}
+                    {{ (1 == post.shares.count) ? ' share' : ' shares' }}
+                </span>
+            {% endif %}
+        </div>
+        {% if (post.message) %}
+            <div class="item-message">{{ post.message|nl2br }}</div>
+        {% endif %}
+        {% if imgUrls|length > 0 %}
+            <div class="item-media-container">
+                <img class="item-img" src="{{ imgUrls|first }}" />
+            </div>
+        {% endif %}
+        <div class="item-bottom-stuff">
+            <a class="item-permalink" href="{{ post.getGuessLink() }}">permalink</a>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

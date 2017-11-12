@@ -22,17 +22,17 @@ use JMS\Serializer\Annotation\SerializedName;
  */
 class WeiboMeta {
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @Groups({"display"})
      */
     protected $likeCount;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @Groups({"display"})
      */
     protected $commentsCount;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @Groups({"display"})
      */
     protected $repostsCount;

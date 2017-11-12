@@ -16,21 +16,46 @@ use JMS\Serializer\Annotation\Since;
  * @MongoDB\Document(collection="FacebookFeedTimestamp", repositoryClass="AppBundle\Repository\Facebook\FacebookFeedTimestampRepository")
  * @ExclusionPolicy("none")
  */
-class FacebookFeedTimestamp {
+class FacebookFeedTimestamp
+{
     /**
      * @MongoDB\Id
      */
     protected $id;
     /**
-     * @MongoDB\Field(type="int", name="likes_total_count")
+     * @MongoDB\Field(type="int", name="reactions_angry_total_count")
      */
-    protected $likesTotalCount;
+    protected $angryTotalCount;
+    /**
+     * @MongoDB\Field(type="int", name="reactions_haha_total_count")
+     */
+    protected $hahaTotalCount;
+    /**
+     * @MongoDB\Field(type="int", name="reactions_like_total_count")
+     */
+    protected $likeTotalCount;
+    /**
+     * @MongoDB\Field(type="int", name="reactions_love_total_count")
+     */
+    protected $loveTotalCount;
+    /**
+     * @MongoDB\Field(type="int", name="reactions_sad_total_count")
+     */
+    protected $sadTotalCount;
+    /**
+     * @MongoDB\Field(type="int", name="reactions_wow_total_count")
+     */
+    protected $wowTotalCount;
+    /**
+     * @MongoDB\Field(type="int", name="shares_total_count")
+     */
+    protected $sharesTotalCount;
     /**
      * @MongoDB\Field(type="int", name="comments_total_count")
      */
     protected $commentsTotalCount;
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      */
     protected $updateTime;
     /**
@@ -41,7 +66,6 @@ class FacebookFeedTimestamp {
      * @MongoDB\ReferenceOne(targetDocument="AppBundle\Document\Facebook\FacebookFeed")
      */
     protected $fbFeed;
-
 
     /**
      * Get id
@@ -54,25 +78,135 @@ class FacebookFeedTimestamp {
     }
 
     /**
-     * Set likesTotalCount
+     * Set angryTotalCount
      *
-     * @param int $likesTotalCount
+     * @param int $angryTotalCount
      * @return self
      */
-    public function setLikesTotalCount($likesTotalCount)
+    public function setAngryTotalCount($angryTotalCount)
     {
-        $this->likesTotalCount = $likesTotalCount;
+        $this->angryTotalCount = $angryTotalCount;
         return $this;
     }
 
     /**
-     * Get likesTotalCount
+     * Get angryTotalCount
      *
-     * @return int $likesTotalCount
+     * @return int $angryTotalCount
      */
-    public function getLikesTotalCount()
+    public function getAngryTotalCount()
     {
-        return $this->likesTotalCount;
+        return $this->angryTotalCount;
+    }
+
+    /**
+     * Set hahaTotalCount
+     *
+     * @param int $hahaTotalCount
+     * @return self
+     */
+    public function setHahaTotalCount($hahaTotalCount)
+    {
+        $this->hahaTotalCount = $hahaTotalCount;
+        return $this;
+    }
+
+    /**
+     * Get hahaTotalCount
+     *
+     * @return int $hahaTotalCount
+     */
+    public function getHahaTotalCount()
+    {
+        return $this->hahaTotalCount;
+    }
+
+    /**
+     * Set likeTotalCount
+     *
+     * @param int $likeTotalCount
+     * @return self
+     */
+    public function setLikeTotalCount($likeTotalCount)
+    {
+        $this->likeTotalCount = $likeTotalCount;
+        return $this;
+    }
+
+    /**
+     * Get likeTotalCount
+     *
+     * @return int $likeTotalCount
+     */
+    public function getLikeTotalCount()
+    {
+        return $this->likeTotalCount;
+    }
+
+    /**
+     * Set loveTotalCount
+     *
+     * @param int $loveTotalCount
+     * @return self
+     */
+    public function setLoveTotalCount($loveTotalCount)
+    {
+        $this->loveTotalCount = $loveTotalCount;
+        return $this;
+    }
+
+    /**
+     * Get loveTotalCount
+     *
+     * @return int $loveTotalCount
+     */
+    public function getLoveTotalCount()
+    {
+        return $this->loveTotalCount;
+    }
+
+    /**
+     * Set sadTotalCount
+     *
+     * @param int $sadTotalCount
+     * @return self
+     */
+    public function setSadTotalCount($sadTotalCount)
+    {
+        $this->sadTotalCount = $sadTotalCount;
+        return $this;
+    }
+
+    /**
+     * Get sadTotalCount
+     *
+     * @return int $sadTotalCount
+     */
+    public function getWowTotalCount()
+    {
+        return $this->wowTotalCount;
+    }
+
+    /**
+     * Set wowTotalCount
+     *
+     * @param int $wowTotalCount
+     * @return self
+     */
+    public function setWowTotalCount($wowTotalCount)
+    {
+        $this->sadTotalCount = $sadTotalCount;
+        return $this;
+    }
+
+    /**
+     * Get sadTotalCount
+     *
+     * @return int $sadTotalCount
+     */
+    public function getSadTotalCount()
+    {
+        return $this->sadTotalCount;
     }
 
     /**
@@ -95,6 +229,28 @@ class FacebookFeedTimestamp {
     public function getCommentsTotalCount()
     {
         return $this->commentsTotalCount;
+    }
+
+    /**
+     * Set sharesTotalCount
+     *
+     * @param int $sharesTotalCount
+     * @return self
+     */
+    public function setSharesTotalCount($sharesTotalCount)
+    {
+        $this->sharesTotalCount = $sharesTotalCount;
+        return $this;
+    }
+
+    /**
+     * Get sharesTotalCount
+     *
+     * @return int $sharesTotalCount
+     */
+    public function getSharesTotalCount()
+    {
+        return $this->sharesTotalCount;
     }
 
     /**

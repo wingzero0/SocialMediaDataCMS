@@ -12,6 +12,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
+use \DateTime;
 
 /**
  * @MongoDB\Document(collection="LogRecord", repositoryClass="AppBundle\Repository\Utility\LogRecordRepository")
@@ -23,17 +24,17 @@ class LogRecord {
      */
     protected $id;
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      * @MongoDB\Index
      */
     protected $logTime;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
     protected $category;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $remark;
 
@@ -50,7 +51,7 @@ class LogRecord {
     /**
      * Set logTime
      *
-     * @param date $logTime
+     * @param DateTime $logTime
      * @return self
      */
     public function setLogTime($logTime)
@@ -62,7 +63,7 @@ class LogRecord {
     /**
      * Get logTime
      *
-     * @return date $logTime
+     * @return DateTime $logTime
      */
     public function getLogTime()
     {

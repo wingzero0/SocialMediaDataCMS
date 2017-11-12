@@ -14,10 +14,14 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Since;
 
 /**
- * @MongoDB\Document(collection="FacebookFeed", repositoryClass="AppBundle\Repository\Facebook\FacebookFeedRepository")
+ * @MongoDB\Document(
+ *   collection="FacebookFeed",
+ *   repositoryClass="AppBundle\Repository\Facebook\FacebookFeedRepository"
+ * )
  * @ExclusionPolicy("none")
  */
-class FacebookFeed {
+class FacebookFeed
+{
     /**
      * @MongoDB\Id
      */
@@ -27,19 +31,19 @@ class FacebookFeed {
      */
     protected $fbId;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $message;
     /**
-     * @MongoDB\Raw
+     * @MongoDB\Field(type="raw", name="reactions_like")
      */
     protected $likes;
     /**
-     * @MongoDB\Raw
+     * @MongoDB\Field(type="raw")
      */
     protected $comments;
     /**
-     * @MongoDB\Raw
+     * @MongoDB\Field(type="raw")
      */
     protected $attachments;
     /**
@@ -55,7 +59,7 @@ class FacebookFeed {
      */
     protected $fbPage;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $link;
     /**
@@ -63,17 +67,25 @@ class FacebookFeed {
      */
     protected $statusType;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $story;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $type;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $source;
+    /**
+     * @MongoDB\Field(type="raw", name="from")
+     */
+    protected $from;
+    /**
+     * @MongoDB\Field(type="raw")
+     */
+    protected $shares;
 
     /**
      * Get id
@@ -291,29 +303,53 @@ class FacebookFeed {
         return $this->attachments;
     }
 
-    public function getAttachmentImageURL(){
+    public function getAttachmentImageURL()
+    {
         $attachments = $this->getAttachments();
-        if (!$attachments){
+        if (!$attachments)
+        {
             return array();
         }
-        if (
-            isset($attachments["data"])
-            && is_array($attachments["data"])
-            && isset($attachments["data"][0]["type"])
-        ){
-            if (
-                $attachments["data"][0]["type"] == "album"
-                && isset($attachments["data"][0]["subattachments"])
-            ){
-                return $this->parseSubAttachmentImageURL($attachments["data"][0]["subattachments"]);
-            }else if (
-                ($attachments["data"][0]["type"] == "photo"
-                    || $attachments["data"][0]["type"] == "share"
-                    || $attachments["data"][0]["type"] == "video_inline")
-                && isset($attachments["data"][0]["media"])
-            ){
-                $url = $this->parseMediaImageURL($attachments["data"][0]["media"]);
-                if ($url){
+        if (isset($attachments["data"]) &&
+            is_array($attachments["data"]))
+        {
+            $firstAttachment = $attachments["data"][0];
+            if (!empty($firstAttachment["subattachments"]))
+            {
+                return $this->parseSubAttachmentImageURL($firstAttachment["subattachments"]);
+            }
+            else if (!empty($firstAttachment["media"]))
+            {
+                $url = $this->parseMediaImageURL($firstAttachment["media"]);
+                if (!empty($url))
+                {
+                    return array($url);
+                }
+            }
+        }
+        return array();
+    }
+
+    public function getAttachmentImages()
+    {
+        $attachments = $this->getAttachments();
+        if (!$attachments)
+        {
+            return array();
+        }
+        if (isset($attachments["data"]) &&
+            is_array($attachments["data"]))
+        {
+            $firstAttachment = $attachments["data"][0];
+            if (!empty($firstAttachment["subattachments"]))
+            {
+                return $this->parseSubAttachmentImage($firstAttachment["subattachments"]);
+            }
+            else if (!empty($firstAttachment["media"]))
+            {
+                $url = $this->parseMediaImage($firstAttachment["media"]);
+                if (!empty($url))
+                {
                     return array($url);
                 }
             }
@@ -339,18 +375,16 @@ class FacebookFeed {
      * @param array $subAttachments
      * @return array $imageURLs
      */
-    private function parseSubAttachmentImageURL($subAttachments){
+    private function parseSubAttachmentImageURL($subAttachments)
+    {
         $imageURLs = array();
-        if (
-            isset($subAttachments["data"])
-            && is_array($subAttachments["data"])
-        ){
-            foreach($subAttachments["data"] as $data){
-                if (
-                    isset($data["type"])
-                    && $data["type"] == "photo"
-                    && isset($data["media"])
-                ){
+        if (isset($subAttachments["data"]) &&
+            is_array($subAttachments["data"]))
+        {
+            foreach ($subAttachments["data"] as $data)
+            {
+                if (isset($data["media"]))
+                {
                     $imageURL = $this->parseMediaImageURL($data["media"]);
                     $imageURLs[] = $imageURL;
                 }
@@ -361,15 +395,50 @@ class FacebookFeed {
     }
 
     /**
+     * @param array $subAttachments
+     * @return array $images
+     */
+    private function parseSubAttachmentImage($subAttachments)
+    {
+        $images = array();
+        if (isset($subAttachments["data"]) &&
+            is_array($subAttachments["data"]))
+        {
+            foreach ($subAttachments["data"] as $data)
+            {
+                if (isset($data["media"]))
+                {
+                    $images[] = $this->parseMediaImage($data["media"]);
+                }
+            }
+        }
+
+        return $images;
+    }
+
+    /**
      * @param array $media
      * @return string
      */
-    private function parseMediaImageURL($media){
-        if (
-            isset($media["image"])
-            && isset($media["image"]["src"])
-        ){
+    private function parseMediaImageURL($media)
+    {
+        if (isset($media["image"]) &&
+            isset($media["image"]["src"]))
+        {
             return $media["image"]["src"];
+        }
+        return null;
+    }
+
+    /**
+     * @param array $media
+     * @return string
+     */
+    private function parseMediaImage($media)
+    {
+        if (isset($media["image"]))
+        {
+            return $media["image"];
         }
         return null;
     }
@@ -504,5 +573,25 @@ class FacebookFeed {
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * Get from
+     *
+     * @return raw $from
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * Get shares
+     *
+     * @return raw $shares
+     */
+    public function getShares()
+    {
+        return $this->shares;
     }
 }

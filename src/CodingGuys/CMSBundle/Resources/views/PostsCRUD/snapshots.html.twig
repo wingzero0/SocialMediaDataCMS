@@ -1,0 +1,87 @@
+{% extends "CodingGuysCMSBundle:PostsCRUD:layout.html.twig" %}
+
+{% block mainContent %}
+    <style>
+        .row-content {
+        }
+        .col-header {
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .col-content {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+            text-align: center;
+        }
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <a href="{{ path('posts_home') }}">All Posts</a>
+            <h2>Snapshots</h2>
+            <p>
+                <a href="{{ path('posts_edit', { 'id': post.id }) }}">edit post</a>
+                &nbsp;&middot;&nbsp;
+                <a href="{{ path('posts_show_stats', { 'id': post.id }) }}">stats</a>
+            </p>
+            <p>
+                post created at {{ post.createAt|date('Y-m-d H:i') }}
+            </p>
+            <p>
+                [{{ start|date('Y-m-d H:i') }}, {{ end|date('Y-m-d H:i') }}]
+            </p>
+        </div>
+
+        <div class="container">
+            {% if snapshots|length > 0 %}
+                <div class="row row-content">
+                    <div class="col-xs-1 col-header">angry</div>
+                    <div class="col-xs-1 col-header">haha</div>
+                    <div class="col-xs-1 col-header">like</div>
+                    <div class="col-xs-1 col-header">love</div>
+                    <div class="col-xs-1 col-header">sad</div>
+                    <div class="col-xs-1 col-header">wow</div>
+                    <div class="col-xs-1 col-header">comment</div>
+                    <div class="col-xs-1 col-header">share</div>
+                    <div class="col-xs-2 col-header">updated at</div>
+                </div>
+                {% for snapshot in snapshots %}
+                    <div class="row row-content">
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.angryTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.hahaTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.likeTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.loveTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.sadTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.wowTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.commentsTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-1 col-content">
+                            {{ snapshot.sharesTotalCount ?? '---' }}
+                        </div>
+                        <div class="col-xs-2 col-content">
+                            {{ snapshot.updateTime|date('Y-m-d H:i') }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center">
+                  <p style="color: #999; font-size: 24px;">NO DATA</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

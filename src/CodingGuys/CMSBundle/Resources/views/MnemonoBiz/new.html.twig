@@ -10,7 +10,17 @@
         }
     </style>
     <div class="container">
-        <h2>{{ header }}</h2>
+        <div class="page-header">
+            <a href="{{ path('mnemonobiz_home') }}">All Biz</a>
+            <h2>{{ header }}</h2>
+            {% if biz is not null %}
+                <p>
+                    <a href="{{ path('mnemonobiz_show_snapshots', { 'id': biz.id }) }}">snapshots</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="{{ path('mnemonobiz_show_stats', { 'id': biz.id }) }}">stats</a>
+                </p>
+            {% endif %}
+        </div>
         {{ form_start(form) }}
         {{ form_errors(form) }}
         <div class="form-group">
@@ -115,6 +125,10 @@
             {{ form_errors(form.importFrom) }}
             {{ form_widget(form.importFrom, {'attr': {'class': 'form-control'} }) }}
         </div>
+        <div class="form-group">
+            {{ form_label(form.submit) }}
+            {{ form_widget(form.submit, {'attr': {'class': 'btn btn-default'} }) }}
+        </div>
         {% do form.tags.setRendered %}
         {% do form.addresses.setRendered %}
         {% do form.cities.setRendered %}
@@ -123,14 +137,6 @@
         {% do form.websites.setRendered %}
         {% do form.importFrom.setRendered %}
         {{ form_end(form) }}
-
-        <ul class="record_actions list list-inline">
-            <li>
-                <a href="{{ path('mnemonobiz_home') }}" class="btn btn-link">
-                    Back to the list
-                </a>
-            </li>
-        </ul>
     </div>
     {% block footer %}
         <div class="container">

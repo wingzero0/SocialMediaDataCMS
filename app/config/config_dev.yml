@@ -26,11 +26,19 @@ monolog:
             type:  chromephp
             level: info
 
-assetic:
-    use_controller: true
-
 #swiftmailer:
 #    delivery_address: me@example.com
+
+# MongoDb Configuration
+doctrine_mongodb:
+    connections:
+        default:
+            server: "%mongodb_server%"
+            options: {}
+    default_database: "%mongodb_database_dev%"
+    document_managers:
+        default:
+            auto_mapping: true
 
 doctrine_cache:
     providers:

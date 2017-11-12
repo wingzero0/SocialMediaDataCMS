@@ -3,126 +3,169 @@
 {% block mainContent %}
     <style>
         input {width:200px;}
+        .item-count {
+            color: #666;
+            font-size: 12px;
+            margin: 20px 0 10px;
+        }
     </style>
 <div class="container">
+    <div class="page-header">
+        <h2>Post Ranking <a href="{{ path('post_report_rerank') }}" class="btn btn-default btn-sm">rank now</a></h2>
+        {% if lastUpdateTime %}
+            <p><small>Ranking updated at {{ lastUpdateTime|date('Y-m-d H:i') }}</small></p>
+        {% endif %}
+    </div>
     <div>
         <form action="{{ path('post_report_home') }}" method="get">
-            <label for="AppBundle_post_tags" class="required">Tags</label>
-            <input type="text" id="AppBundle_post_tags" name="tags" value="{{ app.request.get("tags") }}" placeholder="AND operator"/>
-            <label for="AppBundle_post_cities" class="required">Cities</label>
-            <input type="text" id="AppBundle_post_cities" name="cities" value="{{ app.request.get("cities") }}" placeholder="OR operator"/>
-            <label for="AppBundle_post_rank" class="required">Rank</label>
-            <input type="text" id="AppBundle_post_rank" name="rank" value="-1"/>
-            <label for="AppBundle_post_search" class="required">Search</label>
-            <input type="text" id="AppBundle_post_search" name="search" value="{{ app.request.get("search") }}"/>
-            <br/>
-            <label for="AppBundle_post_publishStatus" class="required">Publish status</label>
-            <select id="AppBundle_post_publishStatus" name="publishStatus">
-                <option value="">All</option>
-                {% for key, label in lovPublishStatus %}
-                    {% if key == app.request.get('publishStatus') %}
-                        <option value="{{ key }}" selected>{{ label }}</option>
-                    {% else %}
-                        <option value="{{ key }}">{{ label }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <label for="AppBundle_post_showAtHomepage" class="required">show at homepage</label>
-            <select id="AppBundle_post_showAtHomepage" name="showAtHomepage">
-                <option value="">All</option>
-                {% if 'Y' == app.request.get('showAtHomepage') %}
-                    <option value="Y" selected>Y</option>
-                {% else %}
-                    <option value="Y">Y</option>
-                {% endif %}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="tags">tags (logical AND)</label>
+                    <input type="text" id="tags" name="tags" value="{{ filterParams["tags"] }}" placeholder="e.g., info, game" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="cities">cities (logical OR)</label>
+                    <input type="text" id="cities" name="cities" value="{{ filterParams["cities"] }}" placeholder="e.g., hk, mo" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="rank">rank position</label>
+                    <input type="text" id="rank" name="rank" value="{{ filterParams['rank'] }}" placeholder="e.g., 1" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="keyword">keywords in content</label>
+                    <input type="text" id="keyword" name="search" value="{{ filterParams["search"] }}" placeholder="e.g., free" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="publishStatus">status</label>
+                    <select id="publishStatus" name="publishStatus" class="form-control">
+                        <option value="">all</option>
+                        {% for key, label in lovPublishStatus %}
+                            {% if key == filterParams['publishStatus'] %}
+                                <option value="{{ key }}" selected>{{ label }}</option>
+                            {% else %}
+                                <option value="{{ key }}">{{ label }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="showAtHomepage">show at homepage?</label>
+                    <select id="showAtHomepage" name="showAtHomepage" class="form-control">
+                        <option value="">all</option>
+                        {% if 'Y' == filterParams['showAtHomepage'] %}
+                            <option value="Y" selected>yes</option>
+                        {% else %}
+                            <option value="Y">yes</option>
+                        {% endif %}
 
-                {% if 'N' == app.request.get('showAtHomepage') %}
-                    <option value="N" selected>N</option>
-                {% else %}
-                    <option value="N">N</option>
-                {% endif %}
-            </select>
-            <br/>
-            <label for="AppBundle_post_startDate" class="required">Start Date</label>
-            <input type="text" id="AppBundle_post_startDate" name="startDate" value="{{ app.request.get("startDate") }}" placeholder="{{ startDatePlaceHolder }}"/>
-            <label for="AppBundle_post_endDate" class="required">End Date</label>
-            <input type="text" id="AppBundle_post_endDate" name="endDate" value="{{ app.request.get("endDate") }}" placeholder="{{ endDatePlaceHolder }}"/>
-            <button type="submit" id="AppBundle_post_submit" name="submit" class="btn btn-default">filter</button>
+                        {% if 'N' == filterParams['showAtHomepage'] %}
+                            <option value="N" selected>no</option>
+                        {% else %}
+                            <option value="N">no</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="startDate">start date</label>
+                    <input type="text" id="startDate" name="startDate" value="{{ filterParams["startDate"] }}" placeholder="e.g., {{ startDatePlaceHolder }}" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="endDate">end date</label>
+                    <input type="text" id="endDate" name="endDate" value="{{ filterParams["endDate"] }}" placeholder="e.g., {{ endDatePlaceHolder }}" class="form-control"/>
+                </div>
+                <button type="submit" class="btn btn-primary pull-right">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span>search</span>
+                </button>
+            </div>
+            <div class="clearfix"></div>
         </form>
     </div>
-    <p>Last Report updated at {{ lastUpdateTime }}</p>
-    <a href="{{ path('post_report_rerank') }}" class="btn btn-default">Re-rank</a>
+    <p class="item-count">{{ pagination.getTotalItemCount }} item(s)</p>
     <table class="table">
         <thead>
             <tr>
-                <th>Row Num</th>
-                <th>Rank Position</th>
-                <th>finalScore</th>
-                <th>create date</th>
-                <th>meta</th>
-                <th>content</th>
-                <th>tags</th>
-                <th>cities</th>
-                <th>publish status</th>
-                <th>publish action</th>
-                <th>homepage action</th>
-                <th>shortlink</th>
+                <th class="text-center">row #</th>
+                <th class="text-center">rank</th>
+                <th class="text-center">score</th>
+                <th class="text-center">created time</th>
+                <th class="text-center">by</th>
+                <th class="text-center">content</th>
+                <th class="text-center">tags</th>
+                <th class="text-center">cities</th>
+                <th class="text-center">status</th>
+                <th class="text-center">homepage visibility</th>
+                <th class="text-center">original link</th>
             </tr>
         </thead>
         <tbody>
         {% set rowNum = (page - 1) * limit + 1 %}
         {% for post in pagination %}
             <tr>
-                <td>{{ rowNum }}</td>
-                <td>{{ post.rankPosition }}</td>
-                <td>{{ post.finalScore }}</td>
-                <td>{{ post.createAt|date('Y-m-d\\TH:i:sP') }}</td>
+                <td class="text-center">{{ rowNum }}</td>
+                <td class="text-center">{{ post.rankPosition }}</td>
+                <td class="text-right">{{ post.finalScore|number_format(3) }}</td>
+                <td class="text-center">{{ post.createAt|date('Y-m-d H:i') }}</td>
                 <td>
-                    <ul>
-                        {% if post.mnemonoBiz is not null %}
-                            <li><a href="{{ path('mnemonobiz_show', {'id': post.mnemonoBiz.id })}}">{{ post.mnemonoBiz.name }}</a></li>
-                        {% endif %}
-                        {% if post.meta is not null %}
-                            {% if post.importFrom == "facebookFeed" %}
-                                <li>Total Likes: {{ post.meta.fbTotalLikes }}</li>
-                                <li>Total Comments: {{ post.meta.fbTotalComments }}</li>
-                            {% elseif post.importFrom == "weiboFeed" %}
-                                <li>Total Likes: {{ post.meta.likeCount }}</li>
-                                <li>Total Comments: {{ post.meta.commentsCount }}</li>
-                            {% endif %}
-                        {% endif %}
-                    </ul>
-                </td>
-                <td><a href="{{ path('posts_edit', {'id':post.id}) }}" target="_blank">-- {{ post.briefContent }}</a></td>
-                <td>
-                    {% for tag in post.tags %}
-                        {{ tag }},
-                    {% endfor %}
-                </td>
-                <td>
-                    {% for city in post.cities %}
-                        {{ city }},
-                    {% endfor %}
-                </td>
-                <td>
-                    {{ post.publishStatus }}
-                </td>
-                <td>
-                    {% if post.publishStatus == "published" %}
-                    <a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">to review</a>
-                    {% else %}
-                    <a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="1" data-id="{{ post.id }}" href="#">to publish</a>
+                    {% if post.mnemonoBiz is not null %}
+                        <div><a href="{{ path('mnemonobiz_edit', {'id': post.mnemonoBiz.id })}}">{{ post.mnemonoBiz.name }}</a></div>
                     {% endif %}
                 </td>
                 <td>
+                    <a href="{{ path('posts_edit', {'id':post.id}) }}" target="_blank">{{ post.briefContent ? post.briefContent : '---' }}</a>
+                    {% if post.meta is not null %}
+                        {% if post.importFrom == "facebookFeed" %}
+                            <div>
+                                <small>
+                                    Like: {{ post.meta.fbTotalLikes }}
+                                    &nbsp;/&nbsp;
+                                    Comment: {{ post.meta.fbTotalComments }}
+                                </small>
+                            </div>
+                        {% elseif post.importFrom == "weiboFeed" %}
+                            <div>
+                                <small>
+                                    Like: {{ post.meta.likeCount }}
+                                    &nbsp;/&nbsp;
+                                    Comment: {{ post.meta.commentsCount }}
+                                </small>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {{ post.tags|join(', ') }}
+                </td>
+                <td class="text-center">
+                    {{ post.cities|join(', ') }}
+                </td>
+                <td class="text-center">
+                    <div>
+                        {{ post.publishStatus }}
+                    </div>
+                    <div>
+                        {% if post.publishStatus == "published" %}
+                            (<a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">review</a>)
+                        {% else %}
+                            (<a class="publishTrigger" data-url="{{ path('posts_publish', {'id':post.id }) }}" data-action="1" data-id="{{ post.id }}" href="#">publish</a>)
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="text-center">
                     {% if not post.isShowAtHomepage %}
                         <a class="setHomepageTrigger" data-url="{{ path('posts_set_homepage', {'id':post.id }) }}" data-action="1" data-id="{{ post.id }}" href="#">show</a>
                     {% else %}
-                        <a class="setHomepageTrigger" data-url="{{ path('posts_set_homepage', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">hidden</a>
+                        <a class="setHomepageTrigger" data-url="{{ path('posts_set_homepage', {'id':post.id }) }}" data-action="0" data-id="{{ post.id }}" href="#">hide</a>
                     {% endif %}
                 </td>
-                <td>
-                    <a href="{{ post.originalLink }}" target="_blank">shortlink</a>
+                <td class="text-center">
+                    <a href="{{ post.originalLink }}" target="_blank">link</a>
                 </td>
             </tr>
             {% set rowNum = rowNum + 1 %}
@@ -136,7 +179,6 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('bundles/codingguyscms/js/paginatorCSS.js') }}"></script>
     <script>
         $(document).ready(function(){
             $(".setHomepageTrigger").each(function(i, element){
@@ -173,6 +215,4 @@
             });
         });
     </script>
-
 {% endblock %}
-

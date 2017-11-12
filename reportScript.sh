@@ -2,4 +2,4 @@
 BASEDIR=$(dirname $0)
 cd $BASEDIR
 
-app/console mnemono:post:review >> app/logs/crontab.log 2>> app/logs/crontab.err
+php71 bin/console mnemono:post:review >> var/logs/crontab.log 2>> var/logs/crontab.err

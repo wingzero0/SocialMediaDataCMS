@@ -1,0 +1,52 @@
+{% extends "CodingGuysCMSBundle:PendingGamePost:layout.html.twig" %}
+
+{% block mainContent %}
+    <div class="container">
+        <div class="page-header">
+            <h2>Pending Game Post Stats</h2>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>7-day pending game post stats</h4>
+                {% if items|length > 0 %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">date</th>
+                                <th class="text-center">by keyword</th>
+                                <th class="text-center">by naive bayes</th>
+                                <th class="text-center">by keyword &#8745; naive bayes</th>
+                                <th class="text-center">tagged as game</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for item in items %}
+                              <tr>
+                                  <td class="text-center">
+                                      {{ item.id }}
+                                  </td>
+                                  <td class="text-center">
+                                      {{ item.value.k_count }}
+                                  </td>
+                                  <td class="text-center">
+                                      {{ item.value.nb_count }}
+                                  </td>
+                                  <td class="text-center">
+                                      {{ item.value.knb_count }}
+                                  </td>
+                                  <td class="text-center">
+                                      {{ item.value.game_count }}
+                                  </td>
+                              </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center">
+                        <p style="color: #999; font-size: 24px;">NO DATA</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

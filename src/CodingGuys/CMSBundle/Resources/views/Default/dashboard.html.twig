@@ -1,23 +1,148 @@
 {% extends 'CodingGuysCMSBundle:layout:layout.html.twig' %}
 
-
 {% block headerBar %}
     {% include "CodingGuysCMSBundle:layout:nav.html.twig" %}
 {% endblock %}
 
 {% block mainContent %}
-    <div class="jumbotron">
-
-        <div class="container">
-            <h1>Dashboard</h1>
-
-            <div class="row">
-                <div class="col-xs-6 col-sm-3">
-                    <h2>Report</h2>
-                    <a class="btn btn-default" href="{{ path('post_report_home') }}">View details</a></div>
+    <style>
+        .biz-figure-container {
+            display: inline-block;
+            padding: 5px 20px 10px;
+            text-align: center;
+        }
+        .biz-figure-border {
+            border-right: 1px solid #ccc;
+        }
+        .biz-figure {
+            font-size: 18px;
+        }
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>biz figures</h4>
+                <p class="biz-figure-container biz-figure-border">
+                    <small>total</small>
+                    <br />
+                    <span class="biz-figure">{{ bizCount.all }}</span>
+                </p>
+                <p class="biz-figure-container">
+                    <small>facebook</small>
+                    <br />
+                    <span class="biz-figure">{{ bizCount.ref_fb }}</span>
+                </p>
+                <p class="biz-figure-container biz-figure-border">
+                    <small>weibo</small>
+                    <br />
+                    <span class="biz-figure">{{ bizCount.ref_weibo }}</span>
+                </p>
+                <p class="biz-figure-container">
+                    <small>hk</small>
+                    <br />
+                    <span class="biz-figure">{{ bizCount.city_hk }}</span>
+                </p>
+                <p class="biz-figure-container">
+                    <small>mo</small>
+                    <br />
+                    <span class="biz-figure">{{ bizCount.city_mo }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h4>7-day post stats</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">date</th>
+                            <th class="text-center">00-02</th>
+                            <th class="text-center">03-05</th>
+                            <th class="text-center">06-08</th>
+                            <th class="text-center">09-11</th>
+                            <th class="text-center">12-14</th>
+                            <th class="text-center">15-17</th>
+                            <th class="text-center">18-20</th>
+                            <th class="text-center">21-23</th>
+                            <th class="text-center">total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in postItems %}
+                          <tr>
+                              <td class="text-center">
+                                  {{ item.id }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['00'] +
+                                      item.value['01'] +
+                                      item.value['02']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['03'] +
+                                      item.value['04'] +
+                                      item.value['05']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['06'] +
+                                      item.value['07'] +
+                                      item.value['08']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['09'] +
+                                      item.value['10'] +
+                                      item.value['11']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['12'] +
+                                      item.value['13'] +
+                                      item.value['14']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['15'] +
+                                      item.value['16'] +
+                                      item.value['17']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['18'] +
+                                      item.value['19'] +
+                                      item.value['20']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{
+                                      item.value['21'] +
+                                      item.value['22'] +
+                                      item.value['23']
+                                  }}
+                              </td>
+                              <td class="text-center">
+                                  {{ item.value.count }}
+                              </td>
+                          </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
     {% block footer %}
         <div class="container">
             {{ parent() }}

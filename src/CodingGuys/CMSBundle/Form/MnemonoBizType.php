@@ -12,6 +12,9 @@ use AppBundle\Utility\DocumentPath;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class MnemonoBizType extends AbstractType
 {
@@ -23,62 +26,62 @@ class MnemonoBizType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('shortDesc','text',array(
+            ->add('shortDesc', TextType::class, array(
                 'required' => false
             ))
-            ->add('longDesc','text',array(
+            ->add('longDesc', TextType::class, array(
                 'required' => false
             ))
-            ->add('category','text',array(
+            ->add('category', TextType::class, array(
                 'required' => false
             ))
-            ->add('tags','collection',array(
-                'type' => 'text',
+            ->add('tags', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('addresses', 'collection', array(
-                'type' => 'text',
+            ->add('addresses', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('cities', 'collection', array(
-                'type' => 'text',
+            ->add('cities', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('phones','collection',array(
-                'type' => 'text',
+            ->add('phones', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('faxes','collection',array(
-                'type' => 'text',
+            ->add('faxes', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('websites','collection',array(
-                'type' => 'text',
+            ->add('websites', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('weighting','number',array(
+            ->add('weighting', NumberType::class, array(
                 'required' => false
             ))
-            ->add('importFrom', 'text', array(
-                'read_only' => true
+            ->add('importFrom', TextType::class, array(
+                'attr' => ['readonly' => true],
             ))
         ;
 

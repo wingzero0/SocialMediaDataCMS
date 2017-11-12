@@ -10,9 +10,10 @@ namespace CodingGuys\CMSBundle\Form\Settings;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-
-class WeightingType extends AbstractType{
+class WeightingType extends AbstractType
+{
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -20,10 +21,10 @@ class WeightingType extends AbstractType{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name','text',array(
+            ->add('name', TextType::class, array(
                 'required' => true
             ))
-            ->add('value','text',array(
+            ->add('value', TextType::class, array(
                 'required' => true
             ))
         ;

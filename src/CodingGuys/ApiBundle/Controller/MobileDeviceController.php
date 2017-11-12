@@ -10,11 +10,9 @@ namespace CodingGuys\ApiBundle\Controller;
 
 use AppBundle\Controller\AppBaseController;
 use AppBundle\Document\DeviceInfo;
-use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -38,9 +36,12 @@ class MobileDeviceController extends AppBaseController{
      * )
      * @Route("/")
      * @Method("POST")
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @deprecated
      */
-    public
-    function NewDeviceAction(Request $request)
+    public function NewDeviceAction(Request $request)
     {
         //$user = $this->container->get('security.context')->getToken()->getUser();
 

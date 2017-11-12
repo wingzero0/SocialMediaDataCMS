@@ -22,7 +22,8 @@ use Mnemono\BackgroundServiceBundle\Services\Score\WeiboScore;
  *     service="PostScoreService"
  * )
  */
-class PostScoreService extends BaseService{
+class PostScoreService extends BaseService
+{
     /**
      * Job for create post form fbID
      *
@@ -36,8 +37,10 @@ class PostScoreService extends BaseService{
      *     description = "Create post"
      * )
      */
-    public function updateScore(\GearmanJob $job){
-        try{
+    public function updateScore(\GearmanJob $job)
+    {
+        try
+        {
             $key_json = json_decode($job->workload(), true);
             $id = $key_json["id"];
             $this->resetDM();
@@ -45,7 +48,9 @@ class PostScoreService extends BaseService{
             $this->updatePostLocalScore($post);
             $this->updatePostFinalScore($post);
             return true;
-        }catch (\Exception $e){
+        }
+        catch (\Exception $e)
+        {
             $this->logExecption($e);
             exit(-1);
         }
@@ -55,7 +60,8 @@ class PostScoreService extends BaseService{
      * as a step stone to get FbFeedTimestampRepo
      * @return \AppBundle\Repository\Facebook\FacebookFeedTimestampRepository
      */
-    public function proxyFbFeedTimestampRepo(){
+    public function proxyFbFeedTimestampRepo()
+    {
         return $this->getFbFeedTimestampRepo();
     }
 
@@ -64,29 +70,33 @@ class PostScoreService extends BaseService{
      * @param \DateTime $dateTime2
      * @return float
      */
-    public function timePenaltyFactor(\DateTime $dateTime1, \DateTime $dateTime2){
+    public function timePenaltyFactor(\DateTime $dateTime1, \DateTime $dateTime2)
+    {
         $interval = $dateTime1->diff($dateTime2);
         $gravity = $this->getWeighting("gravity");
-        if ($interval->days < 1){
+        if ($interval->days < 1)
+        {
             return 1.0 / pow(0.5, $gravity);
-        }else{
-            return 1.0 / pow($interval->days, $gravity);
         }
+        return 1.0 / pow($interval->days, $gravity);
     }
 
     /**
      * @param $key
      * @return float
      */
-    public function getWeighting($key){
+    public function getWeighting($key)
+    {
         $weighting = $this->getWeightingRepo()->findOneByName($key);
-        if ($weighting == null){
+        if ($weighting == null)
+        {
             return 1.0;
         }
         return $weighting->getValue();
     }
 
-    private function updatePostFinalScore(Post $post){
+    private function updatePostFinalScore(Post $post)
+    {
         $localWeight = $this->getWeighting("localWeight");
         $adminWeight = $this->getWeighting("adminWeight");
 
@@ -99,7 +109,8 @@ class PostScoreService extends BaseService{
      * @param Post $post
      * @return float|int
      */
-    private function updatePostLocalScore(Post $post){
+    private function updatePostLocalScore(Post $post)
+    {
         $score = $this->calLocalScoreBySource($post);
         $score = $score * $this->timePenaltyFactor(new \DateTime(), $post->getCreateAt());
         $post->setLocalScore($score);
@@ -111,25 +122,30 @@ class PostScoreService extends BaseService{
      * @param Post $post
      * @return float
      */
-    private function calLocalScoreBySource(Post $post){
+    private function calLocalScoreBySource(Post $post)
+    {
         $feed = $post->getImportFromRef();
         $scoreFactory = null;
-        if ($feed instanceof FacebookFeed){
+        if ($feed instanceof FacebookFeed)
+        {
             $scoreFactory = new FbScore($this);
-        }else if ($feed instanceof WeiboFeed){
+        }
+        else if ($feed instanceof WeiboFeed)
+        {
             $scoreFactory = new WeiboScore($this);
         }
-        if ($scoreFactory != null){
+        if ($scoreFactory != null)
+        {
             return $scoreFactory->calLocalScore($post);
-        }else{
-            return 0.0;
         }
+        return 0.0;
     }
 
     /**
      * @param Post $post
      */
-    private function persistPost(Post $post){
+    private function persistPost(Post $post)
+    {
         $dm = $this->getDM();
         $dm->persist($post);
         $dm->flush();

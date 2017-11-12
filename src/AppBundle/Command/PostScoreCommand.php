@@ -17,8 +17,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PostScoreCommand extends BaseCommand{
-    protected function configure(){
+class PostScoreCommand extends BaseCommand
+{
+    protected function configure()
+    {
         $this->setName("mnemono:post:score")
             ->setDescription("calculate a post's score")
             ->addOption('id', null ,
@@ -29,29 +31,38 @@ class PostScoreCommand extends BaseCommand{
                 'generate a test list of command for dummy testing')
         ;
     }
-    protected function execute(InputInterface $input, OutputInterface $output){
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $genTestFlag = $input->getOption('genTest');
         if ($genTestFlag){
             $this->genTestList();
             return;
         }
         $ids = $input->getOption('id');
-        if (!empty($ids)){
-            foreach ($ids as $id){
+        if (!empty($ids))
+        {
+            foreach ($ids as $id)
+            {
                 $json = json_encode(array("id" => $id));
                 $this->getGearman()->doBackgroundJob(GearmanServiceName::$postScoreUpdateJob, $json);
             }
-        }else{
+        }
+        else
+        {
             $output->writeln("no id");
         }
     }
 
-    private function genTestList(){
+    private function genTestList()
+    {
         echo "test\n";
         $posts = $this->getPostRepo()->findAllWithSkipAndLimit();
         $counter = 0;
-        foreach($posts as $post){
-            if($counter > 100){
+        foreach($posts as $post)
+        {
+            if ($counter > 100)
+            {
                 break;
             }
             print_r($post->getId()."\n");

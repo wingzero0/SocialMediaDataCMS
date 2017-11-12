@@ -13,6 +13,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Document\Post;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class PostType extends AbstractType
 {
@@ -23,80 +31,80 @@ class PostType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id', 'text', array(
-                'read_only' => true
+            ->add('id', TextType::class, array(
+                'attr' => ['readonly' => true],
             ))
-            ->add('tags','collection', array(
-                'type' => 'text',
+            ->add('tags', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('cities','collection', array(
-                'type' => 'text',
+            ->add('cities', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('imageLinks','collection', array(
-                'type' => 'text',
+            ->add('imageLinks', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('videoLinks','collection', array(
-                'type' => 'text',
+            ->add('videoLinks', CollectionType::class, array(
+                'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
                 'required' => false
             ))
-            ->add('originalLink', 'text', array(
+            ->add('originalLink', TextType::class, array(
                 'required' => false
             ))
-            ->add('updateAt','date', array(
-                'read_only' => true,
+            ->add('updateAt', DateType::class, array(
+                'attr' => ['readonly' => true],
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'yyyy-MM-dd',
             ))
-            ->add('rankPosition','number', array(
+            ->add('rankPosition', NumberType::class, array(
                 'required' => false
             ))
-            ->add('localScore','number', array(
-                'read_only' => true,
+            ->add('localScore', NumberType::class, array(
+                'attr' => ['readonly' => true],
                 'required' => false
             ))
-            ->add('adminScore','number', array(
+            ->add('adminScore', NumberType::class, array(
                 'required' => false
             ))
-            ->add('finalScore','number', array(
-                'read_only' => true,
+            ->add('finalScore', NumberType::class, array(
+                'attr' => ['readonly' => true],
                 'required' => false
             ))
-            ->add('importFrom', 'text', array(
-                'read_only' => true
+            ->add('importFrom', TextType::class, array(
+                'attr' => ['readonly' => true],
             ))
-            ->add('publishStatus', 'choice', array(
-                'empty_value' => false,
+            ->add('publishStatus', ChoiceType::class, array(
+                'empty_data' => false,
                 'required' => true,
                 'choices' => Post::listOfPublishStatus(),
             ))
-            ->add('expireDate','datetime', array(
+            ->add('expireDate', DateTimeType::class, array(
                 'required' => true,
             ))
-            ->add('content','textarea', array(
+            ->add('content', TextareaType::class, array(
                 'attr' => array('rows' => '10'),
                 'required' => false,
             ))
-            ->add('showAtHomepage', 'checkbox', array(
+            ->add('showAtHomepage', CheckboxType::class, array(
                 'label'    => 'Show at homepage',
                 'required' => false,
             ))
-            ->add('softDelete', 'checkbox', array(
+            ->add('softDelete', CheckboxType::class, array(
                 'label'    => 'Delete',
                 'required' => false,
             ))

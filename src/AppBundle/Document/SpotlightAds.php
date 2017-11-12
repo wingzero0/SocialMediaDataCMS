@@ -29,23 +29,23 @@ class SpotlightAds {
      */
     protected $id;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $description;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @MongoDB\Index
      * @Groups({"display"})
      */
     protected $displaySeq;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $imageLink;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $landingPage;

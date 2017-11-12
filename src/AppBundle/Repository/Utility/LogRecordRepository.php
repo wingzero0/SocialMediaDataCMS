@@ -11,14 +11,16 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use AppBundle\Document\Utility\LogRecord;
 
-class LogRecordRepository extends DocumentRepository{
+class LogRecordRepository extends DocumentRepository
+{
     /**
      * @return LogRecord
      */
-    public function findLastPostReportLogRecord(){
+    public function findLastPostReportLogRecord()
+    {
         $logRecord = $this->createQueryBuilder()
             ->field("category")->equals("postReview")
-            ->sort(array("logTime" => -1))
+            ->sort(["_id" => -1])
             ->getQuery()->getSingleResult();
         return $logRecord;
     }

@@ -16,31 +16,36 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PostReviewCommand extends BaseCommand{
+class PostReviewCommand extends BaseCommand
+{
     private $allBiz;
-    protected function configure(){
+    protected function configure()
+    {
         $this->setName("mnemono:post:review")
             ->setDescription("generate ranking of post in biz for review")
         ;
     }
-    protected function execute(InputInterface $input, OutputInterface $output){
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $json = json_encode(array("id" => null));
         $this->getGearman()->doBackgroundJob(GearmanServiceName::$postReviewRankJob, $json);
 
         $allBiz = $this->getAllBiz();
 
-        foreach ($allBiz as $biz){
+        foreach ($allBiz as $biz)
+        {
             // TODO should control biz order
             $json = json_encode(array("id" => $biz->getId()));
             $this->getGearman()->doBackgroundJob(GearmanServiceName::$postReviewRankJob, $json);
         }
     }
 
-    private function getAllBiz(){
+    private function getAllBiz()
+    {
         $this->allBiz = array();
-        $this->loopCollectionWithSkipParam(function($limit, $skip){
+        $this->loopCollectionWithSkipParam(function($limit, $skip) {
             return $this->getBizQueryBuilder($limit, $skip);
-        }, function(MnemonoBiz $biz){
+        }, function(MnemonoBiz $biz) {
             $bizId = (string) ($biz->getId());
             $this->allBiz[$bizId] = $biz;
         });
@@ -52,7 +57,8 @@ class PostReviewCommand extends BaseCommand{
      * @param int $skip
      * @return \Doctrine\MongoDB\Query\Builder
      */
-    private function getBizQueryBuilder($limit, $skip){
+    private function getBizQueryBuilder($limit, $skip)
+    {
         $bizRepo = $this->getMnemenoBizRepo();
         return $bizRepo->getQueryBuilderFindAll($limit, $skip);
     }

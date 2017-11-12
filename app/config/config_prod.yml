@@ -22,6 +22,17 @@ monolog:
             path:  "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
 
+# MongoDb Configuration
+doctrine_mongodb:
+    connections:
+        default:
+            server: "%mongodb_server%"
+            options: {}
+    default_database: "%mongodb_database_prod%"
+    document_managers:
+        default:
+            auto_mapping: true
+
 doctrine_cache:
     providers:
         gearman_cache:

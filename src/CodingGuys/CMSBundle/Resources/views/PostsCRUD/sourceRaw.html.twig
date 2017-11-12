@@ -2,8 +2,19 @@
 
 {% block mainContent %}
 <div class="container">
+    <div class="page-header">
+        <a href="{{ path('posts_home') }}">All Posts</a>
+        <h2>Raw</h2>
+        <p>
+            <a href="{{ path('posts_edit', {'id': post.id}) }}">edit post</a>
+            &nbsp;&middot;&nbsp;
+            <a href="{{ path('posts_show_snapshots', { 'id': post.id }) }}">snapshots</a>
+            &nbsp;&middot;&nbsp;
+            <a href="{{ path('posts_show_stats', { 'id': post.id }) }}">stats</a>
+        </p>
+    </div>
     <div>
-        <p>possibleLinks</p>
+        <p>Possible Links</p>
         <ul class="list-group">
             {% for link in possibleLinks %}
                 <li class="list-group-item"><a href="{{ link }}">{{ link }}</a></li>
@@ -11,7 +22,7 @@
         </ul>
     </div>
     <div>
-        <p>raw data</p>
+        <p>Raw Data</p>
         <pre>
 {{ strOutput }}
         </pre>

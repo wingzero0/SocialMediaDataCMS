@@ -18,23 +18,30 @@ use AppBundle\Utility\LoopCollectionStrategy;
 use AppBundle\Utility\DocumentPath;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
 
-abstract class BaseCommand extends ContainerAwareCommand{
+abstract class BaseCommand extends ContainerAwareCommand
+{
     const OPTION_ACTION = 'action';
     private $documentManager = null;
+
     /**
      * @param bool $reset
      * @return null|DocumentManager
      */
-    protected function getDM($reset = false){
-        if ($this->documentManager == null){
+    protected function getDM($reset = false)
+    {
+        if ($this->documentManager == null)
+        {
             $this->documentManager = $this->getContainer()->get("doctrine_mongodb")->getManager();
         }
-        if ($reset == true && $this->documentManager instanceof DocumentManager){
+        if ($reset == true && $this->documentManager instanceof DocumentManager)
+        {
             $this->documentManager = DocumentManager::create(new Connection(), $this->documentManager->getConfiguration());
         }
         return $this->documentManager;
     }
-    protected function resetDM(){
+
+    protected function resetDM()
+    {
         $this->getDM(true);
     }
 
@@ -44,16 +51,18 @@ abstract class BaseCommand extends ContainerAwareCommand{
      *
      * it will reset the dm in the loop
      */
-    protected function loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack){
+    protected function loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack)
+    {
         $loopS = new LoopCollectionStrategy();
-        $loopS->loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack, function(){
+        $loopS->loopCollectionWithQueryBuilder($queryBuilderCallback, $reducerCallBack, function() {
             $this->resetDM();
         });
     }
 
-    protected function loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack){
+    protected function loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack)
+    {
         $loopS = new LoopCollectionStrategy();
-        $loopS->loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack, function(){
+        $loopS->loopCollectionWithSkipParam($queryBuilderCallback, $reducerCallBack, function() {
             $this->resetDM();
         });
     }
@@ -61,37 +70,47 @@ abstract class BaseCommand extends ContainerAwareCommand{
     /**
      * @return FacebookPageRepository
      */
-    protected function getFacebookPageRepo(){
+    protected function getFacebookPageRepo()
+    {
         return $this->getDM()->getRepository(DocumentPath::$facebookPageDocumentPath);
     }
+
     /**
      * @return FacebookFeedRepository
      */
-    protected function getFbFeedRepo(){
+    protected function getFbFeedRepo()
+    {
         return $this->getDM()->getRepository(DocumentPath::$facebookFeedDocumentPath);
     }
     /**
      * @return WeightingRepository
      */
-    protected function getWeightingRepo(){
+    protected function getWeightingRepo()
+    {
         return $this->getDM()->getRepository(DocumentPath::$weightingDocumentPath);
     }
+
     /**
      * @return PostRepository
      */
-    protected function getPostRepo(){
+    protected function getPostRepo()
+    {
         return $this->getDM()->getRepository(DocumentPath::$postDocumentPath);
     }
+
     /**
      * @return MnemonoBizRepository
      */
-    protected function getMnemenoBizRepo(){
+    protected function getMnemenoBizRepo()
+    {
         return $this->getDM()->getRepository(DocumentPath::$mnemonoBizDocumentPath);
     }
+
     /**
      * @return GearmanClient
      */
-    protected function getGearman(){
+    protected function getGearman()
+    {
         return $this->getContainer()->get('gearman');
     }
 }

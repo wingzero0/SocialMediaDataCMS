@@ -23,35 +23,35 @@ class ManagedTag {
      */
     protected $id;
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
      * @MongoDB\Index
      */
     protected $displaySeq;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      * @Groups({"display"})
      */
     protected $key;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      * @Groups({"display"})
      */
     protected $nameChi;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @MongoDB\Index
      * @Groups({"display"})
      */
     protected $nameEng;
     /**
-     * @MongoDB\Collection
+     * @MongoDB\Field(type="collection")
      * @MongoDB\Index
      */
     protected $extendTags;
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      * @Groups({"display"})
      */
     protected $imageLink;
